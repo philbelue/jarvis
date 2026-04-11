@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis Memory Architecture — Cross-Channel Context System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e17;
+  --navy-mid: #141b2d;
+  --navy-light: #1c2541;
+  --accent: #3b82a0;
+  --warm: #ffd7a3;
+  --warm-light: #fff4db;
+  --gold: #ffb86a;
+  --gold-dim: rgba(255,184,106,0.08);
+  --bg: #0d1117;
+  --bg-card: rgba(20,27,45,0.85);
+  --text: #e2ddd7;
+  --text-light: #a0aec0;
+  --text-muted: #5a6577;
+  --border: rgba(255,212,163,0.1);
+  --green: #48c78e;
+  --green-dim: rgba(72,199,142,0.1);
+  --red: #ff6b6b;
+  --red-dim: rgba(255,107,107,0.1);
+  --cyan: #a9e7f0;
+  --cyan-dim: rgba(169,231,240,0.06);
+  --purple: #b794f6;
+  --purple-dim: rgba(183,148,246,0.08);
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(10,14,23,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+nav .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; overflow-x: auto; padding: 0 20px; }
+nav a { color: var(--text-muted); text-decoration: none; font-size: 0.72rem; font-weight: 600; padding: 14px 16px; white-space: nowrap; transition: all 0.3s; border-bottom: 2px solid transparent; letter-spacing: 0.08em; text-transform: uppercase; }
+nav a:hover, nav a.active { color: var(--warm); border-bottom-color: var(--gold); }
+nav .nav-brand { font-family: var(--font-display); color: var(--warm-light); font-size: 0.95rem; padding: 14px 20px 14px 0; border-right: 1px solid var(--border); margin-right: 8px; white-space: nowrap; }
+
+/* HERO */
+.hero { background: linear-gradient(135deg, var(--navy) 0%, #0f1a2e 40%, #162035 100%); padding: 80px 24px 60px; position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: radial-gradient(ellipse at top right, rgba(255,184,106,0.06) 0%, transparent 60%); }
+.hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(255,184,106,0.3); padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+.hero h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4.5vw, 2.8rem); color: var(--warm-light); margin-bottom: 16px; line-height: 1.2; }
+.hero h1 span { color: var(--gold); }
+.hero > .hero-inner > p { font-size: 1rem; color: var(--text-light); max-width: 620px; line-height: 1.8; }
+.hero-meta { margin-top: 28px; display: flex; gap: 32px; flex-wrap: wrap; }
+.hero-meta div { font-size: 0.78rem; color: var(--text-muted); }
+.hero-meta strong { color: var(--text); display: block; font-size: 0.85rem; }
+
+/* SECTIONS */
+.section { max-width: 940px; margin: 0 auto; padding: 56px 24px; }
+.section-title { font-family: var(--font-display); font-size: 1.8rem; color: var(--warm-light); margin-bottom: 8px; }
+.section-sub { font-size: 0.88rem; color: var(--text-light); margin-bottom: 32px; max-width: 700px; }
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* DARK SECTION */
+.section-dark { background: var(--navy-mid); }
+
+/* CALLOUT */
+.callout { background: var(--gold-dim); border-left: 4px solid var(--gold); padding: 20px 24px; border-radius: 0 var(--radius) var(--radius) 0; margin: 24px 0; }
+.callout-title { font-weight: 700; font-size: 0.85rem; color: var(--warm-light); margin-bottom: 6px; }
+.callout p { font-size: 0.84rem; color: var(--text-light); margin: 0; line-height: 1.7; }
+.callout-red { background: var(--red-dim); border-left-color: var(--red); }
+.callout-red .callout-title { color: var(--red); }
+.callout-green { background: var(--green-dim); border-left-color: var(--green); }
+.callout-green .callout-title { color: var(--green); }
+
+/* ARCHITECTURE DIAGRAMS */
+.arch-diagram { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin: 24px 0; overflow-x: auto; }
+.arch-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+
+/* FLOW NODES */
+.flow { display: flex; flex-direction: column; gap: 0; align-items: center; }
+.flow-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; width: 100%; }
+.flow-node { background: var(--navy-light); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; text-align: center; min-width: 130px; transition: all 0.3s; }
+.flow-node:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(255,184,106,0.1); }
+.flow-node .node-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.flow-node .node-label { font-size: 0.72rem; font-weight: 600; color: var(--warm-light); }
+.flow-node .node-sub { font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; }
+.flow-node.active { border-color: var(--green); background: var(--green-dim); }
+.flow-node.active .node-label { color: var(--green); }
+.flow-node.problem { border-color: var(--red); background: var(--red-dim); }
+.flow-node.problem .node-label { color: var(--red); }
+.flow-node.new { border-color: var(--gold); background: var(--gold-dim); }
+.flow-node.new .node-label { color: var(--gold); }
+.flow-node.hermes { border-color: var(--purple); background: var(--purple-dim); }
+.flow-node.hermes .node-label { color: var(--purple); }
+.flow-node.cyan-node { border-color: var(--cyan); background: var(--cyan-dim); }
+.flow-node.cyan-node .node-label { color: var(--cyan); }
+
+.flow-arrow { color: var(--text-muted); font-size: 1.2rem; padding: 8px 0; flex-shrink: 0; }
+.flow-arrow-h { color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
+.flow-arrow-x { color: var(--red); font-size: 1.4rem; font-weight: 700; padding: 8px 0; }
+
+/* SIDE BY SIDE */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; }
+.compare-card { padding: 24px; border-radius: var(--radius); }
+.compare-card.bad { background: var(--red-dim); border: 1px solid rgba(255,107,107,0.2); }
+.compare-card.good { background: var(--green-dim); border: 1px solid rgba(72,199,142,0.2); }
+.compare-card h4 { font-size: 0.9rem; margin-bottom: 12px; }
+.compare-card.bad h4 { color: var(--red); }
+.compare-card.good h4 { color: var(--green); }
+.compare-card ul { list-style: none; font-size: 0.82rem; color: var(--text-light); }
+.compare-card ul li { padding: 4px 0; }
+.compare-card.bad ul li::before { content: '✗ '; color: var(--red); font-weight: 700; }
+.compare-card.good ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+
+/* OPTION CARDS */
+.opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 24px 0; }
+.opt { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 28px 24px; position: relative; transition: all 0.3s; }
+.opt:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.opt.recommended { border-color: var(--gold); }
+.opt.recommended::before { content: 'RECOMMENDED'; position: absolute; top: -12px; left: 24px; background: var(--gold); color: var(--navy); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; padding: 4px 14px; border-radius: 12px; }
+.opt-name { font-family: var(--font-display); font-size: 1.2rem; color: var(--warm-light); margin-bottom: 4px; }
+.opt-tag { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
+.opt-detail { font-size: 0.78rem; color: var(--text-light); margin-bottom: 4px; }
+.opt-detail strong { color: var(--text); }
+.opt-items { list-style: none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+.opt-items li { font-size: 0.78rem; color: var(--text-light); padding: 4px 0; }
+.opt-items li::before { content: '→ '; color: var(--gold); font-weight: 700; }
+
+/* STEPS */
+.steps { counter-reset: step; margin: 24px 0; }
+.step { display: flex; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+.step::before { counter-increment: step; content: counter(step); flex-shrink: 0; width: 36px; height: 36px; background: var(--gold); color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+.step-content h4 { font-size: 0.9rem; color: var(--warm-light); margin-bottom: 4px; }
+.step-content p { font-size: 0.82rem; color: var(--text-light); }
+.step-tag { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 8px; margin-top: 6px; }
+.step-easy { background: var(--green-dim); color: var(--green); }
+.step-med { background: var(--gold-dim); color: var(--gold); }
+.step-hard { background: var(--purple-dim); color: var(--purple); }
+
+/* ACCORDION */
+.accordion { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 24px 0; }
+.accordion-item { border-bottom: 1px solid var(--border); }
+.accordion-item:last-child { border-bottom: none; }
+.accordion-btn { width: 100%; text-align: left; background: var(--bg-card); border: none; padding: 16px 20px; font-size: 0.88rem; font-weight: 600; color: var(--warm-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-body); }
+.accordion-btn:hover { background: var(--navy-light); }
+.accordion-btn::after { content: '+'; font-size: 1.2rem; color: var(--text-muted); }
+.accordion-item.open .accordion-btn::after { content: '−'; }
+.accordion-body { display: none; padding: 0 20px 20px; font-size: 0.84rem; color: var(--text-light); line-height: 1.75; }
+.accordion-item.open .accordion-body { display: block; }
+
+/* STACK TABLE */
+.stack-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 24px 0; }
+.stack-table th { background: var(--navy-light); color: var(--warm-light); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.stack-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-light); }
+.stack-table tr:hover td { background: var(--gold-dim); }
+.stack-table .status-active { color: var(--green); font-weight: 600; }
+.stack-table .status-idle { color: var(--red); font-weight: 600; }
+.stack-table .status-partial { color: var(--gold); font-weight: 600; }
+
+/* TAB SYSTEM */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
+.tab-btn { background: none; border: none; padding: 12px 20px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-family: var(--font-body); letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.3s; }
+.tab-btn:hover { color: var(--text-light); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* LEGEND */
+.legend { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.legend-dot.green { background: var(--green); }
+.legend-dot.red { background: var(--red); }
+.legend-dot.gold { background: var(--gold); }
+.legend-dot.purple { background: var(--purple); }
+.legend-dot.cyan { background: var(--cyan); }
+
+/* FOOTER */
+footer { text-align: center; padding: 40px 24px; font-size: 0.72rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+@media (max-width: 700px) {
+  .compare-grid { grid-template-columns: 1fr; }
+  .opt-grid { grid-template-columns: 1fr; }
+  .flow-row { flex-direction: column; }
+  .hero h1 { font-size: 1.6rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">J.A.R.V.I.S.</span>
+    <a href="#current">Current State</a>
+    <a href="#problem">The Gap</a>
+    <a href="#stack">Your Stack</a>
+    <a href="#target">Target Architecture</a>
+    <a href="#options">Approaches</a>
+    <a href="#plan">Execution Plan</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Architecture Brief</div>
+    <h1>Jarvis Memory System — <span>Cross-Channel Context.</span></h1>
+    <p>How to give Jarvis persistent, context-aware memory across every Discord channel, leveraging your existing stack: n8n, Claude API, Hermes, Obsidian, and OpenRouter.</p>
+    <div class="hero-meta">
+      <div><strong>Operator</strong>Philip Belue</div>
+      <div><strong>Date</strong>April 10, 2026</div>
+      <div><strong>Stack</strong>n8n · Claude · Hermes · Obsidian</div>
+    </div>
+  </div>
+</div>
+
+<!-- CURRENT STATE -->
+<div id="current" class="section">
+  <h2 class="section-title">Current State</h2>
+  <p class="section-sub">Jarvis can hear everything. But each conversation starts from zero. Here's how messages flow today.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-label">Current Message Flow — Stateless</div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">💬</div>
+          <div class="node-label">Discord Message</div>
+          <div class="node-sub">Any channel</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">⚡</div>
+          <div class="node-label">n8n Workflow</div>
+          <div class="node-sub">Webhook trigger</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">🧠</div>
+          <div class="node-label">Claude API</div>
+          <div class="node-sub">via OpenRouter</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node problem">
+          <div class="node-icon">🚫</div>
+          <div class="node-label">Fresh Context Only</div>
+          <div class="node-sub">No history, no cross-channel</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">📤</div>
+          <div class="node-label">Response</div>
+          <div class="node-sub">Back to Discord</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <div class="callout-title">The Core Problem</div>
+    <p>Every Claude API call is stateless. When Jarvis gets a message in #ai-research, he has zero knowledge of what was discussed in #strategy 10 minutes ago. No conversation history. No shared context. No memory of past decisions. Each message is an island.</p>
+  </div>
+
+  <table class="stack-table">
+    <thead><tr><th>Component</th><th>Status</th><th>Current Role</th><th>Memory Contribution</th></tr></thead>
+    <tbody>
+      <tr><td><strong>n8n</strong></td><td class="status-active">Active</td><td>Workflow orchestration, webhook routing</td><td>None — passes messages through</td></tr>
+      <tr><td><strong>Claude API</strong></td><td class="status-active">Active</td><td>Reasoning, responses via OpenRouter</td><td>None — stateless per call</td></tr>
+      <tr><td><strong>OpenRouter</strong></td><td class="status-active">Active ($100 credit)</td><td>API routing to Claude</td><td>None</td></tr>
+      <tr><td><strong>Hermes (Local)</strong></td><td class="status-idle">Idle</td><td>Not leveraged yet</td><td>Could summarize, embed, classify</td></tr>
+      <tr><td><strong>Obsidian Vault</strong></td><td class="status-partial">Partial</td><td>Agent-shared knowledge, rolling memory</td><td>Static — not queried at response time</td></tr>
+      <tr><td><strong>Discord (Admin)</strong></td><td class="status-active">Active</td><td>Message delivery, all channels</td><td>History exists but not retrieved</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="section-divider">
+
+<!-- THE GAP -->
+<div id="problem" class="section-dark">
+  <div class="section" id="problem-inner">
+    <h2 class="section-title">The Gap</h2>
+    <p class="section-sub">What's missing between "Jarvis can talk" and "Jarvis remembers."</p>
+
+    <div class="compare-grid">
+      <div class="compare-card bad">
+        <h4>Current: Stateless Agent</h4>
+        <ul>
+          <li>Every API call starts from scratch</li>
+          <li>No recall of prior conversations</li>
+          <li>Can't connect discussions across channels</li>
+          <li>Obsidian vault is write-only (briefs write to it, nothing reads back)</li>
+          <li>Hermes model sitting idle on M4 Max</li>
+          <li>Context limited to current message + system prompt</li>
+        </ul>
+      </div>
+      <div class="compare-card good">
+        <h4>Target: Context-Aware Agent</h4>
+        <ul>
+          <li>Retrieves relevant past conversations before responding</li>
+          <li>Knows what was decided in #strategy when answering in #ops</li>
+          <li>Obsidian vault is a live knowledge base — queried in real-time</li>
+          <li>Hermes handles summarization + embeddings locally (free)</li>
+          <li>Time-decay so recent context weighs more than old</li>
+          <li>Learns and improves over time</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">The 3 Missing Layers</div>
+      <p><strong>1. Storage:</strong> A vector database to store embeddings of messages and knowledge. <strong>2. Retrieval:</strong> A RAG pipeline that queries relevant context before each Claude call. <strong>3. Processing:</strong> A local model (Hermes) that summarizes, embeds, and classifies — saving API costs and enabling background processing.</p>
+    </div>
+  </div>
+</div>
+
+<!-- YOUR STACK -->
+<div id="stack" class="section">
+  <h2 class="section-title">Your Stack — Mapped</h2>
+  <p class="section-sub">Every piece you already own, and what role each plays in the memory system.</p>
+
+  <div class="accordion">
+    <div class="accordion-item open">
+      <button class="accordion-btn">n8n — The Orchestrator</button>
+      <div class="accordion-body">
+        <p><strong>What it does today:</strong> Routes Discord messages to Claude, runs AM/PM brief workflows, handles webhook triggers.</p>
+        <p><strong>Memory role:</strong> Becomes the central pipeline. Every message passes through n8n, making it the perfect place to inject a "memory fetch" step before calling Claude. n8n has built-in nodes for Qdrant, ChromaDB, and Pinecone — you can add vector store queries without writing code.</p>
+        <p><strong>Key capability:</strong> n8n's AI Agent nodes support ConversationSummaryBufferMemory — keeps recent messages raw, summarizes older ones when hitting token limits. This is production-grade memory management with zero custom code.</p>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-btn">Claude API (via OpenRouter) — The Reasoner</button>
+      <div class="accordion-body">
+        <p><strong>What it does today:</strong> Generates all Jarvis responses. Stateless — each call is independent.</p>
+        <p><strong>Memory role:</strong> Stays as the primary reasoning engine, but now receives enriched prompts. Instead of just the current message, Claude gets: the message + relevant past conversations + relevant Obsidian notes + server state summary. The context window becomes a "working memory" built fresh for each query.</p>
+        <p><strong>Cost note:</strong> $100 in OpenRouter credit goes further when Hermes handles embedding/summarization locally. Reserve Claude for reasoning-heavy tasks.</p>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-btn">Hermes 3 (Local) — The Workhorse</button>
+      <div class="accordion-body">
+        <p><strong>What it does today:</strong> Nothing. Sitting idle on the M4 Max.</p>
+        <p><strong>Memory role:</strong> This is your free compute layer. Use it for:</p>
+        <p>→ <strong>Summarization:</strong> When the conversation buffer fills up, Hermes compresses old messages into summaries before storing them. Runs locally = $0.<br>
+        → <strong>Embedding generation:</strong> Run nomic-embed-text or similar via Ollama to convert messages into vectors for the vector store. Again, $0.<br>
+        → <strong>Classification:</strong> Filter noise before storing. "Is this message worth remembering?" Hermes answers locally.<br>
+        → <strong>Internal monologue:</strong> Hermes 3 supports multi-turn reasoning — useful for deciding WHAT context to retrieve before querying Claude.</p>
+        <p><strong>Hardware fit:</strong> M4 Max can run Hermes 3 8B effortlessly. Even 70B quantized would work for batch processing during off-peak hours.</p>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-btn">Obsidian Vault — The Knowledge Base</button>
+      <div class="accordion-body">
+        <p><strong>What it does today:</strong> Stores agent-shared knowledge, rolling memory from daily briefs, infrastructure audit. Mostly write-only.</p>
+        <p><strong>Memory role:</strong> Becomes a live, queryable knowledge base. Two approaches:</p>
+        <p>→ <strong>Plugin-based RAG:</strong> Obsidian plugins like "Vault AI Chat" auto-chunk and embed notes as they change. Stores embeddings locally in ChromaDB.<br>
+        → <strong>CLI integration:</strong> n8n reads vault files via filesystem, sends them through Hermes for embedding, stores in vector DB. Keeps vault as the single source of truth.</p>
+        <p><strong>Key insight:</strong> Your vault already has structure (daily notes, knowledge base, decisions). That structure IS your long-term memory — you just need a retrieval layer on top.</p>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-btn">Discord (Admin) — The Interface</button>
+      <div class="accordion-body">
+        <p><strong>What it does today:</strong> Message delivery across all channels. Jarvis has Administrator permissions server-wide.</p>
+        <p><strong>Memory role:</strong> Admin access means Jarvis can READ message history from any channel via the Discord API. This is critical — n8n can pull recent messages from relevant channels and feed them into the context window. Discord becomes both the input AND a source of retrievable history.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- TARGET ARCHITECTURE -->
+<div id="target" class="section">
+  <h2 class="section-title">Target Architecture</h2>
+  <p class="section-sub">The full memory-aware message flow. Every component has a job.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-label">Target Flow — Memory-Enriched Responses</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot green"></div>Active today</div>
+      <div class="legend-item"><div class="legend-dot gold"></div>New component</div>
+      <div class="legend-item"><div class="legend-dot purple"></div>Hermes (local)</div>
+      <div class="legend-item"><div class="legend-dot cyan"></div>Vector store</div>
+    </div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">💬</div>
+          <div class="node-label">Discord Message</div>
+          <div class="node-sub">Any channel, any user</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">⚡</div>
+          <div class="node-label">n8n Workflow</div>
+          <div class="node-sub">Receives message</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <!-- PARALLEL BRANCHES -->
+      <div class="flow-row" style="gap: 24px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px; flex:1;">
+          <div class="flow-node hermes" style="width:100%;">
+            <div class="node-icon">🔮</div>
+            <div class="node-label">Hermes: Embed</div>
+            <div class="node-sub">Convert message → vector</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node cyan-node" style="width:100%;">
+            <div class="node-icon">🗄️</div>
+            <div class="node-label">Vector DB Query</div>
+            <div class="node-sub">ChromaDB / Qdrant</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node new" style="width:100%;">
+            <div class="node-icon">📋</div>
+            <div class="node-label">Relevant Context</div>
+            <div class="node-sub">Past convos + decisions</div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px; flex:1;">
+          <div class="flow-node new" style="width:100%;">
+            <div class="node-icon">📖</div>
+            <div class="node-label">Obsidian Query</div>
+            <div class="node-sub">Search vault notes</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node new" style="width:100%;">
+            <div class="node-icon">📝</div>
+            <div class="node-label">Knowledge Chunks</div>
+            <div class="node-sub">Relevant vault content</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node new" style="width:100%;">
+            <div class="node-icon">🔄</div>
+            <div class="node-label">Buffer History</div>
+            <div class="node-sub">Last ~20 messages raw</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓ merge</div>
+
+      <div class="flow-row">
+        <div class="flow-node new">
+          <div class="node-icon">🧩</div>
+          <div class="node-label">Context Assembly</div>
+          <div class="node-sub">Message + memories + vault + buffer</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row">
+        <div class="flow-node active">
+          <div class="node-icon">🧠</div>
+          <div class="node-label">Claude API</div>
+          <div class="node-sub">Enriched prompt via OpenRouter</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-row" style="gap:24px;">
+        <div class="flow-node active">
+          <div class="node-icon">📤</div>
+          <div class="node-label">Response</div>
+          <div class="node-sub">Context-aware reply</div>
+        </div>
+        <div class="flow-node hermes">
+          <div class="node-icon">💾</div>
+          <div class="node-label">Hermes: Store</div>
+          <div class="node-sub">Embed + save to vector DB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="callout-title">What Changes</div>
+    <p>Before Claude sees a message, n8n now runs a parallel retrieval: (1) embed the message via Hermes locally, (2) query the vector DB for similar past conversations, (3) query Obsidian vault for relevant knowledge, (4) grab the last ~20 messages from the conversation buffer. All of this gets merged into an enriched prompt. After Claude responds, the exchange gets embedded and stored back in the vector DB for future retrieval. This is the RAG loop.</p>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- APPROACHES -->
+<div id="options" class="section-dark">
+  <div class="section">
+    <h2 class="section-title">Three Approaches</h2>
+    <p class="section-sub">Ranked by complexity. All buildable with your current stack.</p>
+
+    <div class="opt-grid">
+      <div class="opt">
+        <div class="opt-name">Quick Buffer</div>
+        <div class="opt-tag">Low lift · 2-3 hours · n8n only</div>
+        <div class="opt-detail"><strong>Vector DB:</strong> None needed</div>
+        <div class="opt-detail"><strong>Hermes:</strong> Not required</div>
+        <div class="opt-detail"><strong>Cost:</strong> $0 additional</div>
+        <ul class="opt-items">
+          <li>n8n's built-in ConversationBufferMemory node</li>
+          <li>Keeps last ~20 messages per channel in n8n memory</li>
+          <li>Feeds recent history into each Claude call</li>
+          <li>No cross-channel awareness</li>
+          <li>No long-term memory beyond buffer window</li>
+          <li>Good first step to prove the concept</li>
+        </ul>
+      </div>
+
+      <div class="opt recommended">
+        <div class="opt-name">RAG + Vector Store</div>
+        <div class="opt-tag">Medium lift · 1-2 days · n8n + ChromaDB + Hermes</div>
+        <div class="opt-detail"><strong>Vector DB:</strong> ChromaDB (self-hosted, lightweight)</div>
+        <div class="opt-detail"><strong>Hermes:</strong> Embeddings + summarization</div>
+        <div class="opt-detail"><strong>Cost:</strong> ~$0 (all local)</div>
+        <ul class="opt-items">
+          <li>Full semantic search across all channels + vault</li>
+          <li>Hermes generates embeddings locally ($0)</li>
+          <li>ChromaDB runs in Docker on M4 Max</li>
+          <li>n8n queries vector DB before each Claude call</li>
+          <li>Obsidian vault auto-indexed as knowledge base</li>
+          <li>Cross-channel context awareness ✓</li>
+          <li>Long-term memory ✓</li>
+          <li>Time-decay weighting on older memories</li>
+        </ul>
+      </div>
+
+      <div class="opt">
+        <div class="opt-name">Letta / MemGPT</div>
+        <div class="opt-tag">High lift · 3-5 days · Custom deployment</div>
+        <div class="opt-detail"><strong>Vector DB:</strong> Built into Letta</div>
+        <div class="opt-detail"><strong>Hermes:</strong> Optional secondary model</div>
+        <div class="opt-detail"><strong>Cost:</strong> $0 (self-hosted)</div>
+        <ul class="opt-items">
+          <li>Research-grade memory management (UC Berkeley)</li>
+          <li>Virtual context — auto-swaps memories in/out</li>
+          <li>Perpetual conversations with no token limit</li>
+          <li>Built-in memory classes + custom tools</li>
+          <li>Overkill for current needs but future-proof</li>
+          <li>Steeper learning curve, more moving parts</li>
+          <li>Best for when Jarvis becomes multi-agent</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXECUTION PLAN -->
+<div id="plan" class="section">
+  <h2 class="section-title">Execution Plan</h2>
+  <p class="section-sub">Recommended path: start with Option A to prove the concept, then layer in Option B. This is iterative — don't try to build everything at once.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="phase1">Phase 1: Quick Buffer</button>
+    <button class="tab-btn" data-tab="phase2">Phase 2: RAG Pipeline</button>
+    <button class="tab-btn" data-tab="phase3">Phase 3: Full Memory</button>
+  </div>
+
+  <div class="tab-content active" id="phase1">
+    <div class="callout">
+      <div class="callout-title">Goal: Jarvis remembers the last 20 messages in each channel</div>
+      <p>This is the "get a half back dive down" rep. Minimal infrastructure, maximum proof of concept.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <h4>Add Memory Node to n8n Workflow</h4>
+          <p>In the Jarvis Discord response workflow, add a ConversationBufferWindowMemory node before the Claude AI Agent node. Set window to 20 messages. n8n stores these in its built-in SQLite.</p>
+          <span class="step-tag step-easy">Easy · 30 min</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Configure Session ID by Channel</h4>
+          <p>Set the memory session ID to the Discord channel ID. This gives each channel its own conversation buffer. Jarvis now remembers recent messages per channel.</p>
+          <span class="step-tag step-easy">Easy · 15 min</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Test Cross-Message Recall</h4>
+          <p>Send Jarvis a message referencing something from 10 messages ago in the same channel. Verify he picks it up. That's your first win.</p>
+          <span class="step-tag step-easy">Easy · 15 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="phase2">
+    <div class="callout">
+      <div class="callout-title">Goal: Jarvis retrieves relevant context from ANY channel + Obsidian vault</div>
+      <p>This is the play action pass. Cross-channel awareness and knowledge base retrieval.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <h4>Deploy ChromaDB in Docker</h4>
+          <p>Run ChromaDB on the Mac Studio. Single Docker container, ~500MB memory footprint. This becomes the semantic search layer for all stored conversations and vault content.</p>
+          <span class="step-tag step-med">Medium · 1 hour</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Set Up Hermes Embeddings via Ollama</h4>
+          <p>Install nomic-embed-text (or similar) in Ollama alongside Hermes. This model converts text → vectors. Runs locally on M4 Max, $0 per embedding. n8n calls it via HTTP.</p>
+          <span class="step-tag step-med">Medium · 1 hour</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Build the Ingest Pipeline in n8n</h4>
+          <p>New workflow: on every Discord message, (1) embed the message via Hermes/Ollama, (2) store the embedding + metadata (channel, user, timestamp) in ChromaDB. This runs in background — doesn't slow down responses.</p>
+          <span class="step-tag step-med">Medium · 2 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Index Obsidian Vault</h4>
+          <p>One-time workflow: read all markdown files from the Obsidian vault, chunk them (500-1000 tokens each), embed via Hermes, store in ChromaDB. Schedule re-indexing nightly to catch vault updates.</p>
+          <span class="step-tag step-med">Medium · 2 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Add Retrieval Step to Response Workflow</h4>
+          <p>Before calling Claude: embed the incoming message → query ChromaDB for top 5-10 similar past messages + vault chunks → inject as context in the prompt. n8n has a Vector Store Retriever node for this.</p>
+          <span class="step-tag step-med">Medium · 2 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Test Cross-Channel Recall</h4>
+          <p>Discuss a topic in #strategy, then ask about it in #ai-research without mentioning specifics. Jarvis should retrieve the #strategy context and connect the dots.</p>
+          <span class="step-tag step-easy">Easy · 15 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="phase3">
+    <div class="callout">
+      <div class="callout-title">Goal: Jarvis has autonomous long-term memory with self-summarization</div>
+      <p>The exotic formation reverse. Jarvis manages his own memory, compresses old context, and evolves.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <h4>Add Hermes Summarization Layer</h4>
+          <p>When the conversation buffer exceeds 50 messages, trigger Hermes to summarize the oldest 30 into a compressed summary. Store the summary in ChromaDB and Obsidian. This is ConversationSummaryBufferMemory in practice.</p>
+          <span class="step-tag step-hard">Advanced · 3 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Implement Time-Decay Scoring</h4>
+          <p>When retrieving from ChromaDB, weight results by recency: Score = Relevance × e^(-0.1 × days_old). Recent conversations rank higher than old ones. Prevents stale context pollution.</p>
+          <span class="step-tag step-hard">Advanced · 2 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Build "Server State" Summary</h4>
+          <p>Nightly scheduled workflow: Hermes reads all channels' activity from the past 24 hours, generates a 500-word "server state" summary. This gets injected into every Claude call as persistent context. Jarvis always knows "what's going on."</p>
+          <span class="step-tag step-hard">Advanced · 3 hours</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <h4>Vault Write-Back Loop</h4>
+          <p>When Jarvis makes a decision or gives a recommendation, auto-write it back to the Obsidian vault under a "decisions" folder. This closes the loop — conversations become knowledge, knowledge informs future conversations.</p>
+          <span class="step-tag step-med">Medium · 2 hours</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- FINAL REC -->
+<div class="section">
+  <h2 class="section-title">Recommendation</h2>
+  <p class="section-sub">Start Phase 1 today. It's a 1-hour rep that proves the concept. Phase 2 is your weekend project. Phase 3 is iterative and can happen over weeks.</p>
+
+  <div class="callout callout-green">
+    <div class="callout-title">Bottom Line</div>
+    <p>You have every piece of the stack already running on your machine. The gap isn't tools — it's the retrieval pipeline between them. ChromaDB + Hermes embeddings + n8n's vector store nodes close that gap. Total additional infrastructure cost: $0. This is all local compute on the M4 Max. The $100 in OpenRouter credit stays reserved for Claude reasoning — the expensive calls. Hermes handles the grunt work for free.</p>
+  </div>
+</div>
+
+<footer>
+  Jarvis Infrastructure — Memory Architecture Brief · April 10, 2026 · Philip Belue · Generated with Claude
+</footer>
+
+<script>
+// Scroll tracking
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// Accordion
+document.querySelectorAll('.accordion-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  });
+});
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

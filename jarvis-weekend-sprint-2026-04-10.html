@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S. — Weekend Sprint: Operational by Monday</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d12;
+  --bg-card: #10141b;
+  --bg-card-hover: #161b24;
+  --bg-code: #0d1117;
+  --cyan: #7fd8e6;
+  --cyan-dim: rgba(127,216,230,0.10);
+  --gold: #ffb86a;
+  --gold-soft: #ffc978;
+  --gold-dim: rgba(255,184,106,0.12);
+  --gold-glow: rgba(255,184,106,0.18);
+  --gold-strong: rgba(255,184,106,0.32);
+  --core-white: #fff4db;
+  --core-warm: #ffd7a3;
+  --green: #5ce0a0;
+  --green-dim: rgba(92,224,160,0.10);
+  --red: #f06060;
+  --red-dim: rgba(240,96,96,0.10);
+  --yellow: #f0d060;
+  --yellow-dim: rgba(240,208,96,0.10);
+  --text: #d5dbe3;
+  --text-bright: #f5f7fa;
+  --text-dim: #8d97a5;
+  --border: rgba(255,255,255,0.06);
+  --border-gold: rgba(255,184,106,0.12);
+  --radius: 8px;
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px; }
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 50% 20%, rgba(255,184,106,0.02) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+
+nav { position: fixed; top: 0; left: 0; bottom: 0; width: 190px; z-index: 100; background: rgba(10,14,23,0.97); backdrop-filter: blur(12px); border-right: 1px solid var(--border); overflow-y: auto; }
+nav .nav-inner { display: flex; flex-direction: column; padding: 20px 0; }
+nav a { color: var(--text-dim); text-decoration: none; font-family: var(--font-display); font-size: 0.5rem; font-weight: 500; padding: 9px 18px; white-space: nowrap; transition: all 0.3s; border-left: 2px solid transparent; letter-spacing: 0.08em; text-transform: uppercase; }
+nav a:hover, nav a.active { color: var(--core-warm); border-left-color: var(--gold); background: var(--gold-dim); }
+nav .nav-brand { font-family: var(--font-display); color: var(--core-white); font-size: 0.58rem; font-weight: 700; padding: 16px 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 8px; letter-spacing: 0.12em; line-height: 1.6; }
+.main-content { margin-left: 190px; }
+@media (max-width: 860px) { nav { position: relative; width: 100%; bottom: auto; border-right: none; border-bottom: 1px solid var(--border); } nav .nav-inner { flex-direction: row; overflow-x: auto; padding: 0; } nav a { padding: 12px 14px; border-left: none; border-bottom: 2px solid transparent; font-size: 0.45rem; } .main-content { margin-left: 0; } nav .nav-brand { border-bottom: none; border-right: 1px solid var(--border); margin-bottom: 0; padding: 12px 14px; font-size: 0.5rem; } }
+
+.hero { background: linear-gradient(135deg, #0b0d12 0%, #0f1218 40%, #12161e 100%); padding: 70px 24px 55px; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero::before { content: ''; position: absolute; top: 50%; left: 50%; width: 500px; height: 500px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,244,219,0.03) 0%, rgba(255,184,106,0.02) 40%, transparent 70%); pointer-events: none; }
+.hero-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag { display: inline-block; font-family: var(--font-display); font-size: 0.55rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--green); border: 1px solid rgba(92,224,160,0.25); padding: 6px 16px; border-radius: 2px; margin-bottom: 20px; background: var(--green-dim); }
+.hero h1 { font-family: var(--font-display); font-size: clamp(1.4rem, 4vw, 2.2rem); color: var(--text-bright); margin-bottom: 8px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.3; }
+.hero h1 span { color: var(--gold); }
+.hero .subtitle { font-size: 1.05rem; color: var(--text-dim); font-weight: 300; letter-spacing: 0.03em; margin-bottom: 14px; }
+.hero p { font-size: 0.95rem; color: var(--text); max-width: 700px; line-height: 1.8; }
+.hero-meta { margin-top: 24px; display: flex; gap: 28px; flex-wrap: wrap; }
+.hero-meta div { font-size: 0.8rem; color: var(--text-dim); }
+.hero-meta strong { color: var(--core-warm); display: block; font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.container { max-width: 920px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+section { padding: 50px 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+.section-label { font-family: var(--font-display); font-size: 0.55rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.section-title { font-family: var(--font-display); font-size: clamp(1.1rem, 2.5vw, 1.5rem); color: var(--text-bright); font-weight: 700; margin-bottom: 16px; letter-spacing: 0.03em; line-height: 1.4; }
+.section-intro { font-size: 1rem; color: var(--text); line-height: 1.8; margin-bottom: 28px; max-width: 780px; }
+
+/* Day blocks */
+.day-block { margin-bottom: 40px; }
+.day-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border-gold); }
+.day-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--core-white); font-weight: 700; letter-spacing: 0.06em; }
+.day-date { font-family: var(--font-body); font-size: 0.9rem; color: var(--text-dim); }
+.day-goal { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-left: auto; padding: 4px 12px; background: var(--gold-dim); border-radius: 2px; font-weight: 600; }
+
+/* Time blocks */
+.time-block { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.time-block:last-child { border-bottom: none; }
+.time-label { min-width: 90px; font-family: var(--font-code); font-size: 0.78rem; color: var(--gold); font-weight: 600; padding-top: 2px; }
+.time-content { flex: 1; }
+.time-content h4 { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-bright); font-weight: 600; margin-bottom: 6px; }
+.time-content p { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 6px; }
+
+/* Task items */
+.task-list { list-style: none; padding: 0; margin: 8px 0; }
+.task-list li { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 0.88rem; color: var(--text); }
+.task-list li::before { content: ''; width: 14px; height: 14px; min-width: 14px; border: 1.5px solid var(--text-dim); border-radius: 3px; margin-top: 4px; }
+.task-list li.critical::before { border-color: var(--gold); background: var(--gold-dim); }
+.task-list li.gate::before { border-color: var(--green); background: var(--green-dim); border-radius: 50%; }
+.task-tag { display: inline-block; font-family: var(--font-display); font-size: 0.42rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; font-weight: 600; margin-left: 6px; vertical-align: middle; }
+.tag-gate { color: var(--green); background: var(--green-dim); }
+.tag-build { color: var(--cyan); background: var(--cyan-dim); }
+.tag-harden { color: var(--gold); background: var(--gold-dim); }
+.tag-test { color: var(--yellow); background: var(--yellow-dim); }
+.tag-deploy { color: var(--core-warm); background: rgba(255,215,163,0.12); }
+
+/* Callouts */
+.callout { border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+.callout-title { font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+.callout-gold { background: var(--gold-dim); border-left: 3px solid var(--gold); }
+.callout-gold .callout-title { color: var(--gold); }
+.callout-green { background: var(--green-dim); border-left: 3px solid var(--green); }
+.callout-green .callout-title { color: var(--green); }
+.callout-red { background: var(--red-dim); border-left: 3px solid var(--red); }
+.callout-red .callout-title { color: var(--red); }
+.callout-cyan { background: var(--cyan-dim); border-left: 3px solid var(--cyan); }
+.callout-cyan .callout-title { color: var(--cyan); }
+
+/* Code */
+.cmd { background: var(--bg-code); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; margin: 8px 0; font-family: var(--font-code); font-size: 0.75rem; color: var(--cyan); overflow-x: auto; white-space: pre; display: block; }
+
+/* Progress tracker */
+.progress-bar { display: flex; gap: 2px; margin: 24px 0; height: 6px; border-radius: 3px; overflow: hidden; }
+.progress-segment { flex: 1; background: var(--border); position: relative; }
+.progress-segment.active { background: var(--gold); box-shadow: 0 0 8px rgba(255,184,106,0.3); }
+.progress-segment.done { background: var(--green); }
+
+/* Checklist summary */
+.checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+@media (max-width: 640px) { .checklist-grid { grid-template-columns: 1fr; } }
+.check-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; }
+.check-card h5 { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--core-warm); margin-bottom: 6px; font-weight: 600; }
+.check-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+/* Monday readiness */
+.ready-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 20px 0; }
+.ready-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
+.ready-item .status { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+.ready-item .status.online { color: var(--green); }
+.ready-item .name { font-family: var(--font-display); font-size: 0.6rem; color: var(--text-bright); font-weight: 600; letter-spacing: 0.08em; margin-bottom: 4px; }
+.ready-item .desc { font-size: 0.8rem; color: var(--text-dim); }
+
+footer { text-align: center; padding: 40px 24px; font-family: var(--font-display); font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em; border-top: 1px solid var(--border); line-height: 2; }
+footer strong { color: var(--core-warm); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">WEEKEND<br>SPRINT</div>
+    <a href="#overview">Mission</a>
+    <a href="#friday">Fri Evening</a>
+    <a href="#saturday">Saturday</a>
+    <a href="#sunday">Sunday</a>
+    <a href="#monday">Mon Readiness</a>
+    <a href="#gates">Go/No-Go</a>
+    <a href="#commands">Command Ref</a>
+  </div>
+</nav>
+
+<div class="main-content">
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Sprint &mdash; 60 Hours to Operational</div>
+    <h1>Operational by <span>Monday</span></h1>
+    <div class="subtitle">Weekend sprint: harden, build, deploy, verify.</div>
+    <p>Three working sessions. Friday evening with the Hornets game. Saturday focused build. Sunday deploy and soak test. Monday morning, Hermes is live, backups are running, monitoring is active, and the system runs itself.</p>
+    <div class="hero-meta">
+      <div><strong>Start</strong>Friday 6:30 PM ET</div>
+      <div><strong>End</strong>Sunday 10:00 PM ET</div>
+      <div><strong>Deliverable</strong>Hermes deployed + hardened infra</div>
+      <div><strong>Status</strong>Replaces Phase 0&ndash;2 timeline</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- OVERVIEW -->
+<!-- ============================================================ -->
+<section id="overview">
+  <div class="container">
+    <div class="section-label">Mission</div>
+    <div class="section-title">Collapse Three Weeks into Three Days</div>
+    <p class="section-intro">The original roadmap had Phase 0 (stabilize) running through Sunday, Phase 1 (harden) through April 17, and Phase 2 (Hermes deploy) in the week of April 20. That&rsquo;s too slow. The architecture is decided, the code skeletons exist, and you&rsquo;ve got dedicated time. Let&rsquo;s compress.</p>
+
+    <div class="progress-bar">
+      <div class="progress-segment active" title="Friday Evening"></div>
+      <div class="progress-segment" title="Saturday AM"></div>
+      <div class="progress-segment" title="Saturday PM"></div>
+      <div class="progress-segment" title="Sunday AM"></div>
+      <div class="progress-segment" title="Sunday PM"></div>
+      <div class="progress-segment" title="Sunday Night — Soak"></div>
+    </div>
+
+    <div class="checklist-grid">
+      <div class="check-card">
+        <h5>Friday Evening</h5>
+        <p>PM Recap gate + Phase 1 hardening (Keychain, Healthchecks.io, backups, Eero Plus). Low-intensity work, Hornets game on.</p>
+      </div>
+      <div class="check-card">
+        <h5>Saturday</h5>
+        <p>AM Brief gate + cold reboot test + build Hermes core (queue, state machine, discord alerting, main daemon loop).</p>
+      </div>
+      <div class="check-card">
+        <h5>Sunday</h5>
+        <p>Build Hermes skills + deploy via launchd + end-to-end smoke test + overnight soak starts.</p>
+      </div>
+      <div class="check-card">
+        <h5>Monday Morning</h5>
+        <p>Check overnight soak. Hermes survived the night? Green light. System is operational. Start the work week with infrastructure running itself.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">Ground Rules</div>
+      <p><strong style="color:var(--core-white);">Gate-check before building.</strong> Each day has a go/no-go test. If PM Recap fails tonight, you harden infra but don&rsquo;t build Hermes &mdash; fix the foundation first. If AM Brief fails Saturday, same thing. Building on an unstable base is how you end up debugging at 2am.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FRIDAY EVENING -->
+<!-- ============================================================ -->
+<section id="friday">
+  <div class="container">
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-name">Friday Evening</span>
+        <span class="day-date">April 10</span>
+        <span class="day-goal">Harden</span>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">6:30 PM</div>
+        <div class="time-content">
+          <h4>PM Recap Test <span class="task-tag tag-gate">Gate</span></h4>
+          <p>Watch Discord. The PM Recap workflow should fire automatically. If it delivers clean, Phase 0 is passing. If it fails, debug the n8n workflow before doing anything else tonight.</p>
+          <ul class="task-list">
+            <li class="gate">PM Recap fires and delivers to Discord</li>
+            <li class="gate">Content is coherent (not empty, not errored)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">7:00 PM</div>
+        <div class="time-content">
+          <h4>Hardening Block 1: Secrets &amp; Monitoring <span class="task-tag tag-harden">Harden</span></h4>
+          <p>Chill work while Hornets are on. Store secrets properly, set up dead-man monitoring.</p>
+          <ul class="task-list">
+            <li class="critical">Store n8n encryption key in macOS Keychain</li>
+            <li>Create Healthchecks.io account (free tier)</li>
+            <li>Create a check for each service: Ollama, n8n, OpenClaw</li>
+            <li>Note the ping URLs &mdash; Hermes will use these</li>
+          </ul>
+          <code class="cmd"># Store n8n encryption key in Keychain
+security add-generic-password -a "n8n" -s "encryption-key" -w "YOUR_KEY_HERE"
+
+# Verify it's stored
+security find-generic-password -a "n8n" -s "encryption-key" -w</code>
+          <code class="cmd"># Store Discord bot token
+security add-generic-password -a "jarvis" -s "discord-bot-token" -w "YOUR_TOKEN"
+
+# Store any other API keys the same way
+security add-generic-password -a "jarvis" -s "openai-api-key" -w "YOUR_KEY"</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">8:00 PM</div>
+        <div class="time-content">
+          <h4>Hardening Block 2: Backups &amp; Eero <span class="task-tag tag-harden">Harden</span></h4>
+          <p>Set up the nightly backup script and grab Eero Plus.</p>
+          <ul class="task-list">
+            <li class="critical">Create nightly rsync backup script to NVMe</li>
+            <li>Test the backup script manually once</li>
+            <li>Add backup script to crontab (runs at 3 AM daily)</li>
+            <li>Sign up for Eero Plus ($10/month)</li>
+          </ul>
+          <code class="cmd"># Create backup script
+mkdir -p ~/jarvis/scripts
+cat > ~/jarvis/scripts/nightly-backup.sh << 'SCRIPT'
+#!/bin/bash
+DEST="/Volumes/JarvisNVMe/backups/$(date +%Y-%m-%d)"
+LATEST="/Volumes/JarvisNVMe/backups/latest"
+LOG="$HOME/jarvis/logs/backup-$(date +%Y-%m-%d).log"
+
+mkdir -p "$DEST" "$(dirname $LOG)"
+
+echo "=== Backup started $(date) ===" >> "$LOG"
+
+# n8n data
+rsync -a --delete ~/.n8n/ "$DEST/n8n/" 2>> "$LOG"
+
+# Obsidian vault
+rsync -a --delete ~/JarvisVault/ "$DEST/obsidian-vault/" 2>> "$LOG"
+
+# Hermes (when it exists)
+[ -d ~/jarvis/hermes ] && rsync -a --delete ~/jarvis/hermes/ "$DEST/hermes/" 2>> "$LOG"
+
+# OpenClaw
+[ -d ~/jarvis/openclaw ] && rsync -a --delete ~/jarvis/openclaw/ "$DEST/openclaw/" 2>> "$LOG"
+
+# Update latest symlink
+ln -sfn "$DEST" "$LATEST"
+
+echo "=== Backup finished $(date) ===" >> "$LOG"
+SCRIPT
+chmod +x ~/jarvis/scripts/nightly-backup.sh</code>
+          <code class="cmd"># Test it
+~/jarvis/scripts/nightly-backup.sh
+
+# Verify
+ls -la /Volumes/JarvisNVMe/backups/latest/</code>
+          <code class="cmd"># Add to crontab (3 AM daily)
+(crontab -l 2>/dev/null; echo "0 3 * * * $HOME/jarvis/scripts/nightly-backup.sh") | crontab -</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">9:00 PM</div>
+        <div class="time-content">
+          <h4>Hardening Block 3: Hermes Scaffolding <span class="task-tag tag-build">Build</span></h4>
+          <p>While the game winds down, set up the Hermes directory structure and venv. No code yet &mdash; just the skeleton so Saturday starts clean.</p>
+          <ul class="task-list">
+            <li>Create ~/jarvis/hermes/ directory tree</li>
+            <li>Set up Python venv with dependencies</li>
+            <li>Create empty module files with docstrings</li>
+            <li>Initialize git repo</li>
+          </ul>
+          <code class="cmd"># Create structure
+mkdir -p ~/jarvis/hermes/{skills,core,data,logs,plists}
+touch ~/jarvis/hermes/{skills,core}/__init__.py
+
+# Create venv
+cd ~/jarvis/hermes
+python3.12 -m venv .venv
+source .venv/bin/activate
+
+# Install deps
+pip install aiosqlite aiohttp psutil watchfiles pyyaml
+
+# Freeze for reproducibility
+pip freeze > requirements.txt
+
+# Init git
+git init
+echo -e ".venv/\ndata/queue.db\ndata/queue.db-wal\ndata/queue.db-shm\nlogs/\n__pycache__/\n*.pyc" > .gitignore
+git add -A && git commit -m "Hermes: initial scaffolding"
+
+deactivate</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">9:30 PM</div>
+        <div class="time-content">
+          <h4>Push to IXON + Call It <span class="task-tag tag-harden">Harden</span></h4>
+          <ul class="task-list">
+            <li>Push REBUILD.md to IXON repo</li>
+            <li>Verify all three blueprint docs are live on GitHub Pages</li>
+            <li>Done for the night. Let the system breathe overnight.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-title">Friday Exit Criteria</div>
+        <p>PM Recap passed. Secrets in Keychain. Healthchecks.io account live. Nightly backup script tested and scheduled. Eero Plus active. Hermes directory scaffolded with venv. REBUILD.md on IXON. Total active time: ~2.5 hours around the Hornets game.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SATURDAY -->
+<!-- ============================================================ -->
+<section id="saturday">
+  <div class="container">
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-name">Saturday</span>
+        <span class="day-date">April 11</span>
+        <span class="day-goal">Build Core</span>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">6:00 AM</div>
+        <div class="time-content">
+          <h4>AM Brief Test <span class="task-tag tag-gate">Gate</span></h4>
+          <p>Check Discord when you wake up. AM Brief should have fired at 6:00 AM. Two clean automated deliveries (PM Recap last night + AM Brief this morning) = foundation is solid.</p>
+          <ul class="task-list">
+            <li class="gate">AM Brief fired and delivered to Discord</li>
+            <li class="gate">Content is coherent</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">MORNING</div>
+        <div class="time-content">
+          <h4>Cold Reboot Test <span class="task-tag tag-test">Test</span></h4>
+          <p>Power off the Mac Studio completely. Power on. Time how long until all services are healthy. This validates the launchd plists and gives you a baseline for Hermes&rsquo;s boot grace period.</p>
+          <ul class="task-list">
+            <li class="critical">Shut down Mac Studio (full power off)</li>
+            <li>Power on &mdash; start a timer</li>
+            <li>Wait for login, then check each service</li>
+            <li>Record time to all-green</li>
+          </ul>
+          <code class="cmd"># After reboot, check all services:
+echo "=== Ollama ===" && curl -sf http://localhost:11434/api/tags | jq '.models | length'
+echo "=== n8n ===" && curl -sf http://localhost:5678/healthz
+echo "=== OpenClaw ===" && curl -sf http://localhost:3000/health
+echo "Timer: ___ seconds to all-green"</code>
+          <div class="callout callout-cyan" style="margin-top:12px;">
+            <div class="callout-title">Expected Results</div>
+            <p>Ollama: ~10s. n8n: ~15s. OpenClaw: ~30&ndash;45s (loads extensions). Target: all healthy within 60s of login. If anything takes longer than 90s, investigate before building Hermes &mdash; the boot grace period depends on this number.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">MORNING</div>
+        <div class="time-content">
+          <h4>Build: core/queue.py <span class="task-tag tag-build">Build</span></h4>
+          <p>The SQLite WAL task queue. This is the most critical module. Take it from the addendum code and make it real.</p>
+          <ul class="task-list">
+            <li class="critical">Implement TaskQueue class from addendum spec</li>
+            <li>init_db(), enqueue(), claim(), complete(), fail(), reap_stale()</li>
+            <li>Write a quick test script that enqueues 5 tasks, claims them, completes 3, fails 2</li>
+            <li>Verify dead_letter works (fail same task 3 times)</li>
+          </ul>
+          <code class="cmd"># Quick test after building queue.py
+cd ~/jarvis/hermes && source .venv/bin/activate
+python3 -c "
+import asyncio
+from core.queue import TaskQueue
+async def test():
+    q = TaskQueue('data/queue.db')
+    await q.init_db()
+    tid = await q.enqueue('health_probe', {'target': 'ollama'})
+    print(f'Enqueued: {tid}')
+    task = await q.claim()
+    print(f'Claimed: {task}')
+    await q.complete(task.id)
+    print('Completed')
+asyncio.run(test())
+"</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">AFTERNOON</div>
+        <div class="time-content">
+          <h4>Build: core/state.py + core/discord.py <span class="task-tag tag-build">Build</span></h4>
+          <p>The daemon state machine (BOOTING &rarr; OPERATIONAL &rarr; DEGRADED &rarr; EMERGENCY) and the Discord alert dispatcher.</p>
+          <ul class="task-list">
+            <li>DaemonState class with set(), current, transition rules</li>
+            <li>State transitions logged and timestamped</li>
+            <li>DiscordAlert class &mdash; sends to webhook URL from config</li>
+            <li>Test: send a test alert to your Discord channel</li>
+          </ul>
+          <code class="cmd"># Test Discord alerting
+python3 -c "
+import asyncio
+from core.discord import DiscordAlert
+async def test():
+    d = DiscordAlert('YOUR_WEBHOOK_URL')
+    await d.send('Test alert from Hermes build session')
+asyncio.run(test())
+"</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">AFTERNOON</div>
+        <div class="time-content">
+          <h4>Build: main.py <span class="task-tag tag-build">Build</span></h4>
+          <p>The daemon entry point. Wire together queue, state, discord, and signal handling. No skills yet &mdash; just the bare daemon loop that starts, enters grace period, and runs the health endpoint.</p>
+          <ul class="task-list">
+            <li class="critical">Implement Hermes class from addendum skeleton</li>
+            <li>Boot grace period with dependency polling</li>
+            <li>Health endpoint on port 7777</li>
+            <li>SIGTERM handler for graceful shutdown</li>
+            <li>Test: run in foreground, verify state transitions in logs</li>
+            <li>Test: curl localhost:7777/health returns JSON</li>
+            <li>Test: Ctrl+C triggers graceful shutdown</li>
+          </ul>
+          <code class="cmd"># Run Hermes in foreground
+python3 main.py
+# In another terminal:
+curl -s http://localhost:7777/health | jq .
+# Expected: {"status": "booting"} then {"status": "operational"}</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">EVENING</div>
+        <div class="time-content">
+          <h4>Git Commit + Rest</h4>
+          <ul class="task-list">
+            <li>Commit all Hermes core code</li>
+            <li>Verify nightly backup ran at 3 AM (check logs from last night)</li>
+            <li>Done for the day. Sunday is skills + deploy.</li>
+          </ul>
+          <code class="cmd">cd ~/jarvis/hermes
+git add -A
+git commit -m "Hermes core: queue, state machine, discord alerts, main daemon"</code>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-title">Saturday Exit Criteria</div>
+        <p>AM Brief passed. Cold reboot tested and timed. Hermes core built: SQLite queue works, state machine transitions, Discord alerts fire, daemon runs in foreground with health endpoint. All committed to git. Total focused build time: ~4&ndash;5 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SUNDAY -->
+<!-- ============================================================ -->
+<section id="sunday">
+  <div class="container">
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-name">Sunday</span>
+        <span class="day-date">April 12</span>
+        <span class="day-goal">Deploy</span>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">MORNING</div>
+        <div class="time-content">
+          <h4>Build: Health Probe Skill <span class="task-tag tag-build">Build</span></h4>
+          <p>The first and most important skill. Checks every service endpoint, reports status, sends alerts on failure.</p>
+          <ul class="task-list">
+            <li class="critical">skills/health_probe.py &mdash; checks Ollama, n8n, OpenClaw</li>
+            <li>HTTP health check with configurable timeout (2s default)</li>
+            <li>Track consecutive failures per service</li>
+            <li>Format alert messages for Discord</li>
+            <li>Ping Healthchecks.io on successful cycle (dead-man switch)</li>
+            <li>psutil system metrics (memory, disk) with M4 workarounds</li>
+          </ul>
+          <code class="cmd"># Service endpoints to check (put these in config.yaml):
+# ollama:   http://localhost:11434/api/tags
+# n8n:      http://localhost:5678/healthz
+# openclaw: http://localhost:3000/health
+# hermes:   internal (self-check via state machine)</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">MORNING</div>
+        <div class="time-content">
+          <h4>Build: Config Guardian + Workflow Executor <span class="task-tag tag-build">Build</span></h4>
+          <p>Config Guardian watches config.yaml for changes. Workflow Executor triggers n8n workflows via webhook. Both are simpler than the health probe.</p>
+          <ul class="task-list">
+            <li>skills/config_guardian.py &mdash; hash config.yaml, detect drift, reload on change</li>
+            <li>skills/workflow_exec.py &mdash; POST to n8n webhook URLs from task queue payloads</li>
+            <li>Test both: change config.yaml and verify detection. Trigger a test workflow.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">AFTERNOON</div>
+        <div class="time-content">
+          <h4>Create config.yaml <span class="task-tag tag-build">Build</span></h4>
+          <p>The single source of truth for all Hermes tuning. Every threshold, every endpoint, every interval &mdash; in one file.</p>
+          <code class="cmd" style="white-space:pre-wrap;">hermes:
+  boot_grace_seconds: 120
+  health_port: 7777
+  queue_poll_seconds: 5
+  stale_reap_minutes: 10
+
+services:
+  ollama:
+    url: http://localhost:11434/api/tags
+    timeout_seconds: 2
+    failure_threshold: 3
+  n8n:
+    url: http://localhost:5678/healthz
+    timeout_seconds: 2
+    failure_threshold: 3
+  openclaw:
+    url: http://localhost:3000/health
+    timeout_seconds: 3
+    failure_threshold: 3
+
+health_probe:
+  interval_seconds: 300
+  healthchecks_ping_url: https://hc-ping.com/YOUR-UUID
+
+discord:
+  webhook_url: YOUR_WEBHOOK_URL
+  alert_on: [degraded, emergency, dead_letter]
+
+backups:
+  verify_path: /Volumes/JarvisNVMe/backups/latest</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">AFTERNOON</div>
+        <div class="time-content">
+          <h4>Deploy: launchd Plist <span class="task-tag tag-deploy">Deploy</span></h4>
+          <p>The real deployment. Hermes becomes a managed service.</p>
+          <ul class="task-list">
+            <li class="critical">Create com.jarvis.hermes.plist (venv Python path!)</li>
+            <li>Copy to ~/Library/LaunchAgents/</li>
+            <li>launchctl load</li>
+            <li>Verify Hermes starts, enters grace period, goes operational</li>
+          </ul>
+          <code class="cmd"># Create the plist (CRITICAL: use venv Python, not system Python)
+cat > ~/jarvis/hermes/plists/com.jarvis.hermes.plist << 'PLIST'
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.jarvis.hermes&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/Users/philbelue/jarvis/hermes/.venv/bin/python3&lt;/string&gt;
+        &lt;string&gt;/Users/philbelue/jarvis/hermes/main.py&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;WorkingDirectory&lt;/key&gt;
+    &lt;string&gt;/Users/philbelue/jarvis/hermes&lt;/string&gt;
+    &lt;key&gt;KeepAlive&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;SuccessfulExit&lt;/key&gt;
+        &lt;false/&gt;
+    &lt;/dict&gt;
+    &lt;key&gt;ThrottleInterval&lt;/key&gt;
+    &lt;integer&gt;10&lt;/integer&gt;
+    &lt;key&gt;ExitTimeOut&lt;/key&gt;
+    &lt;integer&gt;15&lt;/integer&gt;
+    &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;PYTHONUNBUFFERED&lt;/key&gt;
+        &lt;string&gt;1&lt;/string&gt;
+    &lt;/dict&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/Users/philbelue/jarvis/hermes/logs/hermes.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/Users/philbelue/jarvis/hermes/logs/hermes-error.log&lt;/string&gt;
+    &lt;key&gt;ProcessType&lt;/key&gt;
+    &lt;string&gt;Background&lt;/string&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+PLIST
+
+# Deploy
+cp ~/jarvis/hermes/plists/com.jarvis.hermes.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.jarvis.hermes.plist
+
+# Verify
+launchctl list | grep hermes
+sleep 5
+curl -s http://localhost:7777/health | jq .
+tail -20 ~/jarvis/hermes/logs/hermes.log</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">LATE PM</div>
+        <div class="time-content">
+          <h4>End-to-End Smoke Test <span class="task-tag tag-test">Test</span></h4>
+          <p>The full system test. Everything running. Everything monitored.</p>
+          <ul class="task-list">
+            <li class="critical">All 4 services healthy (Ollama, n8n, OpenClaw, Hermes)</li>
+            <li>Hermes health endpoint returns operational</li>
+            <li>Hermes logs show successful health probe cycle</li>
+            <li>Healthchecks.io shows green (Hermes pinged it)</li>
+            <li>Kill Ollama &rarr; verify Hermes detects failure &rarr; Discord alert fires</li>
+            <li>Restart Ollama &rarr; verify Hermes detects recovery</li>
+            <li>Enqueue a test task &rarr; verify Hermes processes it</li>
+          </ul>
+          <code class="cmd"># Test failure detection
+brew services stop ollama
+sleep 20  # wait for next health probe cycle
+# Check Discord — should see alert
+
+# Restore
+brew services start ollama
+sleep 20
+# Check Discord — should see recovery notice
+
+# Check Healthchecks.io dashboard — should still be green</code>
+        </div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">EVENING</div>
+        <div class="time-content">
+          <h4>Soak Test + Prep for Monday</h4>
+          <ul class="task-list">
+            <li>Commit all Hermes code</li>
+            <li>Push Hermes to GitHub (new repo or add to IXON)</li>
+            <li>Leave everything running overnight &mdash; soak test</li>
+            <li>Set a calendar reminder: Monday 7 AM, check Hermes logs + Healthchecks.io</li>
+          </ul>
+          <code class="cmd"># Final commit
+cd ~/jarvis/hermes
+git add -A
+git commit -m "Hermes v1.0: deployed and operational"
+
+# Check everything one last time
+echo "=== Services ==="
+curl -sf http://localhost:11434/api/tags | jq '.models | length'
+curl -sf http://localhost:5678/healthz
+curl -sf http://localhost:3000/health
+curl -sf http://localhost:7777/health | jq .
+echo "=== Hermes Logs (last 10) ==="
+tail -10 ~/jarvis/hermes/logs/hermes.log</code>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-title">Sunday Exit Criteria</div>
+        <p>Hermes deployed via launchd. Health probe running every 5 min. Healthchecks.io green. Discord alerts tested (kill/recover Ollama). Task queue tested. Config.yaml in place. Overnight soak started. Total focused build time: ~4&ndash;5 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MONDAY READINESS -->
+<!-- ============================================================ -->
+<section id="monday">
+  <div class="container">
+    <div class="section-label">Monday Morning</div>
+    <div class="section-title">Readiness Check: What &ldquo;Operational&rdquo; Looks Like</div>
+    <p class="section-intro">Monday 7 AM. Coffee. Open Discord. Open Healthchecks.io. If both look clean, the system ran itself overnight. Here&rsquo;s what should be true:</p>
+
+    <div class="ready-grid">
+      <div class="ready-item">
+        <div class="status online">Online</div>
+        <div class="name">Ollama</div>
+        <div class="desc">Mistral loaded, responding on :11434</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Online</div>
+        <div class="name">n8n</div>
+        <div class="desc">Workflows active, encrypted, responding on :5678</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Online</div>
+        <div class="name">OpenClaw</div>
+        <div class="desc">Jarvis bot live, Discord connected, :3000 healthy</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Online</div>
+        <div class="name">Hermes</div>
+        <div class="desc">Watchdog daemon, :7777 healthy, monitoring all</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Active</div>
+        <div class="name">Healthchecks.io</div>
+        <div class="desc">Dead-man switch green, pinged by Hermes every 5 min</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Running</div>
+        <div class="name">Nightly Backups</div>
+        <div class="desc">3 AM rsync to NVMe, latest/ symlink updated</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Secured</div>
+        <div class="name">Keychain Secrets</div>
+        <div class="desc">n8n key, Discord token, API keys — all in Keychain</div>
+      </div>
+      <div class="ready-item">
+        <div class="status online">Protected</div>
+        <div class="name">Eero Plus</div>
+        <div class="desc">Network threat detection active</div>
+      </div>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">Monday Morning Verification (2 minutes)</div>
+      <p>Open Discord &mdash; no overnight alerts from Hermes means everything ran clean. Open Healthchecks.io &mdash; all checks green. Run the smoke test one more time. If all green: you did it. The system is operational and self-monitoring. Get to work.</p>
+    </div>
+
+    <code class="cmd"># Monday morning quick check
+curl -s http://localhost:7777/health | jq .
+tail -5 ~/jarvis/hermes/logs/hermes.log
+cat ~/jarvis/logs/backup-$(date -v-1d +%Y-%m-%d).log | tail -3</code>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- GO/NO-GO GATES -->
+<!-- ============================================================ -->
+<section id="gates">
+  <div class="container">
+    <div class="section-label">Decision Gates</div>
+    <div class="section-title">Go / No-Go Checkpoints</div>
+    <p class="section-intro">If any gate fails, don&rsquo;t push forward &mdash; fix the foundation. Building Hermes on an unstable base creates more problems than it solves.</p>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Gate 1: Friday 6:30 PM &mdash; PM Recap</div>
+      <p><strong>Pass:</strong> PM Recap fires and delivers coherent content to Discord. Proceed with hardening and scaffolding.</p>
+      <p><strong>Fail:</strong> Debug the n8n workflow. Do hardening work (Keychain, backups, Eero) but hold off on Hermes scaffolding. Fix the workflow first.</p>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Gate 2: Saturday 6:00 AM &mdash; AM Brief</div>
+      <p><strong>Pass:</strong> AM Brief fires clean. Two automated deliveries in a row. Foundation is solid. Proceed with cold reboot + Hermes build.</p>
+      <p><strong>Fail:</strong> Debug. Run the cold reboot test (valuable regardless). Build Hermes core but don&rsquo;t deploy until AM Brief passes.</p>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Gate 3: Sunday Afternoon &mdash; Hermes Foreground Test</div>
+      <p><strong>Pass:</strong> Hermes runs in foreground, enters grace period, goes operational, health endpoint responds, Discord alert fires on simulated failure. Proceed to launchd deployment.</p>
+      <p><strong>Fail:</strong> Fix the failing component. Don&rsquo;t deploy to launchd until the foreground run is clean. A broken daemon in launchd is worse than no daemon &mdash; it restart-loops.</p>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">Gate 4: Monday 7:00 AM &mdash; Overnight Soak</div>
+      <p><strong>Pass:</strong> No overnight Discord alerts. Healthchecks.io green. Hermes logs show clean cycles. <strong>System is operational.</strong></p>
+      <p><strong>Fail:</strong> Check Hermes error logs. Most likely: a health probe timeout threshold is too aggressive, or a service restarted and Hermes caught it (which is actually it doing its job). Tune config.yaml thresholds based on what you see.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- COMMAND REFERENCE -->
+<!-- ============================================================ -->
+<section id="commands">
+  <div class="container">
+    <div class="section-label">Quick Reference</div>
+    <div class="section-title">Commands You&rsquo;ll Use This Weekend</div>
+
+    <code class="cmd" style="white-space:pre-wrap; line-height:2.2;"><span style="color:var(--text-dim);"># --- Keychain ---</span>
+security add-generic-password -a "n8n" -s "encryption-key" -w "KEY"
+security find-generic-password -a "n8n" -s "encryption-key" -w
+
+<span style="color:var(--text-dim);"># --- Hermes venv ---</span>
+cd ~/jarvis/hermes && source .venv/bin/activate
+
+<span style="color:var(--text-dim);"># --- Hermes foreground test ---</span>
+python3 main.py
+
+<span style="color:var(--text-dim);"># --- Hermes launchd ---</span>
+launchctl load ~/Library/LaunchAgents/com.jarvis.hermes.plist
+launchctl unload ~/Library/LaunchAgents/com.jarvis.hermes.plist
+launchctl list | grep hermes
+
+<span style="color:var(--text-dim);"># --- Health checks ---</span>
+curl -s http://localhost:11434/api/tags | jq '.models | length'
+curl -s http://localhost:5678/healthz
+curl -s http://localhost:3000/health
+curl -s http://localhost:7777/health | jq .
+
+<span style="color:var(--text-dim);"># --- Hermes logs ---</span>
+tail -f ~/jarvis/hermes/logs/hermes.log
+tail -f ~/jarvis/hermes/logs/hermes-error.log
+
+<span style="color:var(--text-dim);"># --- Backup ---</span>
+~/jarvis/scripts/nightly-backup.sh
+ls -la /Volumes/JarvisNVMe/backups/latest/
+
+<span style="color:var(--text-dim);"># --- Git ---</span>
+cd ~/jarvis/hermes && git add -A && git status</code>
+  </div>
+</section>
+
+<footer>
+  <strong>J.A.R.V.I.S.</strong> &mdash; Weekend Sprint Plan v1.0<br>
+  <span style="color:var(--text-dim);">Generated April 10, 2026 &middot; Claude Opus (Cowork) &middot; Operational by Monday</span><br>
+  <span style="color:var(--text-dim);font-size:0.55rem;margin-top:6px;display:inline-block;">Supersedes original Phase 0&ndash;2 timeline &middot; Companion to Strategic Blueprint + Engineering Addendum</span>
+</footer>
+
+</div>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 120;
+    if (pageYOffset >= sectionTop) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
