@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S. — Strategic Blueprint: Hermes &amp; System Hardening</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d12;
+  --bg-card: #10141b;
+  --bg-card-hover: #161b24;
+  --cyan: #7fd8e6;
+  --cyan-soft: #a9e7f0;
+  --cyan-dim: rgba(127,216,230,0.10);
+  --cyan-glow: rgba(127,216,230,0.18);
+  --gold: #ffb86a;
+  --gold-soft: #ffc978;
+  --gold-dim: rgba(255,184,106,0.12);
+  --gold-glow: rgba(255,184,106,0.18);
+  --gold-strong: rgba(255,184,106,0.32);
+  --core-white: #fff4db;
+  --core-warm: #ffd7a3;
+  --green: #5ce0a0;
+  --green-dim: rgba(92,224,160,0.10);
+  --red: #f06060;
+  --red-dim: rgba(240,96,96,0.10);
+  --yellow: #f0d060;
+  --yellow-dim: rgba(240,208,96,0.10);
+  --text: #d5dbe3;
+  --text-bright: #f5f7fa;
+  --text-dim: #8d97a5;
+  --border: rgba(255,255,255,0.06);
+  --border-gold: rgba(255,184,106,0.12);
+  --radius: 8px;
+  --shadow: 0 0 20px rgba(255,184,106,0.04);
+  --shadow-glow: 0 0 30px rgba(255,184,106,0.06);
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px; }
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 50% 30%, rgba(255,184,106,0.02) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+
+/* Sidebar Nav */
+nav { position: fixed; top: 0; left: 0; bottom: 0; width: 190px; z-index: 100; background: rgba(10,14,23,0.97); backdrop-filter: blur(12px); border-right: 1px solid var(--border); overflow-y: auto; }
+nav .nav-inner { display: flex; flex-direction: column; padding: 20px 0; }
+nav a { color: var(--text-dim); text-decoration: none; font-family: var(--font-display); font-size: 0.55rem; font-weight: 500; padding: 9px 20px; white-space: nowrap; transition: all 0.3s; border-left: 2px solid transparent; letter-spacing: 0.08em; text-transform: uppercase; }
+nav a:hover, nav a.active { color: var(--core-warm); border-left-color: var(--gold); background: var(--gold-dim); }
+nav .nav-brand { font-family: var(--font-display); color: var(--core-white); font-size: 0.68rem; font-weight: 700; padding: 16px 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 8px; letter-spacing: 0.15em; }
+nav .nav-sub { font-size: 0.48rem; padding-left: 32px; color: var(--text-dim); opacity: 0.7; }
+.main-content { margin-left: 190px; }
+@media (max-width: 860px) { nav { position: relative; width: 100%; bottom: auto; border-right: none; border-bottom: 1px solid var(--border); } nav .nav-inner { flex-direction: row; overflow-x: auto; padding: 0; } nav a { padding: 12px 14px; border-left: none; border-bottom: 2px solid transparent; } nav a:hover, nav a.active { border-left-color: transparent; border-bottom-color: var(--gold); } nav .nav-brand { border-bottom: none; border-right: 1px solid var(--border); margin-bottom: 0; margin-right: 8px; padding: 12px 20px; } nav .nav-sub { display: none; } .main-content { margin-left: 0; } }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #0b0d12 0%, #0f1218 40%, #12161e 100%); padding: 80px 24px 65px; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero::before { content: ''; position: absolute; top: 50%; left: 50%; width: 600px; height: 600px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,244,219,0.04) 0%, rgba(255,184,106,0.02) 40%, transparent 70%); pointer-events: none; }
+.hero-inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag { display: inline-block; font-family: var(--font-display); font-size: 0.55rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--border-gold); padding: 6px 16px; border-radius: 2px; margin-bottom: 20px; background: var(--gold-dim); }
+.hero h1 { font-family: var(--font-display); font-size: clamp(1.6rem, 4.5vw, 2.6rem); color: var(--text-bright); margin-bottom: 8px; font-weight: 700; letter-spacing: 0.05em; line-height: 1.3; }
+.hero h1 span { color: var(--core-white); }
+.hero .subtitle { font-size: 1.1rem; color: var(--text-dim); font-weight: 300; letter-spacing: 0.03em; margin-bottom: 12px; }
+.hero p { font-size: 0.95rem; color: var(--text); max-width: 680px; line-height: 1.8; }
+.hero-meta { margin-top: 28px; display: flex; gap: 32px; flex-wrap: wrap; }
+.hero-meta div { font-size: 0.8rem; color: var(--text-dim); }
+.hero-meta strong { color: var(--core-warm); display: block; font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* Arc reactor */
+.arc-reactor { width: 80px; height: 80px; position: relative; margin: 0 auto 20px; }
+.arc-reactor .ring { position: absolute; border-radius: 50%; border: 1.5px solid transparent; }
+.arc-reactor .ring-1 { top: 0; left: 0; right: 0; bottom: 0; border-color: rgba(127,216,230,0.15); animation: spin 14s linear infinite; }
+.arc-reactor .ring-2 { top: 8px; left: 8px; right: 8px; bottom: 8px; border-color: rgba(255,215,163,0.18); border-top-color: transparent; animation: spin-reverse 9s linear infinite; }
+.arc-reactor .ring-3 { top: 16px; left: 16px; right: 16px; bottom: 16px; border-color: rgba(255,244,219,0.2); border-bottom-color: transparent; animation: spin 6s linear infinite; }
+.arc-reactor .core { position: absolute; top: 22px; left: 22px; right: 22px; bottom: 22px; background: radial-gradient(circle, #fff8ed 0%, var(--core-white) 25%, var(--core-warm) 50%, rgba(255,184,106,0.15) 70%, transparent 85%); border-radius: 50%; box-shadow: 0 0 18px rgba(255,244,219,0.45), 0 0 40px rgba(255,184,106,0.15); animation: pulse-core 4s ease-in-out infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+@keyframes pulse-core { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.88; } }
+
+/* Sections */
+.container { max-width: 920px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+section { padding: 55px 0; }
+section + section { border-top: 1px solid var(--border); }
+h2 { font-family: var(--font-display); font-size: 1.15rem; color: var(--core-warm); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+h2 + .section-line { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin-bottom: 20px; }
+h3 { font-family: var(--font-display); font-size: 0.76rem; font-weight: 600; color: var(--gold-soft); margin: 28px 0 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+h4 { font-family: var(--font-display); font-size: 0.68rem; font-weight: 600; color: var(--text-bright); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+p { margin-bottom: 14px; font-size: 0.95rem; color: var(--text); font-weight: 400; }
+
+/* Cards */
+.card { background: var(--bg-card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid var(--border); transition: border-color 0.3s; }
+.card:hover { border-color: var(--border-gold); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.card h3 { margin: 0; }
+
+/* Badges */
+.badge { display: inline-block; font-family: var(--font-display); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 2px; }
+.badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(92,224,160,0.2); }
+.badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,96,96,0.2); }
+.badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(240,208,96,0.2); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan-soft); border: 1px solid rgba(127,216,230,0.2); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(255,184,106,0.2); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; }
+th { background: rgba(255,184,106,0.06); color: var(--core-warm); font-family: var(--font-display); font-weight: 600; text-align: left; padding: 10px 14px; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:hover td { background: rgba(255,184,106,0.03); }
+
+/* Callouts */
+.callout { background: rgba(255,184,106,0.04); border-left: 3px solid var(--gold); padding: 18px 22px; border-radius: 0 var(--radius) var(--radius) 0; margin: 18px 0; }
+.callout-green { border-left-color: var(--green); background: rgba(92,224,160,0.03); }
+.callout-red { border-left-color: var(--red); background: rgba(240,96,96,0.03); }
+.callout-gold { border-left-color: var(--gold); background: rgba(255,184,106,0.04); }
+.callout-title { font-family: var(--font-display); font-weight: 600; font-size: 0.65rem; color: var(--core-warm); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.callout-green .callout-title { color: var(--green); }
+.callout-red .callout-title { color: var(--red); }
+.callout p { font-size: 0.88rem; color: var(--text); margin: 0; }
+.callout p + p { margin-top: 8px; }
+
+/* Fix items / numbered lists */
+.fix-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.fix-item:last-child { border-bottom: none; }
+.fix-num { width: 28px; height: 28px; background: linear-gradient(135deg, var(--gold), var(--core-warm)); color: var(--bg); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.fix-num.warn { background: linear-gradient(135deg, var(--gold), #cc8800); }
+.fix-num.crit { background: linear-gradient(135deg, var(--red), #cc3333); }
+.fix-num.done { background: linear-gradient(135deg, var(--green), #00aa55); }
+.fix-content { flex: 1; }
+.fix-content strong { font-size: 0.9rem; color: var(--text-bright); display: block; margin-bottom: 4px; }
+.fix-content p { font-size: 0.85rem; margin: 0; }
+.fix-content p + p { margin-top: 6px; }
+
+/* Comparison grid */
+.comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+@media (max-width: 640px) { .comparison-grid { grid-template-columns: 1fr; } }
+.comp-card { background: var(--bg-card); border-radius: var(--radius); padding: 22px; border: 1px solid var(--border); }
+.comp-card.recommended { border-color: var(--green); box-shadow: 0 0 20px rgba(0,255,136,0.08); }
+.comp-card.gold-border { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,184,106,0.08); }
+.comp-card h4 { margin-bottom: 8px; }
+.comp-card p { font-size: 0.85rem; }
+.comp-card ul { list-style: none; padding: 0; margin: 10px 0 0; }
+.comp-card li { font-size: 0.85rem; color: var(--text); padding: 4px 0 4px 20px; position: relative; }
+.comp-card li::before { content: ''; position: absolute; left: 0; top: 11px; width: 8px; height: 1px; background: var(--text-dim); }
+.comp-card.recommended li::before { background: var(--green); }
+.comp-card.gold-border li::before { background: var(--gold); }
+
+/* Code */
+code { background: rgba(255,255,255,0.05); padding: 2px 7px; border-radius: 3px; font-size: 0.82rem; color: var(--cyan-soft); font-family: 'SF Mono', 'Fira Code', monospace; }
+.terminal-block { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.72rem; line-height: 1.9; background: #060a12; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; color: var(--text); overflow-x: auto; margin: 16px 0; }
+.terminal-block .cyan { color: var(--cyan); }
+.terminal-block .gold { color: var(--gold); }
+.terminal-block .green { color: var(--green); }
+.terminal-block .red { color: var(--red); }
+.terminal-block .dim { color: var(--text-dim); }
+.terminal-block .warm { color: var(--core-warm); }
+
+/* Three column grid */
+.three-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+@media (max-width: 780px) { .three-grid { grid-template-columns: 1fr; } }
+
+/* Phase timeline */
+.phase-bar { display: flex; gap: 0; margin: 20px 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+.phase-segment { padding: 14px 18px; flex: 1; text-align: center; }
+.phase-segment .phase-label { font-family: var(--font-display); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.phase-segment .phase-desc { font-size: 0.75rem; color: var(--text-dim); }
+
+/* Accordion */
+.accordion { border: 1px solid var(--border); border-radius: var(--radius); margin: 12px 0; overflow: hidden; }
+.accordion-header { background: var(--bg-card); padding: 16px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
+.accordion-header:hover { background: var(--bg-card-hover); }
+.accordion-header h4 { margin: 0; }
+.accordion-arrow { color: var(--gold); font-size: 0.8rem; transition: transform 0.3s; }
+.accordion-body { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: var(--bg-card); }
+.accordion.open .accordion-body { max-height: 3000px; padding: 0 20px 20px; }
+.accordion.open .accordion-arrow { transform: rotate(180deg); }
+
+/* Footer */
+footer { background: rgba(10,14,23,0.95); border-top: 1px solid var(--border); color: var(--text-dim); padding: 30px 24px; text-align: center; font-size: 0.75rem; }
+footer strong { color: var(--core-white); font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* Priority matrix */
+.priority-matrix { display: grid; grid-template-columns: auto 1fr auto auto; gap: 0; margin: 16px 0; }
+.pm-row { display: contents; }
+.pm-row > * { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.pm-row:hover > * { background: rgba(255,184,106,0.03); }
+.pm-pri { font-family: var(--font-display); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">J.A.R.V.I.S.</span>
+    <a href="#executive">Executive Brief</a>
+    <a href="#moonview">Moon View</a>
+    <a href="#hermes">Hermes Architecture</a>
+    <a class="nav-sub" href="#skills">First 3 Skills</a>
+    <a class="nav-sub" href="#handoff">Handoff Protocol</a>
+    <a class="nav-sub" href="#selfrepair">Self-Repair Loop</a>
+    <a href="#reliability">Reliability</a>
+    <a class="nav-sub" href="#launchd">launchd</a>
+    <a class="nav-sub" href="#n8n-harden">n8n Hardening</a>
+    <a class="nav-sub" href="#ollama-rel">Ollama</a>
+    <a href="#security">Security</a>
+    <a class="nav-sub" href="#zero-trust">Zero Trust</a>
+    <a class="nav-sub" href="#encryption">Encryption</a>
+    <a class="nav-sub" href="#keys">Key Mgmt</a>
+    <a href="#disaster">Disaster Recovery</a>
+    <a href="#monitoring">Monitoring</a>
+    <a href="#interop">Interoperability</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+</nav>
+
+<div class="main-content">
+<div class="hero">
+  <div class="hero-inner">
+    <div class="arc-reactor">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+      <div class="core"></div>
+    </div>
+    <div class="hero-tag">Strategic Blueprint &mdash; Classified</div>
+    <h1>Hermes Activation &amp; <span>System Hardening</span></h1>
+    <p class="subtitle">The view from the moon &mdash; not the rim of the canyon</p>
+    <p>This document is the complete architectural blueprint for activating Hermes as the executor layer, hardening every surface of the Jarvis infrastructure, and building a system that self-heals, self-monitors, and scales without fragility. Every recommendation is grounded in production patterns from real-world multi-agent systems, home lab reliability engineering, and security frameworks adapted for personal AI infrastructure. Nothing theoretical. Everything executable.</p>
+    <div class="hero-meta">
+      <div><strong>Platform</strong>Mac Studio M4 Max</div>
+      <div><strong>Classification</strong>Strategic / Architectural</div>
+      <div><strong>Scope</strong>Full Stack</div>
+      <div><strong>Date</strong>April 10, 2026</div>
+      <div><strong>Author</strong>Claude Opus (Cowork)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- EXECUTIVE BRIEF -->
+<!-- ============================================================ -->
+<section id="executive">
+  <div class="container">
+    <h2>Executive Brief</h2>
+    <div class="section-line"></div>
+    <p>You have a Mac Studio M4 Max running OpenClaw as the nervous system, n8n as the automation layer, Ollama for local inference, Obsidian as the knowledge vault, and Discord/Telegram as the communication channels. The foundation works. But it was broken an hour ago, and the first real reliability test hasn&rsquo;t fired yet.</p>
+    <p>This blueprint addresses five things simultaneously: activating Hermes as a parallel executor with a concrete skill library and handoff protocol, hardening every service for production-grade reliability, implementing zero-trust security across the stack, building disaster recovery that lets you rebuild the entire system in under an hour, and wiring monitoring that tells you something&rsquo;s wrong before you notice it yourself.</p>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">The Five Pillars</div>
+      <p><strong style="color:var(--core-warm);">Interoperability</strong> &mdash; Every component talks to every other component through defined protocols, not ad-hoc wiring. Jarvis, Hermes, n8n, Obsidian, and Claude all share a common handoff schema and vault structure.</p>
+      <p><strong style="color:var(--green);">Stability</strong> &mdash; Services survive reboots, power loss, and crashes without human intervention. launchd plists configured correctly. Dependency chains verified. Cold boot tested.</p>
+      <p><strong style="color:var(--cyan-soft);">Reliability</strong> &mdash; Workflows fire when they&rsquo;re supposed to. Failures are caught, logged, and escalated. No more silent failures. No more &ldquo;it was broken and nobody knew.&rdquo;</p>
+      <p><strong style="color:var(--red);">Security</strong> &mdash; Zero-trust posture. Services bind to localhost. Encrypted at rest and in transit. API keys in Keychain, not config files. Reverse proxy with auth in front of everything.</p>
+      <p><strong style="color:var(--gold);">Agility</strong> &mdash; The system evolves without breaking. Git-versioned configs. Rollback in seconds. New skills deploy without touching the core. Blue-green model upgrades.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MOON VIEW -->
+<!-- ============================================================ -->
+<section id="moonview">
+  <div class="container">
+    <h2>The Moon View &mdash; Unified System Architecture</h2>
+    <div class="section-line"></div>
+    <p>From the moon, the Jarvis infrastructure isn&rsquo;t a collection of services &mdash; it&rsquo;s an organism. Three brains (Jarvis/OpenClaw, Hermes, Claude/Cowork), one nervous system (n8n), one memory (Obsidian vault), and multiple sensory channels (Discord, Telegram, Gmail, Calendar). The organism needs to breathe on its own, heal its own wounds, and grow new capabilities without surgery.</p>
+
+    <div class="terminal-block">
+<pre>
+ <span class="gold">THE JARVIS ORGANISM</span>  <span class="dim">&middot;</span>  <span class="warm">Mac Studio M4 Max</span>  <span class="dim">&middot;</span>  <span class="cyan">36GB Unified Memory</span>
+
+ <span class="gold">COGNITIVE LAYER</span> <span class="dim">(three brains, distinct roles)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  <span class="green">JARVIS (OpenClaw)</span>        <span class="gold">HERMES</span>              <span class="cyan">CLAUDE (Cowork)</span>      <span class="dim">│</span>
+ <span class="dim">│</span>  Nervous System           Executor            Architect            <span class="dim">│</span>
+ <span class="dim">│</span>  Always-on routing         Parallel tasks      Deep sessions        <span class="dim">│</span>
+ <span class="dim">│</span>  Channel management        Self-improving      Strategic design     <span class="dim">│</span>
+ <span class="dim">│</span>  Memory consolidation      Skill library       File generation      <span class="dim">│</span>
+ <span class="dim">│</span>  Proactive alerts          Pattern learning    Infrastructure QA    <span class="dim">│</span>
+ <span class="dim">│</span>                                                                    <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">Monitors Hermes ←→ Monitors Jarvis      ↑ On-demand via Phil</span>   <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+                          <span class="dim">│</span>
+ <span class="gold">NERVOUS SYSTEM</span> <span class="dim">(automation &amp; orchestration)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  <span class="green">n8n</span> <span class="dim">(5 workflows + MCP server)</span>                                  <span class="dim">│</span>
+ <span class="dim">│</span>  IXON AM Brief <span class="dim">→</span> PM Recap <span class="dim">→</span> Rolling Memory <span class="dim">→</span> AM Brief <span class="dim">(loop)</span>     <span class="dim">│</span>
+ <span class="dim">│</span>  Daily System Health <span class="dim">·</span> Morning Brief <span class="dim">·</span> Weekly Deal Strategy       <span class="dim">│</span>
+ <span class="dim">│</span>  Webhook triggers <span class="dim">·</span> Cron triggers <span class="dim">·</span> API triggers                  <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+                          <span class="dim">│</span>
+ <span class="gold">INFERENCE LAYER</span> <span class="dim">(model routing)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  <span class="green">Tier 1: Ollama</span> <span class="dim">(local)</span>     Mistral Small 3.1 <span class="dim">·</span> free <span class="dim">·</span> private      <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="cyan">Tier 2: OpenRouter</span>        Gemini Flash <span class="dim">·</span> $100 credit <span class="dim">·</span> fallback   <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="gold">Tier 3: Anthropic</span>         Claude Sonnet 4.6 <span class="dim">·</span> premium ops          <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+                          <span class="dim">│</span>
+ <span class="gold">MEMORY LAYER</span> <span class="dim">(single source of truth)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  <span class="green">Obsidian Vault</span> <span class="dim">/Volumes/Jarvis/obsidian-vault/</span>                   <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">├──</span> openclaw/ <span class="dim">(Jarvis memory, working context)</span>                  <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">├──</span> hermes/ <span class="dim">(skill library, execution logs)</span>                    <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">├──</span> agent-shared/handoffs/ <span class="dim">(cross-agent task queue)</span>              <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">├──</span> _private/ <span class="dim">(excluded from Sync &middot; credentials, finances)</span>     <span class="dim">│</span>
+ <span class="dim">│</span>  <span class="dim">└──</span> daily-ops/ <span class="dim">(rolling context, AM/PM memory files)</span>            <span class="dim">│</span>
+ <span class="dim">│</span>  Obsidian Sync <span class="dim">→</span> phone/iPad <span class="dim">·</span> Publish <span class="dim">→</span> executive dashboard      <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+                          <span class="dim">│</span>
+ <span class="gold">SENSORY CHANNELS</span> <span class="dim">(input/output)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  Discord <span class="dim">·</span> Telegram <span class="dim">·</span> Gmail <span class="dim">·</span> Calendar <span class="dim">·</span> Tasks <span class="dim">·</span> Playwright       <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+                          <span class="dim">│</span>
+ <span class="gold">INFRASTRUCTURE</span> <span class="dim">(survival layer)</span>
+ <span class="dim">┌────────────────────────────────────────────────────────────────────┐</span>
+ <span class="dim">│</span>  launchd <span class="dim">(process supervision)</span> <span class="dim">·</span> macOS Firewall <span class="dim">·</span> APFS Encrypted   <span class="dim">│</span>
+ <span class="dim">│</span>  Caddy <span class="dim">(reverse proxy)</span> <span class="dim">·</span> Keychain <span class="dim">(secrets)</span> <span class="dim">·</span> UPS <span class="dim">(power)</span>         <span class="dim">│</span>
+ <span class="dim">│</span>  Git <span class="dim">(config versioning)</span> <span class="dim">·</span> rsync <span class="dim">(backups)</span> <span class="dim">·</span> Healthchecks.io      <span class="dim">│</span>
+ <span class="dim">└────────────────────────────────────────────────────────────────────┘</span>
+</pre>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">Design Principle</div>
+      <p>Every layer is independently restartable. If Hermes dies, Jarvis keeps routing. If n8n dies, Jarvis still responds on Discord. If Ollama dies, inference falls back to OpenRouter then Anthropic. If the NVMe disconnects, internal SSD configs keep the core running. No single point of failure can take the whole organism down.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- HERMES ARCHITECTURE -->
+<!-- ============================================================ -->
+<section id="hermes">
+  <div class="container">
+    <h2>Hermes &mdash; Executor Architecture</h2>
+    <div class="section-line"></div>
+    <p>Hermes is not another chatbot. It&rsquo;s a task execution engine that sits underneath Jarvis. Jarvis decides what needs to happen. Hermes figures out how to do it, does it, and learns from the result. The relationship is command-and-control: Jarvis issues directives, Hermes executes them, reports back, and stores the pattern for next time.</p>
+
+    <div class="phase-bar">
+      <div class="phase-segment" style="background:rgba(92,224,160,0.08);border-right:1px solid var(--border);">
+        <span class="phase-label" style="color:var(--green);">Phase 1 &mdash; Foundation</span>
+        <span class="phase-desc">Base stack stable. AM/PM briefs firing. Cold boot tested. <strong style="color:var(--green);">You are here</strong></span>
+      </div>
+      <div class="phase-segment" style="background:rgba(255,184,106,0.08);border-right:1px solid var(--border);">
+        <span class="phase-label" style="color:var(--gold);">Phase 2 &mdash; Hermes Deploy</span>
+        <span class="phase-desc">launchd plist. First 3 skills. Handoff protocol live. Mutual monitoring.</span>
+      </div>
+      <div class="phase-segment" style="background:rgba(127,216,230,0.08);">
+        <span class="phase-label" style="color:var(--cyan);">Phase 3 &mdash; Evolution</span>
+        <span class="phase-desc">Self-improving skills. Parallel execution. Obsidian Publish dashboard.</span>
+      </div>
+    </div>
+
+    <!-- FIRST 3 SKILLS -->
+    <h3 id="skills">First 3 Skills &mdash; What Hermes Learns First</h3>
+    <p>Skills are not scripts. They&rsquo;re reusable execution patterns that Hermes abstracts from successful task completions. Each skill has a trigger condition, execution steps, success criteria, and a self-improvement hook. Start with three skills that cover the highest-leverage operational patterns.</p>
+
+    <div class="three-grid">
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Skill 01: System Health Probe</h4>
+        <span class="badge badge-gold" style="margin-bottom:12px;">Infrastructure</span>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:10px;">Comprehensive health check across all services with escalation logic.</p>
+        <ul>
+          <li><strong style="color:var(--text-bright);">Trigger:</strong> Cron (every 5 min) or on-demand via Jarvis command</li>
+          <li><strong style="color:var(--text-bright);">Checks:</strong> Ollama (<code>/api/tags</code> + latency probe), n8n (<code>/api/v1</code>), OpenClaw (port 18789), Obsidian vault mount, NVMe availability, memory pressure, disk space</li>
+          <li><strong style="color:var(--text-bright);">Escalation:</strong> If any check fails twice in a row &rarr; attempt automatic restart via <code>launchctl kickstart</code> &rarr; if restart fails &rarr; Discord alert to #status-and-health with diagnostic payload</li>
+          <li><strong style="color:var(--text-bright);">Self-improvement:</strong> Logs response times per service. After 7 days, recalibrates &ldquo;healthy&rdquo; latency thresholds to actual P95 values. Eliminates false positives automatically.</li>
+          <li><strong style="color:var(--text-bright);">Output:</strong> Writes <code>health-log.md</code> to Obsidian vault daily. Appends to rolling 30-day history.</li>
+        </ul>
+      </div>
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Skill 02: Config Guardian</h4>
+        <span class="badge badge-cyan" style="margin-bottom:12px;">Resilience</span>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:10px;">Git-versioned config backup with automatic rollback on failure.</p>
+        <ul>
+          <li><strong style="color:var(--text-bright);">Trigger:</strong> Nightly (11:30 PM, before historian) or after any config change detected via <code>fswatch</code></li>
+          <li><strong style="color:var(--text-bright);">Scope:</strong> <code>~/.openclaw/</code>, <code>~/.hermes/</code>, <code>~/.n8n/</code>, launchd plists, Caddy config, cron state</li>
+          <li><strong style="color:var(--text-bright);">Action:</strong> <code>git add -A && git commit</code> with auto-generated diff summary. Push to local bare repo on NVMe.</li>
+          <li><strong style="color:var(--text-bright);">Rollback:</strong> If System Health Probe detects failure within 10 min of a config commit &rarr; auto <code>git revert HEAD</code> &rarr; restart affected service &rarr; Discord alert with diff of what was rolled back.</li>
+          <li><strong style="color:var(--text-bright);">Self-improvement:</strong> Tracks which config changes correlate with service failures. Builds a &ldquo;dangerous keys&rdquo; list. Warns before applying changes to those keys in the future.</li>
+        </ul>
+      </div>
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Skill 03: Workflow Executor</h4>
+        <span class="badge badge-green" style="margin-bottom:12px;">Automation</span>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:10px;">Triggers n8n workflows on behalf of Jarvis with retry logic and result capture.</p>
+        <ul>
+          <li><strong style="color:var(--text-bright);">Trigger:</strong> Jarvis handoff message (see Handoff Protocol below) or scheduled cron</li>
+          <li><strong style="color:var(--text-bright);">Execution:</strong> Calls n8n API (<code>POST /api/v1/workflows/{id}/run</code>) with payload. Monitors execution status via polling (<code>GET /api/v1/executions/{id}</code>). Timeout: 120s default, configurable per workflow.</li>
+          <li><strong style="color:var(--text-bright);">Retry:</strong> Exponential backoff &mdash; 5s, 10s, 20s. Max 3 retries. If all fail, escalates to Jarvis with error payload.</li>
+          <li><strong style="color:var(--text-bright);">Result capture:</strong> Writes execution result (success/fail, duration, output summary) to <code>agent-shared/execution-log.md</code> in Obsidian vault.</li>
+          <li><strong style="color:var(--text-bright);">Self-improvement:</strong> Tracks workflow success rates over time. If a workflow drops below 80% success rate over 7 days, flags it for review and suggests common failure patterns.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Why These Three First</div>
+      <p>System Health Probe gives Hermes eyes. Config Guardian gives Hermes a safety net. Workflow Executor gives Hermes hands. Together they form the minimum viable executor: it can see what&rsquo;s broken, protect against its own mistakes, and do useful work. Every subsequent skill builds on this foundation.</p>
+    </div>
+
+    <!-- HANDOFF PROTOCOL -->
+    <h3 id="handoff">Handoff Protocol &mdash; How Jarvis Talks to Hermes</h3>
+    <p>The handoff protocol is a JSON schema written as a markdown file to the shared Obsidian vault at <code>/agent-shared/handoffs/</code>. Jarvis writes the file. Hermes watches the directory via <code>fswatch</code>. When a new handoff appears, Hermes picks it up, executes it, and writes the result back. This pattern is borrowed from the OpenAI Agents SDK handoff model, adapted for file-based inter-process communication.</p>
+
+    <div class="terminal-block">
+<pre>
+<span class="gold">HANDOFF SCHEMA</span>  <span class="dim">&middot;</span>  <span class="cyan">/agent-shared/handoffs/{timestamp}-{taskId}.md</span>
+
+<span class="dim">---</span>
+<span class="green">taskId</span>: "2026-04-10-pm-recap-trigger"
+<span class="green">fromAgent</span>: "jarvis"
+<span class="green">toAgent</span>: "hermes"
+<span class="green">priority</span>: "normal"           <span class="dim"># critical | high | normal | low</span>
+<span class="green">skill</span>: "workflow-executor"    <span class="dim"># which Hermes skill to invoke</span>
+<span class="green">created</span>: "2026-04-10T18:25:00-04:00"
+<span class="green">deadline</span>: "2026-04-10T18:35:00-04:00"  <span class="dim"># hard timeout</span>
+<span class="green">status</span>: "pending"             <span class="dim"># pending → in_progress → completed | failed</span>
+<span class="dim">---</span>
+
+<span class="gold">## Task</span>
+Trigger the IXON PM Recap workflow in n8n.
+
+<span class="gold">## Context</span>
+- Workflow ID: <span class="cyan">abc123</span>
+- Expected output: Discord message to #ixon-evening-brief
+- This is the first live test of the PM Recap since the DB patch fix.
+- If it fails, capture the full error and report to Jarvis immediately.
+
+<span class="gold">## Parameters</span>
+```json
+{
+  "workflowId": "abc123",
+  "timeout": 120,
+  "retries": 3,
+  "notifyOnComplete": true,
+  "notifyChannel": "#status-and-health"
+}
+```
+
+<span class="gold">## Result</span> <span class="dim">(written by Hermes after execution)</span>
+<span class="dim">status: completed</span>
+<span class="dim">duration: 14.2s</span>
+<span class="dim">output: "PM Recap delivered to #ixon-evening-brief at 6:31 PM ET"</span>
+<span class="dim">retries_used: 0</span>
+<span class="dim">errors: none</span>
+</pre>
+    </div>
+
+    <p>The handoff directory acts as a persistent, auditable task queue. Every handoff is a markdown file that Obsidian indexes, so you can search, graph-view, and trend your entire task execution history. Failed handoffs stay in the directory with <code>status: failed</code> for debugging. Completed ones get archived to <code>/agent-shared/handoffs/archive/</code> weekly by Config Guardian.</p>
+
+    <div class="comparison-grid">
+      <div class="comp-card">
+        <h4>Jarvis &rarr; Hermes</h4>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:8px;">Command flow</p>
+        <ul>
+          <li>Jarvis writes <code>.md</code> handoff file to <code>/handoffs/</code></li>
+          <li>Hermes detects via <code>fswatch</code> (100ms latency)</li>
+          <li>Hermes reads file, validates schema, claims task (sets <code>status: in_progress</code>)</li>
+          <li>Hermes executes using the specified skill</li>
+          <li>Hermes writes result section back to file</li>
+          <li>Hermes posts completion/failure to Discord if <code>notifyOnComplete: true</code></li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <h4>Hermes &rarr; Jarvis</h4>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:8px;">Report flow</p>
+        <ul>
+          <li>Hermes writes to <code>/agent-shared/reports/</code> for non-task updates</li>
+          <li>Health check results, skill improvement suggestions, anomaly detections</li>
+          <li>Jarvis reads reports during nightly historian consolidation</li>
+          <li>Critical reports trigger immediate Discord notification from Hermes directly</li>
+          <li>Report format: same YAML frontmatter + markdown body</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SELF-REPAIR LOOP -->
+    <h3 id="selfrepair">Mutual Self-Repair Loop</h3>
+    <p>The self-repair loop is the immune system. Two agents watching each other, with launchd as the backup immune system underneath both. Three layers of recovery, each escalating only when the previous layer fails.</p>
+
+    <div class="terminal-block">
+<pre>
+<span class="gold">SELF-REPAIR CASCADE</span>  <span class="dim">&middot;</span>  <span class="cyan">Three Layers</span>
+
+<span class="green">LAYER 1: SERVICE-LEVEL</span> <span class="dim">(launchd &middot; 0-10 seconds)</span>
+<span class="dim">├──</span> KeepAlive: true on all plists
+<span class="dim">├──</span> Process crashes → launchd restarts immediately
+<span class="dim">├──</span> ThrottleInterval: 10s <span class="dim">(prevents restart storms)</span>
+<span class="dim">├──</span> StandardOutPath + StandardErrorPath <span class="dim">(all logs captured)</span>
+<span class="dim">└──</span> <span class="green">Handles:</span> OOM kills, segfaults, unhandled exceptions
+
+<span class="gold">LAYER 2: CROSS-AGENT</span> <span class="dim">(Jarvis ↔ Hermes &middot; 30-60 seconds)</span>
+<span class="dim">├──</span> <span class="cyan">Hermes monitors Jarvis:</span>
+<span class="dim">│</span>   Health check every 30s → port 18789 TCP + HTTP 200
+<span class="dim">│</span>   2 consecutive failures → <code>launchctl kickstart -k user/com.openclaw.gateway</code>
+<span class="dim">│</span>   Post recovery event to Discord #status-and-health
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="gold">Jarvis monitors Hermes:</span>
+<span class="dim">│</span>   Cron check every 60s → verify Hermes PID alive + last heartbeat &lt; 2min
+<span class="dim">│</span>   2 consecutive failures → <code>launchctl kickstart -k user/com.hermes.agent</code>
+<span class="dim">│</span>   Post recovery event to Discord #status-and-health
+<span class="dim">│</span>
+<span class="dim">└──</span> <span class="green">Heartbeat protocol:</span>
+    Each agent writes timestamp to /agent-shared/heartbeats/{agent}.json every 30s
+    Format: <span class="cyan">{"agent":"hermes","ts":"2026-04-10T18:30:00Z","status":"healthy"}</span>
+
+<span class="red">LAYER 3: EMERGENCY</span> <span class="dim">(Claude/Cowork or Phil &middot; minutes to hours)</span>
+<span class="dim">├──</span> Both agents down simultaneously (rare — requires system-level failure)
+<span class="dim">├──</span> Discord webhook from <code>healthchecks.io</code> pings Phil
+<span class="dim">├──</span> Phil opens Cowork session → Claude diagnoses via Bash tool
+<span class="dim">├──</span> Or Phil SSHs in via Tailscale from phone
+<span class="dim">└──</span> REBUILD.md on NVMe has step-by-step recovery procedure
+</pre>
+    </div>
+
+    <div class="callout callout-red">
+      <div class="callout-title">Critical Rule</div>
+      <p>Never restart both agents simultaneously. If Hermes detects Jarvis is down, it restarts Jarvis and waits 30 seconds before checking its own health. If Jarvis detects Hermes is down, same pattern. This prevents a restart cascade where both agents keep killing and restarting each other. The 30-second cooldown is non-negotiable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- RELIABILITY -->
+<!-- ============================================================ -->
+<section id="reliability">
+  <div class="container">
+    <h2>Reliability Engineering</h2>
+    <div class="section-line"></div>
+    <p>Reliability isn&rsquo;t hoping things work. It&rsquo;s designing for the assumption that everything will fail, and building recovery into every layer. Here&rsquo;s how to harden every service in the stack.</p>
+
+    <h3 id="launchd">launchd Configuration &mdash; The Right Way</h3>
+    <p>launchd is the single most important reliability layer. Every misconfigured plist is a ticking time bomb. These are the production-tested patterns.</p>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num warn">01</div>
+        <div class="fix-content">
+          <strong>KeepAlive: Conditional, Not Unconditional</strong>
+          <p>Don&rsquo;t use bare <code>&lt;true/&gt;</code>. Use dictionary form: <code>SuccessfulExit: false</code> restarts only on crashes (exit code &ne; 0), not clean shutdowns. This prevents phantom restarts during system updates or manual stops.</p>
+          <p>Exception: Hermes and OpenClaw watchdogs should use unconditional KeepAlive since they must always be running.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">02</div>
+        <div class="fix-content">
+          <strong>ThrottleInterval: Respect the 10-Second Rule</strong>
+          <p>If your process exits within 10 seconds of launch, launchd enters throttle mode and delays the next restart. Design all services to stay alive for at least 10 seconds. If a health check script runs instantly, add a <code>sleep 10</code> at the end. This is not optional &mdash; launchd will log &ldquo;Service only ran for N seconds. Pushing respawn out.&rdquo;</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">03</div>
+        <div class="fix-content">
+          <strong>Never Daemonize Inside the Process</strong>
+          <p>If your service calls <code>daemon()</code> or <code>fork+exit</code>, launchd thinks the parent died and tries to restart it. Run all services in the foreground. Let launchd be the process manager.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">04</div>
+        <div class="fix-content">
+          <strong>Log Everything</strong>
+          <p>Every plist must have <code>StandardOutPath</code> and <code>StandardErrorPath</code> pointing to <code>~/.jarvis/logs/{service}-stdout.log</code> and <code>stderr.log</code>. Without these, you&rsquo;re debugging blind after any crash.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">05</div>
+        <div class="fix-content">
+          <strong>Startup Dependency Chains via Health Checks</strong>
+          <p>launchd doesn&rsquo;t have explicit dependency ordering. Instead, use wrapper scripts: OpenClaw&rsquo;s startup script polls Ollama&rsquo;s <code>/api/tags</code> endpoint before launching. Hermes polls OpenClaw&rsquo;s port before starting its monitoring loop. This ensures correct startup order after cold boot without fragile sleep timers.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="n8n-harden">n8n &mdash; From Hobby to Production</h3>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Set N8N_ENCRYPTION_KEY Immediately</strong>
+          <p>Generate with <code>openssl rand -base64 32</code>. Store in macOS Keychain. Set as environment variable in the launchd plist via <code>EnvironmentVariables</code> dict. Without this, all stored credentials (Google OAuth, Discord token, API keys) are stored with a default key that anyone with filesystem access can decrypt. This is the highest-priority n8n fix.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">02</div>
+        <div class="fix-content">
+          <strong>Migrate SQLite &rarr; PostgreSQL</strong>
+          <p>SQLite locks the entire database on every write. Cannot be safely backed up while n8n is running. Incompatible with queue mode. Fine for experimentation, dangerous for production workflows that handle your IXON deal intelligence. PostgreSQL via Homebrew: <code>brew install postgresql@16</code>, configure n8n with <code>DB_TYPE=postgresdb</code>. Migration path is documented in n8n docs.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">03</div>
+        <div class="fix-content">
+          <strong>Error Workflows with Discord Alerts</strong>
+          <p>Every workflow should have an error branch that catches failures, formats a diagnostic message, and posts to #status-and-health via Discord webhook. Use exponential backoff on retryable steps: 5s, 10s, 20s, max 3 retries. The AM/PM briefs were silently failing for days &mdash; this ensures that never happens again.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">04</div>
+        <div class="fix-content">
+          <strong>Bind to 127.0.0.1, Not 0.0.0.0</strong>
+          <p>n8n should only accept connections from localhost. External access goes through Caddy reverse proxy with proper authentication. This eliminates the entire class of &ldquo;someone on my network can hit my workflow engine&rdquo; vulnerabilities.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="ollama-rel">Ollama &mdash; Keeping Inference Stable</h3>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>Pin OLLAMA_KEEP_ALIVE to 24h</strong>
+          <p>Default is 5 minutes &mdash; model unloads after inactivity, causing cold-start latency on next request. Set <code>OLLAMA_KEEP_ALIVE=24h</code> in the Ollama launchd plist environment. Your 36GB has headroom for persistent model loading.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>Pin Model Version by Digest</strong>
+          <p>You pulled <code>mistral-small3.1:latest</code>. If Ollama updates the tag, your inference behavior changes silently. Run <code>ollama show mistral-small3.1 --format json</code> and record the digest hash. Document it in REBUILD.md. If behavior changes, you can re-pull the exact version.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>Health Check: Latency Probe, Not Just Connectivity</strong>
+          <p>Don&rsquo;t just check if Ollama is listening. Send a benchmark prompt (&ldquo;Respond with OK&rdquo;) and measure latency. If latency exceeds P95 threshold (calibrated after 7 days of data from Skill 01), trigger model reload. Ollama can enter degraded states where it accepts connections but inference is thrashing.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">04</div>
+        <div class="fix-content">
+          <strong>Memory Budget: Reserve 20GB for Models</strong>
+          <p>Mistral Small 3.1 24B Q4_K_M needs ~15GB for weights plus KV cache overhead. Reserve 20GB for Ollama. That leaves ~16GB for OS + n8n + OpenClaw + Hermes + headroom. Monitor with <code>memory_pressure</code> command &mdash; if you hit &ldquo;WARN&rdquo; level, Ollama is overallocating.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Cold Boot Sequence &mdash; Verified Startup Order</h3>
+    <div class="terminal-block">
+<pre>
+<span class="gold">COLD BOOT → FULL OPERATIONAL</span>  <span class="dim">(target: &lt;90 seconds)</span>
+
+<span class="dim">T+0s</span>   <span class="green">macOS boots</span> → launchd starts
+<span class="dim">T+5s</span>   <span class="green">Ollama</span> starts <span class="dim">(brew services, no deps)</span>
+<span class="dim">T+5s</span>   <span class="green">n8n</span> starts <span class="dim">(launchd, no deps)</span>
+<span class="dim">T+10s</span>  <span class="green">Caddy</span> starts <span class="dim">(launchd, no deps)</span>
+<span class="dim">T+15s</span>  Ollama model loaded into memory <span class="dim">(~10s for Mistral on NVMe)</span>
+<span class="dim">T+20s</span>  <span class="gold">OpenClaw</span> wrapper polls Ollama /api/tags → <span class="green">success</span> → gateway starts
+<span class="dim">T+25s</span>  <span class="gold">Hermes</span> wrapper polls OpenClaw port 18789 → <span class="green">success</span> → agent starts
+<span class="dim">T+30s</span>  Hermes runs System Health Probe → all green → writes boot log
+<span class="dim">T+35s</span>  <span class="green">Discord channels live</span> <span class="dim">(Jarvis online, Hermes online)</span>
+<span class="dim">T+60s</span>  First health check cycle completes <span class="dim">(all services verified)</span>
+
+<span class="dim">If NVMe not mounted at boot:</span>
+<span class="dim">├──</span> Ollama falls back to internal SSD cache <span class="dim">(if model cached)</span>
+<span class="dim">├──</span> OR inference routes to Tier 2/3 <span class="dim">(OpenRouter/Anthropic)</span>
+<span class="dim">├──</span> Obsidian vault unavailable → Jarvis operates from MEMORY.md only
+<span class="dim">└──</span> Alert posted to Discord: "NVMe not mounted — degraded mode"
+</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECURITY -->
+<!-- ============================================================ -->
+<section id="security">
+  <div class="container">
+    <h2>Security Posture</h2>
+    <div class="section-line"></div>
+    <p>The current security posture has critical gaps. OpenClaw binds to <code>0.0.0.0</code> with <code>allowInsecureAuth: true</code>. n8n has no encryption key. The 4TB NVMe is unencrypted. API keys live in config files. Here&rsquo;s the hardening plan, prioritized by risk.</p>
+
+    <h3 id="zero-trust">Zero-Trust Architecture</h3>
+    <p>The principle: never trust any component, even on localhost. Every service authenticates to every other service. Every port is locked down. Every secret is encrypted.</p>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Bind All Services to 127.0.0.1</strong>
+          <p><strong style="color:var(--red);">OpenClaw:</strong> Change <code>allowInsecureAuth: false</code>, bind to <code>loopback</code>. This is the single biggest security vulnerability in the stack right now. Anyone on your home network can currently hit the gateway with no auth.</p>
+          <p><strong style="color:var(--gold);">n8n:</strong> Bind to <code>127.0.0.1:5678</code>. Already has basic auth, but should not be network-accessible.</p>
+          <p><strong style="color:var(--green);">Ollama:</strong> Already localhost-only. Verified.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Deploy Caddy as Reverse Proxy</strong>
+          <p>Install via Homebrew: <code>brew install caddy</code>. Configure as the sole entry point for any service that needs external access. Caddy auto-generates TLS certs for local domains. Put n8n, OpenClaw, and any future web UIs behind Caddy with authentication middleware. This gives you HTTPS on all internal services with one config file.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">03</div>
+        <div class="fix-content">
+          <strong>Deploy Little Snitch for Outbound Control</strong>
+          <p>The built-in macOS firewall only blocks inbound. Little Snitch ($30) gives you per-process outbound visibility. You&rsquo;ll see exactly which services are phoning home, and can block anything unexpected. Particularly important for Ollama (should never make outbound connections) and n8n (should only hit googleapis.com, discord.com, api.anthropic.com, openrouter.ai).</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="encryption">Encryption &mdash; At Rest and In Transit</h3>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Encrypt the 4TB NVMe</strong>
+          <p>Reformat as APFS (Encrypted). Apple Silicon hardware acceleration means zero performance impact. Store the password in macOS Keychain for auto-unlock. This protects your Ollama models, Obsidian vault, backups, and any sensitive data if the drive is physically stolen or the enclosure fails and gets RMA&rsquo;d. Do this before storing any more data.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">02</div>
+        <div class="fix-content">
+          <strong>Verify FileVault on Internal SSD</strong>
+          <p>Should be enabled by default on Apple Silicon. Verify with <code>fdesetup status</code>. If not enabled, enable it. Backup the recovery key to somewhere other than iCloud (1Password, printed in a safe, etc.).</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>TLS for All Internal Services</strong>
+          <p>Caddy reverse proxy handles this automatically. Once deployed, all service-to-service communication goes through HTTPS. Self-signed CA from Caddy gets added to your system trust store. No more plaintext HTTP between services.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="keys">API Key Management</h3>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Move All Secrets to macOS Keychain</strong>
+          <p>Every API key currently lives in a JSON config file. Move them to Keychain using <code>security add-generic-password</code>. Create a startup script that retrieves keys and exports as environment variables. Tools like <code>envchain</code> or <code>ks</code> simplify this. The keys in config files get replaced with placeholders or removed entirely.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">02</div>
+        <div class="fix-content">
+          <strong>Separate Keys Per Service</strong>
+          <p>OpenClaw and Hermes should have different Anthropic API keys. n8n should have its own. If one key is compromised, you revoke only that key. Per-key usage tracking in Anthropic&rsquo;s dashboard shows you exactly which service is spending what. Create keys named: <code>anthropic-jarvis-prod</code>, <code>anthropic-hermes-prod</code>, <code>anthropic-n8n-prod</code>.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>90-Day Key Rotation</strong>
+          <p>Set a quarterly calendar reminder (Jarvis can do this via n8n + Google Calendar). Rotation process: generate new key &rarr; update Keychain &rarr; restart affected service &rarr; verify service works &rarr; revoke old key. Zero-downtime rotation since most APIs support multiple active keys.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- DISASTER RECOVERY -->
+<!-- ============================================================ -->
+<section id="disaster">
+  <div class="container">
+    <h2>Disaster Recovery</h2>
+    <div class="section-line"></div>
+    <p>The goal: if the Mac Studio catches fire tomorrow, you&rsquo;re back online within 60 minutes on any new Mac with access to the 4TB NVMe. If the NVMe also dies, you&rsquo;re back within 4 hours from cloud backups. Everything else is unacceptable.</p>
+
+    <h3>3-2-1 Backup Strategy</h3>
+
+    <div class="three-grid">
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Copy 1: Production</h4>
+        <p style="font-size:0.82rem;">Internal SSD (configs, plists, workspace) + 4TB NVMe (models, vault, backups). This is the live system. Not a backup &mdash; it&rsquo;s what you&rsquo;re protecting.</p>
+      </div>
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Copy 2: Local Mirror</h4>
+        <p style="font-size:0.82rem;">Nightly rsync from internal SSD configs to <code>/Volumes/Jarvis/backups/</code> on NVMe. Hard-link incremental snapshots. 7-day rotation. Separate media (external vs internal). Handles SSD failure.</p>
+      </div>
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Copy 3: Cloud Offsite</h4>
+        <p style="font-size:0.82rem;">Weekly encrypted push to Backblaze B2 ($6/TB/month) via <code>rclone</code>. Configs, vault, n8n database. Not models (re-downloadable). Handles fire, theft, or both devices dying simultaneously.</p>
+      </div>
+    </div>
+
+    <h3>Nightly Backup Script</h3>
+    <div class="terminal-block">
+<pre>
+<span class="gold">NIGHTLY BACKUP</span>  <span class="dim">&middot;</span>  <span class="cyan">Cron 11:00 PM ET (before historian)</span>
+
+<span class="dim">#!/bin/bash</span>
+<span class="dim"># Backup target with date-based snapshot</span>
+BACKUP_DIR="/Volumes/Jarvis/backups/$(date +%Y-%m-%d)"
+LATEST="/Volumes/Jarvis/backups/latest"
+
+<span class="dim"># Incremental rsync with hard links to previous backup</span>
+rsync -a --delete \
+  --link-dest="$LATEST" \
+  ~/.openclaw/ \
+  ~/.hermes/ \
+  ~/.n8n/ \
+  ~/Library/LaunchAgents/com.openclaw.* \
+  ~/Library/LaunchAgents/com.hermes.* \
+  ~/Library/LaunchAgents/com.n8n.* \
+  "$BACKUP_DIR/"
+
+<span class="dim"># Update latest symlink</span>
+ln -sfn "$BACKUP_DIR" "$LATEST"
+
+<span class="dim"># Prune backups older than 7 days</span>
+find /Volumes/Jarvis/backups/ -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +
+
+<span class="dim"># Verify backup integrity</span>
+if [ -d "$BACKUP_DIR/openclaw" ]; then
+  echo "$(date): Backup successful - $BACKUP_DIR" >> /Volumes/Jarvis/backups/backup.log
+else
+  <span class="dim"># Alert via Discord webhook</span>
+  curl -s -X POST "$DISCORD_WEBHOOK" \
+    -H "Content-Type: application/json" \
+    -d '{"content":"⚠️ **BACKUP FAILED** - '"$(date)"' - Check backup.log"}'
+fi
+</pre>
+    </div>
+
+    <h3>REBUILD.md &mdash; The Runbook</h3>
+    <p>One file. On the NVMe. Documents the exact sequence to rebuild everything from scratch. Hermes (via Config Guardian skill) keeps it updated automatically whenever a new service is added or a config changes.</p>
+
+    <div class="accordion" onclick="this.classList.toggle('open')">
+      <div class="accordion-header">
+        <h4>REBUILD.md Contents (expand)</h4>
+        <span class="accordion-arrow">&#9660;</span>
+      </div>
+      <div class="accordion-body">
+        <p style="font-size:0.85rem;margin-top:12px;">Section 1: Prerequisites (macOS version, Xcode CLI tools, Homebrew). Section 2: Brew install list (ollama, node@20, caddy, postgresql@16, git). Section 3: Restore configs from NVMe backup (<code>rsync -a /Volumes/Jarvis/backups/latest/ ~/</code>). Section 4: Restore Keychain secrets (manual — documented key names and how to re-create). Section 5: launchd plist placement and load commands. Section 6: n8n database restore from PostgreSQL dump. Section 7: Ollama model pull commands with pinned digests. Section 8: Verification checklist (each service endpoint to test). Section 9: Obsidian vault is already on NVMe — just open. Section 10: Service start order and dependency verification.</p>
+        <p style="font-size:0.85rem;">Estimated rebuild time with NVMe available: 45-60 minutes. Without NVMe (cloud restore): 3-4 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MONITORING -->
+<!-- ============================================================ -->
+<section id="monitoring">
+  <div class="container">
+    <h2>Monitoring &amp; Observability</h2>
+    <div class="section-line"></div>
+    <p>Prometheus/Grafana is overkill for a single-node home lab. Instead: lightweight health check scripts, Discord webhook alerts, and Healthchecks.io for dead-man-switch monitoring. Total cost: $0.</p>
+
+    <div class="comparison-grid">
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Active Monitoring</h4>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:8px;">Hermes System Health Probe (Skill 01)</p>
+        <ul>
+          <li>Every 5 min: check all service endpoints</li>
+          <li>Every 5 min: check memory pressure, disk space</li>
+          <li>Every 15 min: Ollama latency probe (benchmark prompt)</li>
+          <li>Every 60 min: n8n workflow execution history check</li>
+          <li>Failures &rarr; auto-restart &rarr; Discord alert if restart fails</li>
+        </ul>
+      </div>
+      <div class="comp-card gold-border">
+        <h4 style="color:var(--gold);">Passive Monitoring</h4>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:8px;">Dead-man switches via Healthchecks.io (free tier)</p>
+        <ul>
+          <li>Hermes pings Healthchecks.io every 5 min</li>
+          <li>If ping stops &rarr; Healthchecks.io emails/texts Phil</li>
+          <li>This catches the &ldquo;both agents are dead&rdquo; scenario</li>
+          <li>Also monitors: nightly backup completion, historian run</li>
+          <li>Zero cost, zero infrastructure, external to your stack</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Log Aggregation</h3>
+    <p>All service logs centralized to <code>~/.jarvis/logs/</code>. Weekly rotation via <code>newsyslog</code> or cron. 4-week retention. Hermes can search logs as context when diagnosing issues.</p>
+
+    <table>
+      <thead><tr><th>Service</th><th>Log Path</th><th>Rotation</th></tr></thead>
+      <tbody>
+        <tr><td>OpenClaw</td><td><code>~/.jarvis/logs/openclaw-{stdout,stderr}.log</code></td><td>Weekly, 4 kept</td></tr>
+        <tr><td>Hermes</td><td><code>~/.jarvis/logs/hermes-{stdout,stderr}.log</code></td><td>Weekly, 4 kept</td></tr>
+        <tr><td>n8n</td><td><code>~/.jarvis/logs/n8n-{stdout,stderr}.log</code></td><td>Weekly, 4 kept</td></tr>
+        <tr><td>Caddy</td><td><code>~/.jarvis/logs/caddy-access.log</code></td><td>Weekly, 4 kept</td></tr>
+        <tr><td>Watchdogs</td><td><code>~/.jarvis/logs/watchdog-{service}.log</code></td><td>Weekly, 4 kept</td></tr>
+        <tr><td>Backups</td><td><code>/Volumes/Jarvis/backups/backup.log</code></td><td>Monthly, 12 kept</td></tr>
+        <tr><td>Health</td><td><code>Obsidian: hermes/health-log.md</code></td><td>Rolling 30 days</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- INTEROPERABILITY -->
+<!-- ============================================================ -->
+<section id="interop">
+  <div class="container">
+    <h2>Interoperability &mdash; Everything Talks to Everything</h2>
+    <div class="section-line"></div>
+    <p>The power of the system isn&rsquo;t any single component &mdash; it&rsquo;s how they connect. Every integration point needs a defined protocol, not ad-hoc wiring.</p>
+
+    <h3>MCP Server &mdash; n8n Workflows as Tools</h3>
+    <p>The n8n MCP server exposes your 5 workflows as callable tools for any MCP client (Claude Code, Cowork, future agents). Today you patched the SQLite DB to enable this. Going forward, the MCP server should be the primary way external agents interact with n8n.</p>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>Tag Workflows for Safety</strong>
+          <p>Add tags to n8n workflows: <code>agent-safe</code> for workflows that can be triggered by any agent, <code>manual-only</code> for workflows that should only run via human trigger. MCP server should filter to only expose <code>agent-safe</code> tagged workflows.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>Authenticate the MCP Server</strong>
+          <p>Currently unauthenticated. Add bearer token auth. Each MCP client (Jarvis, Hermes, Claude) gets its own token. Log which client triggered which workflow.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>Implement Timeout Budgets</strong>
+          <p>MCP tool calls need explicit timeouts. AM/PM briefs can take 30-60 seconds (Gmail API + Claude synthesis). Set per-workflow timeouts in the MCP config. If a tool call exceeds its budget, return a structured timeout error that the caller can retry or escalate.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Obsidian Vault as Shared Memory</h3>
+    <p>The vault isn&rsquo;t just for notes &mdash; it&rsquo;s the shared memory bus between Jarvis, Hermes, and Claude. Structure it for machines to read, not just humans.</p>
+
+    <div class="terminal-block">
+<pre>
+<span class="gold">VAULT STRUCTURE</span>  <span class="dim">&middot;</span>  <span class="cyan">/Volumes/Jarvis/obsidian-vault/</span>
+
+<span class="dim">├──</span> <span class="green">openclaw/</span>              <span class="dim">Jarvis-owned memory</span>
+<span class="dim">│</span>   <span class="dim">├──</span> MEMORY.md           <span class="dim">Master context (auto-distilled nightly)</span>
+<span class="dim">│</span>   <span class="dim">├──</span> working-context.md  <span class="dim">Current session state</span>
+<span class="dim">│</span>   <span class="dim">└──</span> mistakes.md         <span class="dim">Things to never repeat</span>
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="gold">hermes/</span>                <span class="dim">Hermes-owned memory</span>
+<span class="dim">│</span>   <span class="dim">├──</span> skills/             <span class="dim">Skill definitions (YAML frontmatter + markdown)</span>
+<span class="dim">│</span>   <span class="dim">├──</span> execution-logs/     <span class="dim">Task completion records</span>
+<span class="dim">│</span>   <span class="dim">├──</span> health-log.md       <span class="dim">Rolling 30-day health metrics</span>
+<span class="dim">│</span>   <span class="dim">└──</span> improvements.md     <span class="dim">Self-identified optimization opportunities</span>
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="cyan">agent-shared/</span>          <span class="dim">Cross-agent communication</span>
+<span class="dim">│</span>   <span class="dim">├──</span> handoffs/           <span class="dim">Task queue (Jarvis → Hermes)</span>
+<span class="dim">│</span>   <span class="dim">│</span>   <span class="dim">└──</span> archive/        <span class="dim">Completed handoffs (weekly cleanup)</span>
+<span class="dim">│</span>   <span class="dim">├──</span> reports/            <span class="dim">Hermes → Jarvis reports</span>
+<span class="dim">│</span>   <span class="dim">├──</span> heartbeats/         <span class="dim">Agent health signals (JSON, 30s interval)</span>
+<span class="dim">│</span>   <span class="dim">└──</span> schemas/            <span class="dim">Shared data format definitions</span>
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="warm">daily-ops/</span>             <span class="dim">IXON operational memory</span>
+<span class="dim">│</span>   <span class="dim">├──</span> ixon-daily-context.md  <span class="dim">Rolling PM→AM context file</span>
+<span class="dim">│</span>   <span class="dim">├──</span> deal-intelligence/     <span class="dim">Per-deal context files</span>
+<span class="dim">│</span>   <span class="dim">└──</span> weekly-reviews/        <span class="dim">Weekly strategy review outputs</span>
+<span class="dim">│</span>
+<span class="dim">├──</span> <span class="red">_private/</span>              <span class="dim">EXCLUDED from Sync</span>
+<span class="dim">│</span>   <span class="dim">├──</span> credentials/        <span class="dim">API key references (not actual keys)</span>
+<span class="dim">│</span>   <span class="dim">├──</span> finances/           <span class="dim">Personal financial data</span>
+<span class="dim">│</span>   <span class="dim">└──</span> attachments/        <span class="dim">Binary files routed here by Obsidian</span>
+<span class="dim">│</span>
+<span class="dim">└──</span> <span class="dim">daily-logs/</span>            <span class="dim">Nightly historian output</span>
+    <span class="dim">└──</span> YYYY-MM-DD.md       <span class="dim">One file per day</span>
+</pre>
+    </div>
+
+    <h3>Claude / Cowork Integration</h3>
+    <p>Claude is the architect who drops in for deep work. The integration pattern: Jarvis accumulates daily context in the vault. When Phil opens a Cowork session, Claude reads the vault for context, produces artifacts (docs, configs, designs), and hands them to Jarvis for deployment.</p>
+
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>The Handoff Pattern: Claude Designs, Jarvis Deploys</strong>
+          <p>Claude produces n8n workflow JSON, Hermes skill definitions, config changes, or REBUILD.md updates. Phil hands to Jarvis via Discord. Jarvis validates and deploys. This keeps Claude&rsquo;s deep reasoning separate from Jarvis&rsquo;s always-on execution.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>The Briefing Loop: Jarvis Collects, Claude Analyzes</strong>
+          <p>Weekly: Jarvis writes a context dump to the vault. Phil opens a Cowork session. Claude reads the week&rsquo;s health logs, deal intelligence, execution logs, and produces strategic analysis. The system gets smarter every week because Claude sees Jarvis&rsquo;s accumulated data.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>The Break Glass: Claude as Emergency Recovery</strong>
+          <p>If both Jarvis and Hermes are down and self-repair fails, Claude via Cowork can diagnose via Bash tool (if Mac Studio is reachable) or via Tailscale SSH (remote). REBUILD.md on the NVMe gives Claude the complete recovery procedure. This is Layer 3 of the self-repair cascade.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- IMPLEMENTATION ROADMAP -->
+<!-- ============================================================ -->
+<section id="roadmap">
+  <div class="container">
+    <h2>Implementation Roadmap</h2>
+    <div class="section-line"></div>
+    <p>Sequenced by dependency and risk. Each phase builds on the previous one. Don&rsquo;t skip ahead &mdash; the later phases assume the earlier ones are done.</p>
+
+    <h3>Phase 0: Stabilize (Now &mdash; Sunday April 12)</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);">Prerequisite for everything. Prove the foundation works before building on it.</p>
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num done">&#10003;</div>
+        <div class="fix-content">
+          <strong>Patch n8n MCP toggle via SQLite (done)</strong>
+          <p>All 5 workflows exposed as MCP tools.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>PM Recap fires tonight at 6:30 PM ET</strong>
+          <p>First live reliability test. Monitor #ixon-evening-brief.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>AM Brief fires tomorrow at 6:00 AM ET</strong>
+          <p>Second data point. If both pass, base automation is proven.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>Cold reboot test (Saturday)</strong>
+          <p>Restart Mac Studio. Verify all services auto-start in correct order. Verify NVMe mounts. Time the full startup sequence. Document any issues.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">04</div>
+        <div class="fix-content">
+          <strong>Nightly Historian fires (Saturday 11:45 PM)</strong>
+          <p>Verify #thinking post appears Sunday morning. Full automation loop proven.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Phase 1: Harden (Monday April 13 &mdash; Friday April 17)</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);">Lock everything down before adding complexity.</p>
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Set N8N_ENCRYPTION_KEY</strong>
+          <p>Generate, store in Keychain, add to n8n launchd plist. <strong style="color:var(--red);">Day 1 priority.</strong></p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Bind OpenClaw to 127.0.0.1 + disable insecure auth</strong>
+          <p>Closes the biggest security gap. <strong style="color:var(--red);">Day 1 priority.</strong></p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num crit">!</div>
+        <div class="fix-content">
+          <strong>Encrypt 4TB NVMe (APFS Encrypted)</strong>
+          <p>Requires reformatting. Back up vault and models first. <strong style="color:var(--red);">Day 1-2.</strong></p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">04</div>
+        <div class="fix-content">
+          <strong>Move secrets to macOS Keychain</strong>
+          <p>All API keys out of config files, into Keychain. launchd plists retrieve via wrapper scripts.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">05</div>
+        <div class="fix-content">
+          <strong>Deploy Caddy reverse proxy</strong>
+          <p>Install, configure for n8n + OpenClaw. Bind services to localhost. All access through Caddy.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num warn">06</div>
+        <div class="fix-content">
+          <strong>Git-init config directories</strong>
+          <p><code>git init</code> in <code>~/.openclaw/</code>, <code>~/.hermes/</code>, <code>~/.n8n/</code>. First commit = current state. Nightly auto-commit via cron.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">07</div>
+        <div class="fix-content">
+          <strong>Implement nightly backup script</strong>
+          <p>rsync to NVMe with 7-day rotation. Discord alert on failure.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">08</div>
+        <div class="fix-content">
+          <strong>Write REBUILD.md</strong>
+          <p>Complete disaster recovery runbook on NVMe.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Phase 2: Hermes Deploy (Week of April 20)</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);">Foundation stable + hardened = green light for executor layer.</p>
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>Create Hermes launchd plist</strong>
+          <p>KeepAlive conditional. Startup wrapper polls OpenClaw. StandardOut/Err to log directory. Separate API keys.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>Deploy Skill 01: System Health Probe</strong>
+          <p>Hermes&rsquo;s eyes. 5-min health checks across all services. Discord alerts on failure. Health log to Obsidian.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>Deploy Skill 02: Config Guardian</strong>
+          <p>Hermes&rsquo;s safety net. Watches config dirs via fswatch. Auto-commits to git. Auto-rollback on correlated failures.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">04</div>
+        <div name="fix-content">
+          <strong>Deploy Skill 03: Workflow Executor</strong>
+          <p>Hermes&rsquo;s hands. Triggers n8n workflows via API with retry logic. Result capture to vault.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">05</div>
+        <div class="fix-content">
+          <strong>Wire mutual self-repair loop</strong>
+          <p>Heartbeat files in <code>/agent-shared/heartbeats/</code>. Cross-monitoring with 30-second cooldown. Discord alerts.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">06</div>
+        <div class="fix-content">
+          <strong>Implement handoff protocol</strong>
+          <p>fswatch on <code>/agent-shared/handoffs/</code>. Jarvis writes, Hermes reads and executes. Results written back.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">07</div>
+        <div class="fix-content">
+          <strong>Register Healthchecks.io dead-man switch</strong>
+          <p>Hermes pings every 5 min. If both agents die, external alert reaches Phil.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Phase 3: Evolve (May 2026+)</h3>
+    <p style="font-size:0.85rem;color:var(--text-dim);">System is stable, hardened, and self-healing. Now it gets smarter.</p>
+    <div class="card">
+      <div class="fix-item">
+        <div class="fix-num">01</div>
+        <div class="fix-content">
+          <strong>Obsidian Publish &mdash; Executive Dashboard</strong>
+          <p>Live status page showing system health, deal intelligence, daily ops. Phil&rsquo;s &ldquo;peek in the window&rdquo; view.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">02</div>
+        <div class="fix-content">
+          <strong>Migrate n8n to PostgreSQL</strong>
+          <p>Proper database for production workflows. Hot backups. Queue mode ready.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">03</div>
+        <div class="fix-content">
+          <strong>ChatGPT Memory Import</strong>
+          <p>1.5 years of conversational context exported, processed, merged into MEMORY.md. Massive context boost.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">04</div>
+        <div class="fix-content">
+          <strong>Hermes Skill #4-6: IXON Revenue Skills</strong>
+          <p>Deal follow-up automation. Meeting prep synthesis. Pipeline staleness detection. Revenue-generating tasks.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">05</div>
+        <div class="fix-content">
+          <strong>Cloud offsite backup (Backblaze B2)</strong>
+          <p>Weekly encrypted push via rclone. Completes the 3-2-1 strategy.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">06</div>
+        <div class="fix-content">
+          <strong>UPS + Power Protection</strong>
+          <p>800VA+ UPS for Mac Studio + NVMe enclosure. Graceful shutdown script on battery low.</p>
+        </div>
+      </div>
+      <div class="fix-item">
+        <div class="fix-num">07</div>
+        <div class="fix-content">
+          <strong>Little Snitch outbound firewall</strong>
+          <p>Per-process network visibility. Lock down which services can reach the internet.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-gold">
+      <div class="callout-title">The Endgame</div>
+      <p>When Phase 3 is complete, the Jarvis organism looks like this: two AI agents watching each other with three layers of self-repair. Every config change versioned and rollable. Every service encrypted at rest and in transit. Every workflow monitored with automatic retry and Discord escalation. Nightly backups to local NVMe + weekly to cloud. A disaster recovery runbook that rebuilds everything in under an hour. An executive dashboard you can check from your phone. And a skill library that gets smarter every week without you touching it.</p>
+      <p>That&rsquo;s not a hobby project. That&rsquo;s personal infrastructure that rivals what companies pay six figures a year for their DevOps teams to maintain. And it runs on a single Mac Studio in your house.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="arc-reactor" style="width:40px;height:40px;margin-bottom:12px;">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="core" style="top:12px;left:12px;right:12px;bottom:12px;"></div>
+  </div>
+  <strong>J.A.R.V.I.S.</strong> &mdash; Strategic Blueprint v1.0<br>
+  <span style="color:var(--text-dim);">Generated April 10, 2026 &middot; Claude Opus (Cowork) &middot; Classified</span><br>
+  <span style="color:var(--text-dim);font-size:0.65rem;margin-top:6px;display:inline-block;">Research sources: Apple Developer Documentation &middot; n8n Security Docs &middot; Ollama Production Guides &middot; NIST CSF 2.0 &middot; OpenAI Agents SDK &middot; LangGraph &middot; CrewAI &middot; Healthchecks.io &middot; Backblaze &middot; Caddy Documentation &middot; macOS Hardening Guides</span>
+</footer>
+</div>
+
+<script>
+// Scroll spy for nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 120;
+    if (pageYOffset >= sectionTop) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
