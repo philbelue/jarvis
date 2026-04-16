@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NORTH STAR — Operating Claude at Leverage</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    /* BACKGROUNDS — deep space with invisible blue dust */
+    --bg: #08090d;
+    --bg-card: #0c0e14;
+    --bg-card-hover: #11131a;
+    --bg-elevated: #0f1117;
+    --bg-code: #060810;
+
+    /* WARM ACCENT — the soul of the design */
+    --gold: #ffb86a;
+    --gold-soft: #ffc978;
+    --gold-dim: rgba(255,184,106,0.10);
+    --gold-glow: rgba(255,184,106,0.15);
+    --gold-strong: rgba(255,184,106,0.28);
+    --core-white: #fff4db;
+    --core-warm: #ffd7a3;
+
+    /* BLUE — whisper only. Structural, never decorative */
+    --blue-ghost: #3d5060;
+    --blue-ghost-dim: rgba(61,80,96,0.08);
+    --blue-faint: rgba(80,110,130,0.06);
+
+    /* STATUS COLORS */
+    --green: #5ce0a0;
+    --green-dim: rgba(92,224,160,0.08);
+    --red: #f06060;
+    --red-dim: rgba(240,96,96,0.06);
+    --yellow: #f0d060;
+    --yellow-dim: rgba(240,208,96,0.08);
+
+    /* TEXT — warm-tinted, never cold white */
+    --text: #b8bfc8;
+    --text-bright: #dce0e6;
+    --text-dim: #5a6370;
+    --text-faint: #3a4250;
+
+    /* STRUCTURE */
+    --border: rgba(255,255,255,0.05);
+    --border-gold: rgba(255,184,106,0.10);
+    --border-subtle: rgba(255,255,255,0.03);
+    --radius: 8px;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+    --shadow-glow: 0 0 30px rgba(255,184,106,0.04);
+
+    /* FONTS */
+    --font-display: 'Orbitron', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+    --font-code: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    height: 800px;
+    background: radial-gradient(ellipse 900px 600px at center, rgba(255,184,106,0.08) 0%, rgba(255,184,106,0.02) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: rgba(8,9,13,0.97);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 32px 0;
+}
+.sidebar-brand {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+.sidebar-brand h1 {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+}
+.sidebar-brand p {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.nav-section {
+    padding: 16px 24px 8px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-faint);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.nav-link {
+    display: block;
+    padding: 9px 24px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+.nav-link:hover {
+    color: var(--core-warm);
+    background: var(--gold-dim);
+    border-left-color: var(--gold);
+}
+.nav-link.active {
+    color: var(--core-warm);
+    background: var(--gold-dim);
+    border-left: 3px solid var(--gold);
+}
+
+/* MAIN */
+.main {
+    margin-left: 260px;
+    padding: 0;
+    position: relative;
+    z-index: 2;
+    max-width: calc(100vw - 260px);
+}
+
+/* HERO */
+.hero {
+    padding: 80px 56px 60px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg) 100%);
+    border-bottom: 2px solid var(--border-gold);
+    position: relative;
+    overflow: hidden;
+}
+.hero-badge {
+    display: inline-block;
+    background: var(--gold-dim);
+    border: 1px solid var(--core-warm);
+    color: var(--core-warm);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--core-white);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    line-height: 1.05;
+    text-shadow: 0 0 20px rgba(255,184,106,0.15);
+    margin-bottom: 16px;
+}
+.hero .subtitle {
+    font-size: 17px;
+    color: var(--core-warm);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+}
+.hero-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    max-width: 760px;
+    margin-top: 12px;
+}
+.meta-cell {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+}
+.meta-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+}
+.meta-value {
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: var(--core-warm);
+    font-weight: 500;
+}
+
+/* CONTENT */
+.content {
+    padding: 60px 56px;
+    max-width: 1100px;
+}
+h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, var(--gold), transparent) 1;
+}
+h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+}
+p { margin-bottom: 14px; color: var(--text); }
+strong { color: var(--core-warm); font-weight: 600; }
+em { color: var(--text-bright); font-style: normal; font-weight: 500; }
+
+section { margin-bottom: 56px; scroll-margin-top: 24px; }
+
+/* TRIANGLE MODEL */
+.triangle-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 20px 30px;
+    margin-bottom: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.triangle-wrap::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse 600px 400px at center, rgba(255,184,106,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+.triangle-svg {
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    position: relative;
+    z-index: 2;
+}
+.node {
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.node:hover .node-bg {
+    fill: var(--gold-dim);
+    stroke: var(--gold);
+}
+.node:hover .node-label {
+    fill: var(--core-warm);
+}
+.node-bg {
+    fill: var(--bg-elevated);
+    stroke: var(--border-gold);
+    stroke-width: 1.5;
+    transition: all 0.25s ease;
+}
+.node-bg.apex {
+    fill: var(--gold-dim);
+    stroke: var(--gold);
+    stroke-width: 2;
+}
+.node-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-anchor: middle;
+    pointer-events: none;
+}
+.node-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    fill: var(--text-dim);
+    text-anchor: middle;
+    pointer-events: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.triangle-edge {
+    stroke: var(--border-gold);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 4 4;
+}
+.triangle-legend {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+}
+.legend-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* CARD GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    transition: all 0.3s ease;
+}
+.card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-gold);
+    box-shadow: var(--shadow-glow);
+}
+.card-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+.card-tag {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--gold);
+    background: var(--gold-dim);
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.card p { font-size: 14px; line-height: 1.6; }
+.card ul { padding-left: 18px; font-size: 14px; }
+.card li { margin-bottom: 4px; }
+
+/* CALLOUT */
+.callout {
+    background: rgba(255,184,106,0.03);
+    border-left: 4px solid var(--gold);
+    padding: 18px 22px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+.callout.success { background: var(--green-dim); border-left-color: var(--green); }
+.callout.danger { background: var(--red-dim); border-left-color: var(--red); }
+.callout-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+.callout.success .callout-title { color: var(--green); }
+.callout.danger .callout-title { color: var(--red); }
+
+/* CODE */
+pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    overflow-x: auto;
+    margin: 14px 0;
+}
+code {
+    font-family: var(--font-code);
+    color: var(--core-warm);
+    background: var(--bg-code);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+pre code { background: transparent; padding: 0; color: var(--text); }
+.code-comment { color: var(--text-dim); }
+.code-key { color: var(--gold); }
+.code-val { color: var(--core-warm); }
+
+/* CHECKLIST */
+.checklist {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 20px 0;
+}
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item:hover { color: var(--text-bright); }
+.checkbox {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border-gold);
+    border-radius: 3px;
+    margin-right: 14px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.checklist-item.checked .checkbox {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+.checklist-item.checked .checkbox::after {
+    content: '✓';
+    color: var(--gold);
+    font-weight: bold;
+    position: absolute;
+    top: -3px; left: 2px;
+    font-size: 14px;
+}
+.checklist-item.checked .checklist-text {
+    color: var(--text-dim);
+    text-decoration: line-through;
+}
+.checklist-text { font-size: 14px; line-height: 1.5; }
+
+/* ACCORDION */
+.accordion { margin-bottom: 14px; }
+.accordion-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.accordion-header:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-gold);
+}
+.accordion-header::after {
+    content: '▾';
+    color: var(--gold);
+    transition: transform 0.2s ease;
+    font-size: 14px;
+}
+.accordion.open .accordion-header::after { transform: rotate(180deg); }
+.accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 22px;
+}
+.accordion.open .accordion-body {
+    max-height: 3000px;
+    padding: 20px 22px 24px;
+}
+.accordion-body p:last-child { margin-bottom: 0; }
+
+/* DECISION TREE */
+.decision-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+}
+.decision-cell {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: all 0.2s ease;
+}
+.decision-cell:hover {
+    background: var(--bg-card-hover);
+    border-left-color: var(--core-warm);
+}
+.decision-cue {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+}
+.decision-arrow {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--core-warm);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}
+.decision-target {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--core-white);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.decision-cell p {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* TABLE */
+.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+.matrix th, .matrix td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+.matrix th {
+    font-family: var(--font-display);
+    font-size: 11px;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: var(--bg-elevated);
+    font-weight: 700;
+}
+.matrix tr:last-child td { border-bottom: none; }
+.matrix tr:hover td { background: var(--bg-card-hover); }
+.matrix code { font-size: 12px; }
+
+/* LADDER */
+.ladder {
+    position: relative;
+    padding-left: 40px;
+    margin: 20px 0;
+}
+.ladder::before {
+    content: '';
+    position: absolute;
+    left: 14px; top: 10px; bottom: 10px;
+    width: 2px;
+    background: linear-gradient(var(--gold), transparent);
+}
+.rung {
+    position: relative;
+    padding: 14px 0 14px 28px;
+    margin-bottom: 8px;
+}
+.rung::before {
+    content: '';
+    position: absolute;
+    left: -33px; top: 20px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--gold);
+}
+.rung-num {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.rung-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--core-white);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.rung p { font-size: 13px; color: var(--text-dim); margin-bottom: 0; }
+
+/* FOOTER */
+footer {
+    padding: 40px 56px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+footer p { margin-bottom: 4px; font-size: 12px; color: var(--text-faint); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--blue-ghost-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue-ghost); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; max-width: 100vw; }
+    .hero { padding: 50px 28px 40px; }
+    .hero h1 { font-size: 34px; letter-spacing: 2px; }
+    .content { padding: 40px 28px; }
+    footer { padding: 30px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <h1>North Star</h1>
+        <p>Jarvis / Opus 4.7</p>
+    </div>
+
+    <div class="nav-section">The Model</div>
+    <a class="nav-link" href="#apex">Apex — Command Layer</a>
+    <a class="nav-link" href="#triangle">Triangle Model</a>
+
+    <div class="nav-section">Landscape (Left Leg)</div>
+    <a class="nav-link" href="#surfaces">Surfaces</a>
+    <a class="nav-link" href="#models">Models</a>
+    <a class="nav-link" href="#integrations">Integrations</a>
+    <a class="nav-link" href="#features">Features</a>
+
+    <div class="nav-section">Mastery (Right Leg)</div>
+    <a class="nav-link" href="#prompting">Prompting</a>
+    <a class="nav-link" href="#workflow">Workflow Loop</a>
+    <a class="nav-link" href="#automation">Automation</a>
+    <a class="nav-link" href="#systems">Systems Thinking</a>
+
+    <div class="nav-section">Execution</div>
+    <a class="nav-link" href="#decision">Surface Decision Tree</a>
+    <a class="nav-link" href="#stack">The Prompt Stack</a>
+    <a class="nav-link" href="#daily">Daily Checklist</a>
+    <a class="nav-link" href="#ladder">Mastery Ladder</a>
+    <a class="nav-link" href="#nextlevel">Next-Level Moves</a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<section class="hero">
+    <span class="hero-badge">Operator Field Manual</span>
+    <h1>North Star<br/>Operating Claude at Leverage</h1>
+    <p class="subtitle">Apex → Landscape → Mastery → Execution</p>
+    <div class="hero-meta">
+        <div class="meta-cell">
+            <div class="meta-label">For</div>
+            <div class="meta-value">Philip / Jarvis</div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Model</div>
+            <div class="meta-value">Opus 4.7</div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Surface</div>
+            <div class="meta-value">Cowork · Code · Chat · API</div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Version</div>
+            <div class="meta-value">v1.0 — Apr 2026</div>
+        </div>
+    </div>
+</section>
+
+<div class="content">
+
+<!-- APEX -->
+<section id="apex">
+    <h2>Apex — The Command Layer</h2>
+    <p>You live at the top. The apex is the <strong>decision point</strong> where you pick a path before you touch a keyboard. Every interaction is filtered through three questions — that's it. The rest of this doc is the territory that each question opens into.</p>
+
+    <div class="grid">
+        <div class="card">
+            <span class="card-tag">Question 1</span>
+            <div class="card-title">Which Surface?</div>
+            <p>Chat, Cowork, Claude Code, or API. Get this wrong and you waste 10× the effort.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Question 2</span>
+            <div class="card-title">Which Model?</div>
+            <p>Opus for strategy and one-of-a-kind work. Sonnet for bulk execution. Haiku for speed and routing.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Question 3</span>
+            <div class="card-title">Which Pattern?</div>
+            <p>One-shot, agent loop, skill-driven, or scheduled. The shape of the work dictates the tool.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-title">Mental Model</div>
+        <p>Treat Claude as an <strong>operator you dispatch work to</strong> — not a chatbot you converse with. You define outcome, constraints, and format. It executes. You verify. That flip is the entire game.</p>
+    </div>
+</section>
+
+<!-- TRIANGLE -->
+<section id="triangle">
+    <h2>The Triangle Model</h2>
+    <p>Your mental map. Apex at the top = where you operate from. Two legs fan down into the full landscape (what exists) and mastery (how to wield it). Click any node to drill in.</p>
+
+    <div class="triangle-wrap">
+        <svg class="triangle-svg" viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg">
+            <!-- Triangle edges -->
+            <line class="triangle-edge" x1="360" y1="60" x2="100" y2="380"/>
+            <line class="triangle-edge" x1="360" y1="60" x2="620" y2="380"/>
+            <line class="triangle-edge" x1="100" y1="380" x2="620" y2="380"/>
+
+            <!-- Apex -->
+            <g class="node" onclick="scrollTo2('#apex')">
+                <rect class="node-bg apex" x="260" y="30" width="200" height="60" rx="8"/>
+                <text class="node-label" x="360" y="55">APEX</text>
+                <text class="node-sub" x="360" y="76">Command Layer</text>
+            </g>
+
+            <!-- Left leg — Landscape -->
+            <g class="node" onclick="scrollTo2('#surfaces')">
+                <rect class="node-bg" x="200" y="150" width="140" height="50" rx="6"/>
+                <text class="node-label" x="270" y="172">Surfaces</text>
+                <text class="node-sub" x="270" y="188">Where to Work</text>
+            </g>
+            <g class="node" onclick="scrollTo2('#models')">
+                <rect class="node-bg" x="130" y="230" width="140" height="50" rx="6"/>
+                <text class="node-label" x="200" y="252">Models</text>
+                <text class="node-sub" x="200" y="268">Opus / Sonnet / Haiku</text>
+            </g>
+            <g class="node" onclick="scrollTo2('#integrations')">
+                <rect class="node-bg" x="60" y="310" width="160" height="50" rx="6"/>
+                <text class="node-label" x="140" y="332">Integrations</text>
+                <text class="node-sub" x="140" y="348">MCP · Skills · Plugins</text>
+            </g>
+
+            <!-- Right leg — Mastery -->
+            <g class="node" onclick="scrollTo2('#prompting')">
+                <rect class="node-bg" x="380" y="150" width="140" height="50" rx="6"/>
+                <text class="node-label" x="450" y="172">Prompting</text>
+                <text class="node-sub" x="450" y="188">How to Ask</text>
+            </g>
+            <g class="node" onclick="scrollTo2('#workflow')">
+                <rect class="node-bg" x="450" y="230" width="140" height="50" rx="6"/>
+                <text class="node-label" x="520" y="252">Workflow</text>
+                <text class="node-sub" x="520" y="268">Research → Verify</text>
+            </g>
+            <g class="node" onclick="scrollTo2('#automation')">
+                <rect class="node-bg" x="500" y="310" width="160" height="50" rx="6"/>
+                <text class="node-label" x="580" y="332">Automation</text>
+                <text class="node-sub" x="580" y="348">Skills · Schedule · Agents</text>
+            </g>
+        </svg>
+
+        <div class="triangle-legend">
+            <span><span class="legend-dot" style="background: var(--gold)"></span>Apex = You</span>
+            <span><span class="legend-dot" style="background: var(--text-dim)"></span>Left Leg = Landscape</span>
+            <span><span class="legend-dot" style="background: var(--text-dim)"></span>Right Leg = Mastery</span>
+        </div>
+    </div>
+
+    <div class="callout success">
+        <div class="callout-title">The Analogy Holds</div>
+        <p>You never carry the full map in your head. You carry the <strong>apex</strong> (3 questions) and trust that the legs are there to drill into when needed. As depth increases, the base of the triangle widens — skills, plugins, MCPs, custom agents — but the apex stays a single point.</p>
+    </div>
+</section>
+
+<!-- LEFT LEG — LANDSCAPE -->
+<section id="surfaces">
+    <h2>Landscape · Surfaces</h2>
+    <p>Four primary surfaces. Pick by the shape of the work, not by habit.</p>
+
+    <div class="accordion open">
+        <div class="accordion-header">Cowork — Your Cockpit</div>
+        <div class="accordion-body">
+            <p><strong>What it is:</strong> Desktop app with native Mac control, file access, cross-app automation, skills, plugins, MCPs. It's what you're using right now.</p>
+            <p><strong>When to use:</strong> File operations on your Mac, anything Jarvis-adjacent, HTML/doc creation, desktop workflows, Notes/Finder/Mail manipulation, running skills and scheduled tasks.</p>
+            <p><strong>Killer feature:</strong> Skills — reusable instruction bundles (Jarvis Midnight theme, pptx, docx) that auto-trigger on keywords and produce on-brand output every time.</p>
+            <p><strong>Your default.</strong> 70% of your time lives here.</p>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">Claude Code — Your Forge</div>
+        <div class="accordion-body">
+            <p><strong>What it is:</strong> CLI tool for agentic coding inside your terminal. Sees your codebase, runs commands, edits files, commits to git.</p>
+            <p><strong>When to use:</strong> Building Jarvis itself. Repo work. Version-controlled infrastructure. Anything where the source of truth is a git repository.</p>
+            <p><strong>Killer feature:</strong> Autonomous multi-step coding — plan, edit, test, verify, commit in one loop. Hooks and subagents for custom workflows.</p>
+            <p><strong>Rule of thumb:</strong> If the work ends in a <code>git commit</code>, it belongs here.</p>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">Chat (claude.ai / Desktop) — Your Scratchpad</div>
+        <div class="accordion-body">
+            <p><strong>What it is:</strong> Pure conversation. Web app at claude.ai and the desktop app. No file tools, no computer control (unless inside Cowork mode).</p>
+            <p><strong>When to use:</strong> Thinking, strategy, drafting, research, tutoring, creative work. Whenever the deliverable is <em>an answer</em>, not <em>an artifact on your machine</em>.</p>
+            <p><strong>Killer feature:</strong> Projects — persistent context (custom instructions + files) across conversations. Artifacts — live HTML/React/markdown previews.</p>
+            <p><strong>Rule of thumb:</strong> If you could do it on a whiteboard, do it here first. Then move to Cowork/Code to execute.</p>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">API + Agent SDK — Your Autopilot</div>
+        <div class="accordion-body">
+            <p><strong>What it is:</strong> Programmatic access to Claude. Build custom agents, automations, batch jobs, integrations that run without you.</p>
+            <p><strong>When to use:</strong> When something needs to run on a trigger, a schedule, or across thousands of inputs. When you want Claude embedded in software you own.</p>
+            <p><strong>Killer feature:</strong> The Agent SDK — same harness that powers Claude Code, available as a library. Build your own Jarvis agents on top of it.</p>
+            <p><strong>Rule of thumb:</strong> If you'd ever run this workflow more than 10 times, graduate it to the API.</p>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <div class="accordion-header">Claude in Chrome + Mobile — Edge Surfaces</div>
+        <div class="accordion-body">
+            <p><strong>Chrome:</strong> Browser extension that lets Claude see the DOM, click, fill forms, scrape pages. Much faster than computer-use pixel clicking for web tasks.</p>
+            <p><strong>Mobile:</strong> Capture-and-queue. Voice notes, photos, quick questions. Not your execution surface — your inbox.</p>
+            <p><strong>Both:</strong> Use when the input is where the action is (browser or phone), but don't mistake them for your primary cockpit.</p>
+        </div>
+    </div>
+</section>
+
+<section id="models">
+    <h2>Landscape · Models</h2>
+    <p>Three models, three jobs. Pick by decision-stakes × volume.</p>
+    <table class="matrix">
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Role</th>
+                <th>Use For</th>
+                <th>Don't Use For</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Opus 4.7</strong></td>
+                <td>Flagship reasoning</td>
+                <td>Strategy, architecture, one-of-a-kind work, hard debugging, this document</td>
+                <td>Routine formatting, bulk classification, simple lookups</td>
+            </tr>
+            <tr>
+                <td><strong>Sonnet 4.6</strong></td>
+                <td>Balanced execution</td>
+                <td>Most daily work, code execution, document production, research synthesis</td>
+                <td>Trivial routing; novel architectural decisions</td>
+            </tr>
+            <tr>
+                <td><strong>Haiku 4.5</strong></td>
+                <td>Speed + volume</td>
+                <td>Agent routing, classification, cheap subagents, quick summaries</td>
+                <td>Anything requiring deep reasoning or creative work</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="callout">
+        <div class="callout-title">Cost-Leverage Rule</div>
+        <p>Use Opus to <em>design the system</em>, Sonnet to <em>run the system</em>, Haiku to <em>route inside the system</em>. In a Jarvis multi-agent setup, Opus is the architect, Sonnet is the worker pool, Haiku is the dispatcher.</p>
+    </div>
+</section>
+
+<section id="integrations">
+    <h2>Landscape · Integrations</h2>
+    <p>How Claude connects to your world. Learn these in order — each one multiplies the previous.</p>
+
+    <div class="grid">
+        <div class="card">
+            <span class="card-tag">Tier 1 · Foundation</span>
+            <div class="card-title">Skills</div>
+            <p>Folders of best-practice instructions that auto-trigger on keywords. You already have Jarvis Midnight, pptx, docx. Build your own for any recurring pattern.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Tier 2 · Connection</span>
+            <div class="card-title">MCPs</div>
+            <p>Model Context Protocol servers — typed connectors to Slack, Gmail, GitHub, Notion, your own APIs. Precise, fast, API-backed. Installable or custom-built.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Tier 3 · Packaging</span>
+            <div class="card-title">Plugins</div>
+            <p>Bundles of skills + MCPs + settings, shipped as one unit. Installable in Cowork and Claude Code. How you ship Jarvis-the-system to your future self (or to a team).</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Tier 4 · Persistence</span>
+            <div class="card-title">Projects &amp; Memory</div>
+            <p>Projects = persistent instructions + files scoped to a topic. Memory = long-term notes that survive across sessions. Your Jarvis <em>remembers</em>.</p>
+        </div>
+    </div>
+</section>
+
+<section id="features">
+    <h2>Landscape · Features</h2>
+    <p>Capabilities that cross surfaces. Know they exist; reach for them when the job calls.</p>
+    <table class="matrix">
+        <thead>
+            <tr><th>Feature</th><th>What It Does</th><th>Where</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Artifacts</strong></td><td>Live previews of HTML, React, markdown, SVG, Mermaid, PDF</td><td>Chat, Cowork</td></tr>
+            <tr><td><strong>Computer Use</strong></td><td>Screenshot + mouse/keyboard control of your Mac</td><td>Cowork</td></tr>
+            <tr><td><strong>Extended Thinking</strong></td><td>Claude reasons longer before answering hard problems</td><td>All</td></tr>
+            <tr><td><strong>Files</strong></td><td>Upload docs, PDFs, images, spreadsheets for analysis</td><td>Chat, Cowork, API</td></tr>
+            <tr><td><strong>Scheduled Tasks</strong></td><td>Run a prompt on a cron (daily, hourly, weekly)</td><td>Cowork</td></tr>
+            <tr><td><strong>Subagents</strong></td><td>Spawn isolated helpers for research or verification</td><td>Cowork, Code, API</td></tr>
+            <tr><td><strong>TodoList</strong></td><td>Structured progress tracking rendered as a widget</td><td>Cowork, Code</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- RIGHT LEG — MASTERY -->
+<section id="prompting">
+    <h2>Mastery · Prompting</h2>
+    <p>The output quality is a function of the input structure. This is the reusable stack.</p>
+
+    <h3>The 4-Layer Prompt Stack</h3>
+    <pre><code><span class="code-key">ROLE</span>     <span class="code-comment">// You are [X]. Strategic framing.</span>
+<span class="code-key">CONTEXT</span>  <span class="code-comment">// What exists, what you tried, constraints.</span>
+<span class="code-key">TASK</span>     <span class="code-comment">// The specific outcome. Be literal.</span>
+<span class="code-key">OUTPUT</span>   <span class="code-comment">// Format, length, structure, constraints on style.</span></code></pre>
+
+    <h3>High-Leverage Techniques</h3>
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">Examples &gt; Description</div>
+            <p>One positive example + one negative example beats a paragraph of description. <em>"Like this, not like that."</em></p>
+        </div>
+        <div class="card">
+            <div class="card-title">XML Tags for Structure</div>
+            <p>Wrap sections in <code>&lt;context&gt;</code>, <code>&lt;task&gt;</code>, <code>&lt;examples&gt;</code>. Claude parses them cleanly and never confuses them with content.</p>
+        </div>
+        <div class="card">
+            <div class="card-title">Constraints &gt; Preferences</div>
+            <p>"Must be under 300 words" beats "keep it short." "Only use Tailwind utility classes" beats "make it clean."</p>
+        </div>
+        <div class="card">
+            <div class="card-title">Force the Outcome</div>
+            <p>End with the format: <em>"Output as a numbered list of 5 items, each under 20 words."</em> Ambiguity kills quality.</p>
+        </div>
+    </div>
+
+    <h3>When Stuck</h3>
+    <div class="callout">
+        <div class="callout-title">The 3 Debug Moves</div>
+        <p><strong>1. Say what bad looks like.</strong> Give Claude an example of the wrong answer it just gave and name what's wrong.<br/>
+        <strong>2. Add a constraint, not another instruction.</strong> "Under 100 words" &gt; "be concise."<br/>
+        <strong>3. Make it think first.</strong> "Before answering, list your assumptions" forces reasoning to surface.</p>
+    </div>
+</section>
+
+<section id="workflow">
+    <h2>Mastery · Workflow Loop</h2>
+    <p>The 4-phase loop that applies to virtually every non-trivial task.</p>
+
+    <div class="ladder">
+        <div class="rung">
+            <div class="rung-num">Phase 01</div>
+            <div class="rung-title">Research</div>
+            <p>Gather: read files, search the web, check the codebase, check state. Never build on an assumed premise.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Phase 02</div>
+            <div class="rung-title">Plan</div>
+            <p>Write a TodoList or outline before acting. The act of writing the plan surfaces edge cases.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Phase 03</div>
+            <div class="rung-title">Execute</div>
+            <p>Do the work. One todo in-progress at a time. Mark complete only when actually done.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Phase 04</div>
+            <div class="rung-title">Verify</div>
+            <p>Spot-check the output. Run tests. Spawn a subagent for independent review on high-stakes work. Ship only after verification.</p>
+        </div>
+    </div>
+
+    <div class="callout success">
+        <div class="callout-title">The Verify Move</div>
+        <p>For anything above a one-shot: spawn a second Claude to review the output without the original context. An independent pair of eyes catches what the author missed — even when the author is an LLM.</p>
+    </div>
+</section>
+
+<section id="automation">
+    <h2>Mastery · Automation</h2>
+    <p>The compounding layer. Every workflow you run more than 3× should climb the ladder.</p>
+
+    <div class="ladder">
+        <div class="rung">
+            <div class="rung-num">Level 01</div>
+            <div class="rung-title">One-Shot</div>
+            <p>Ad-hoc prompt. Useful. Zero leverage. Dies when the conversation ends.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Level 02</div>
+            <div class="rung-title">Saved Prompt / Project</div>
+            <p>Pinned in a Claude Project with custom instructions and reference files. Reusable, but manual.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Level 03</div>
+            <div class="rung-title">Skill</div>
+            <p>Codified into a SKILL.md with triggers, references, and best practices. Auto-fires on keywords. Consistent output every time.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Level 04</div>
+            <div class="rung-title">Scheduled Task</div>
+            <p>Runs on a cron without you. Morning briefs, daily summaries, weekly audits.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Level 05</div>
+            <div class="rung-title">Plugin</div>
+            <p>Skills + MCPs + settings bundled as an installable unit. Shippable to your future self and to others.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Level 06</div>
+            <div class="rung-title">Multi-Agent System</div>
+            <p>Orchestrated agents on the Agent SDK. Opus architect, Sonnet workers, Haiku dispatchers. This is Jarvis at scale.</p>
+        </div>
+    </div>
+</section>
+
+<section id="systems">
+    <h2>Mastery · Systems Thinking</h2>
+    <p>The meta-rule: <strong>work on the system, not in the system.</strong></p>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">Build Infra When…</div>
+            <ul>
+                <li>You've done the task 3+ times</li>
+                <li>The output shape is stable</li>
+                <li>Someone else could benefit</li>
+                <li>The task gates other work</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-title">One-Shot When…</div>
+            <ul>
+                <li>It's a one-of-a-kind</li>
+                <li>The shape is unknown</li>
+                <li>You're exploring</li>
+                <li>The constraint is time, not repetition</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-title">The Leverage Test</div>
+            <p>Before building infra, ask: <em>will this save me 10× the time I'm about to invest?</em> If yes, build. If no, one-shot and move on.</p>
+        </div>
+        <div class="card">
+            <div class="card-title">Cost-to-Value</div>
+            <p>Opus on strategy (rare, high-stakes). Sonnet on execution (daily). Haiku on routing (constant, cheap). Never use Opus where Haiku would work.</p>
+        </div>
+    </div>
+</section>
+
+<!-- EXECUTION -->
+<section id="decision">
+    <h2>Surface Decision Tree</h2>
+    <p>Before you open anything — run this.</p>
+
+    <div class="decision-flow">
+        <div class="decision-cell">
+            <div class="decision-cue">IF</div>
+            <div class="decision-arrow">Thinking / strategy / writing — no tools needed</div>
+            <div class="decision-target">Chat</div>
+            <p>Web or desktop. Fastest iteration, zero ceremony.</p>
+        </div>
+        <div class="decision-cell">
+            <div class="decision-cue">IF</div>
+            <div class="decision-arrow">Files on your Mac, native apps, HTML / doc creation, Jarvis work</div>
+            <div class="decision-target">Cowork</div>
+            <p>Your home base. Where skills and plugins live.</p>
+        </div>
+        <div class="decision-cell">
+            <div class="decision-cue">IF</div>
+            <div class="decision-arrow">Codebase, git-tracked, terminal-native work</div>
+            <div class="decision-target">Code</div>
+            <p>Claude Code CLI. Where Jarvis gets built.</p>
+        </div>
+        <div class="decision-cell">
+            <div class="decision-cue">IF</div>
+            <div class="decision-arrow">It needs to run without you — on a trigger or schedule</div>
+            <div class="decision-target">API</div>
+            <p>Agent SDK. Embedded automation.</p>
+        </div>
+    </div>
+</section>
+
+<section id="stack">
+    <h2>The Prompt Stack</h2>
+    <p>Pin this. Paste it as a template. Fill the four slots. Ship.</p>
+    <pre><code><span class="code-key">ROLE:</span> You are my [strategic operator / systems architect / research analyst / code reviewer].
+      Your job is to [primary outcome].
+
+<span class="code-key">CONTEXT:</span>
+- What exists: [current state, files, stack]
+- What I've tried: [prior attempts, what failed]
+- Constraints: [budget, time, tech, style]
+
+<span class="code-key">TASK:</span>
+[Specific, literal outcome. One sentence.]
+
+<span class="code-key">OUTPUT:</span>
+- Format: [markdown / HTML / code / table / list]
+- Length: [word or item count]
+- Tone: [operator / academic / casual]
+- Must include: [required elements]
+- Must NOT: [anti-patterns]</code></pre>
+    <div class="callout">
+        <div class="callout-title">Why it works</div>
+        <p>ROLE sets the lens. CONTEXT prevents invented premises. TASK removes ambiguity. OUTPUT locks the shape. Skip any one slot and quality degrades predictably.</p>
+    </div>
+</section>
+
+<section id="daily">
+    <h2>Daily Operator Checklist</h2>
+    <p>Click to check off. Use this before every non-trivial Claude session.</p>
+
+    <div class="checklist">
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Picked the right surface.</strong> Chat, Cowork, Code, or API — matched to the work.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Picked the right model.</strong> Opus for strategy, Sonnet for execution, Haiku for volume.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Stated the outcome, not the task.</strong> "I want X" beats "do Y."</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Gave context.</strong> What exists, what I tried, what's off-limits.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Specified output format.</strong> Shape, length, structure, tone.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Let Claude plan before executing.</strong> Asked for a TodoList or outline on anything multi-step.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Verified before shipping.</strong> Spot-check, test, or independent subagent.</div>
+        </div>
+        <div class="checklist-item" onclick="this.classList.toggle('checked')">
+            <div class="checkbox"></div>
+            <div class="checklist-text"><strong>Asked: does this belong in a skill?</strong> If I'll run it again — yes.</div>
+        </div>
+    </div>
+</section>
+
+<section id="ladder">
+    <h2>6-Week Mastery Ladder</h2>
+    <p>Your learning path. One rung per week. Don't skip — each one compounds on the last.</p>
+
+    <div class="ladder">
+        <div class="rung">
+            <div class="rung-num">Week 01</div>
+            <div class="rung-title">Master the Prompt Stack</div>
+            <p>Every prompt uses ROLE / CONTEXT / TASK / OUTPUT. No exceptions. Feel the quality jump.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Week 02</div>
+            <div class="rung-title">Live in Cowork</div>
+            <p>Move recurring desktop/file work from Chat to Cowork. Let skills auto-fire. Pin this doc.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Week 03</div>
+            <div class="rung-title">Build Your First Skill</div>
+            <p>Pick a recurring output you produce. Codify it using the skill-creator skill. Watch it auto-trigger.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Week 04</div>
+            <div class="rung-title">Ship a Scheduled Task</div>
+            <p>Morning brief, weekly audit, daily Jarvis status. Something that runs without you even opening the app.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Week 05</div>
+            <div class="rung-title">Package a Plugin</div>
+            <p>Bundle your skills + MCPs + settings into a Jarvis plugin. Installable. Versioned. Shippable.</p>
+        </div>
+        <div class="rung">
+            <div class="rung-num">Week 06+</div>
+            <div class="rung-title">Architect a Multi-Agent System</div>
+            <p>Agent SDK. Opus orchestrator, Sonnet workers, Haiku router. Jarvis stops being a tool and becomes infrastructure.</p>
+        </div>
+    </div>
+</section>
+
+<section id="nextlevel">
+    <h2>Next-Level Moves</h2>
+    <p>Once the ladder is climbed — the leverage plays.</p>
+
+    <div class="grid">
+        <div class="card">
+            <span class="card-tag">Compound</span>
+            <div class="card-title">Skill-of-Skills</div>
+            <p>Skills that generate skills. A meta-skill that codifies your workflow → Jarvis learns from Jarvis.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Monetize</span>
+            <div class="card-title">Ship Plugins Publicly</div>
+            <p>Your Jarvis patterns are valuable. Publish one opinionated plugin to the marketplace — that's a product.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Scale</span>
+            <div class="card-title">Agent Fleet via API</div>
+            <p>Running cost-optimized agents 24/7 via the Agent SDK. One Opus architect dispatching dozens of Haiku workers.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Defensibility</span>
+            <div class="card-title">Your Memory Layer</div>
+            <p>Long-term memory across all your agents. Projects + a custom MCP backed by your own vector store. Claude <em>knows you</em>.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Speed</span>
+            <div class="card-title">Voice-First Capture</div>
+            <p>Mobile voice memo → transcription → scheduled Cowork task → deliverable on your desk. Thought-to-artifact in under 10 minutes.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Leverage</span>
+            <div class="card-title">Claude Code Hooks</div>
+            <p>Trigger custom behavior on every prompt, tool call, or commit. Wire Claude Code into your personal infrastructure directly.</p>
+        </div>
+    </div>
+
+    <div class="callout success">
+        <div class="callout-title">The One-Line Summary</div>
+        <p>You're not optimizing Claude. You're building <strong>Jarvis on Claude</strong>. Every skill, plugin, and agent you ship widens the base of the triangle — and keeps the apex simple enough that you can operate it on your worst day.</p>
+    </div>
+</section>
+
+</div><!-- /content -->
+
+<footer>
+    <p>JARVIS AI Infrastructure — Built by Philip Belue</p>
+    <p>Midnight Design System v2 — North Star v1.0 — April 2026</p>
+</footer>
+
+</main>
+
+<script>
+// Smooth scroll helper for SVG node clicks
+function scrollTo2(selector) {
+    const el = document.querySelector(selector);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Accordion toggle
+document.querySelectorAll('.accordion-header').forEach(h => {
+    h.addEventListener('click', () => {
+        h.parentElement.classList.toggle('open');
+    });
+});
+
+// Sidebar active-state tracking on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            });
+        }
+    });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Smooth scroll for nav links
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+</script>
+
+</body>
+</html>
