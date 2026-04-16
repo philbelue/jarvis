@@ -12,24 +12,16 @@
   --bg-card-hover: #11131a;
   --bg-elevated: #0f1117;
   --gold: #ffb86a;
-  --gold-soft: #ffc978;
-  --gold-dim: rgba(255,184,106,0.10);
-  --gold-glow: rgba(255,184,106,0.12);
+  --gold-dim: rgba(255,184,106,0.08);
+  --gold-glow: rgba(255,184,106,0.10);
   --core-white: #fff4db;
   --core-warm: #ffd7a3;
-  --green: #5ce0a0;
-  --green-dim: rgba(92,224,160,0.08);
-  --blue: #60a8f0;
-  --blue-dim: rgba(96,168,240,0.08);
-  --purple: #b06cf0;
-  --purple-dim: rgba(176,108,240,0.08);
   --text: #b8bfc8;
-  --text-bright: #dce0e6;
   --text-dim: #5a6370;
   --text-faint: #3a4250;
   --border: rgba(255,255,255,0.05);
-  --border-gold: rgba(255,184,106,0.12);
-  --radius: 8px;
+  --border-gold: rgba(255,184,106,0.10);
+  --radius: 6px;
   --font-display: 'Orbitron', monospace;
   --font-body: 'Rajdhani', sans-serif;
   --font-code: 'JetBrains Mono', monospace;
@@ -40,436 +32,241 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   min-height: 100vh;
-  overflow-x: hidden;
 }
 body::before {
   content: '';
   position: fixed;
   top: -200px; left: 50%;
   transform: translateX(-50%);
-  width: 1200px; height: 700px;
-  background: radial-gradient(ellipse 900px 500px at center, rgba(255,184,106,0.06) 0%, transparent 70%);
+  width: 1000px; height: 600px;
+  background: radial-gradient(ellipse at center, rgba(255,184,106,0.05) 0%, transparent 70%);
   pointer-events: none;
-  z-index: 0;
 }
-.wrap { max-width: 1040px; margin: 0 auto; padding: 60px 32px 80px; position: relative; z-index: 1; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 56px 28px 80px; }
 
-.header { margin-bottom: 56px; }
-.badge {
-  display: inline-block;
-  background: var(--gold-dim);
-  border: 1px solid rgba(255,184,106,0.3);
-  color: var(--gold-soft);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 20px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
+.header { margin-bottom: 44px; }
 .header h1 {
   font-family: var(--font-display);
-  font-size: 42px;
+  font-size: 28px;
   font-weight: 900;
   color: var(--core-white);
+  letter-spacing: 4px;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  line-height: 1.1;
-  text-shadow: 0 0 30px rgba(255,184,106,0.12);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
-.header p { color: var(--text-dim); font-size: 14px; letter-spacing: 1px; }
-.header p span { color: var(--gold); font-family: var(--font-code); font-size: 13px; }
-
-.repo-nav {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 48px;
-}
-.repo-pill {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-size: 11px;
+.header p {
   font-family: var(--font-code);
-  padding: 6px 14px;
-  border-radius: 20px;
-  text-decoration: none;
+  font-size: 12px;
+  color: var(--text-faint);
   letter-spacing: 1px;
-  transition: all 0.2s ease;
 }
-.repo-pill:hover { color: var(--core-warm); border-color: var(--border-gold); background: var(--gold-dim); }
+.header p a { color: var(--text-dim); text-decoration: none; }
+.header p a:hover { color: var(--gold); }
 
-.section { margin-bottom: 48px; }
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-gold);
+.section { margin-bottom: 40px; }
+.section-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
-.section-icon { font-size: 18px; }
-.section-title {
+
+.link-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+}
+.link-row:hover {
+  background: var(--bg-card);
+  border-color: var(--border-gold);
+}
+.link-title {
   font-family: var(--font-display);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--core-warm);
+  letter-spacing: 1px;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  flex-shrink: 0;
 }
-.section-count {
+.link-row:hover .link-title { color: var(--core-white); }
+.link-sep { color: var(--text-faint); font-size: 11px; flex-shrink: 0; }
+.link-url {
   font-family: var(--font-code);
-  font-size: 10px;
-  color: var(--text-faint);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.section-repo {
+.link-row:hover .link-url { color: var(--gold); }
+.link-date {
   margin-left: auto;
   font-family: var(--font-code);
   font-size: 10px;
   color: var(--text-faint);
-  text-decoration: none;
+  flex-shrink: 0;
 }
-.section-repo:hover { color: var(--gold); }
-
-.card {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  margin-bottom: 8px;
-  text-decoration: none;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--gold-dim);
-  transition: background 0.2s ease;
-}
-.card:hover { background: var(--bg-card-hover); border-color: var(--border-gold); box-shadow: 0 0 20px var(--gold-glow); }
-.card:hover::before { background: var(--gold); }
-.card-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-.card-body { flex: 1; min-width: 0; }
-.card-title {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--core-warm);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 4px;
-}
-.card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 6px; }
-.card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
-.tag {
-  font-size: 10px;
-  color: var(--text-faint);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  padding: 2px 7px;
-  border-radius: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-family: var(--font-code);
-}
-.tag.gold { color: var(--gold); border-color: rgba(255,184,106,0.2); background: var(--gold-dim); }
-.tag.green { color: var(--green); border-color: rgba(92,224,160,0.2); background: var(--green-dim); }
-.tag.blue { color: var(--blue); border-color: rgba(96,168,240,0.2); background: var(--blue-dim); }
-.tag.purple { color: var(--purple); border-color: rgba(176,108,240,0.2); background: var(--purple-dim); }
-.card-arrow { color: var(--text-faint); font-size: 14px; flex-shrink: 0; margin-top: 2px; transition: all 0.2s ease; }
-.card:hover .card-arrow { color: var(--gold); transform: translateX(3px); }
 
 footer {
   margin-top: 60px;
-  padding-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid var(--border);
-  text-align: center;
+  font-family: var(--font-code);
+  font-size: 10px;
   color: var(--text-faint);
-  font-size: 11px;
   letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-footer p { margin-bottom: 4px; }
+footer a { color: var(--text-faint); text-decoration: none; }
+footer a:hover { color: var(--gold); }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <div class="header">
-    <div class="badge">Jarvis AI Infrastructure</div>
-    <h1>Document<br/>Library</h1>
-    <p>All Jarvis artifacts, strategies, and architecture docs — <span>philbelue.github.io</span></p>
+    <h1>Jarvis</h1>
+    <p>Document library — <a href="https://github.com/philbelue/jarvis" target="_blank">github.com/philbelue/jarvis</a></p>
   </div>
 
-  <div class="repo-nav">
-    <a class="repo-pill" href="https://github.com/philbelue/jarvis" target="_blank">📦 jarvis</a>
-    <a class="repo-pill" href="https://github.com/philbelue/ixon-internal" target="_blank">🏢 ixon-internal</a>
-    <a class="repo-pill" href="https://github.com/philbelue/ixon-customer" target="_blank">🤝 ixon-customer</a>
-    <a class="repo-pill" href="https://github.com/philbelue/ixon-accounts" target="_blank">📋 ixon-accounts</a>
-    <a class="repo-pill" href="https://github.com/philbelue/cortex" target="_blank">⚡ cortex</a>
-    <a class="repo-pill" href="https://github.com/philbelue/misc" target="_blank">🗂️ misc</a>
-    <a class="repo-pill" href="https://github.com/philbelue/philbelue" target="_blank">🌐 philbelue</a>
-  </div>
-
-  <!-- STRATEGY & OPERATIONS -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-icon">⭐</div>
-      <div class="section-title">Strategy &amp; Operations</div>
-      <div class="section-count">2 docs</div>
-      <a class="section-repo" href="https://github.com/philbelue/jarvis" target="_blank">jarvis repo →</a>
-    </div>
+    <div class="section-label">Strategy</div>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/north-star-operating-claude-2026-04-16.html" target="_blank">
-      <div class="card-icon">⭐</div>
-      <div class="card-body">
-        <div class="card-title">North Star — Operating Claude at Leverage</div>
-        <div class="card-desc">Operator field manual. Triangle model: Apex, Landscape, Mastery. Surfaces, models, prompting, automation ladder, daily checklist. The definitive Jarvis operating guide.</div>
-        <div class="card-meta">
-          <span class="tag gold">v1.0 — Latest</span>
-          <span class="tag">Apr 16 2026</span>
-          <span class="tag">Opus 4.7</span>
-        </div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/north-star-operating-claude-2026-04-16.html" target="_blank">
+      <span class="link-title">North Star</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">north-star-operating-claude-2026-04-16.html</span>
+      <span class="link-date">Apr 16 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/field-manual-tool-routing-2026-04-16.html" target="_blank">
-      <div class="card-icon">🗂️</div>
-      <div class="card-body">
-        <div class="card-title">Field Manual — Tool Routing &amp; Decision Tree</div>
-        <div class="card-desc">Which tool for which job. 3-layer model (Cowork/Claude Code/Jarvis), decision flowchart, channel routing fix table, if-this-then-that examples. The $286 lesson codified.</div>
-        <div class="card-meta">
-          <span class="tag gold">v1.0</span>
-          <span class="tag">Apr 16 2026</span>
-          <span class="tag">Opus 4.7</span>
-          <span class="tag">Cost Control</span>
-        </div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/field-manual-tool-routing-2026-04-16.html" target="_blank">
+      <span class="link-title">Field Manual</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">field-manual-tool-routing-2026-04-16.html</span>
+      <span class="link-date">Apr 16 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-hermes-strategic-blueprint-2026-04-10.html" target="_blank">
-      <div class="card-icon">🗺️</div>
-      <div class="card-body">
-        <div class="card-title">Jarvis–Hermes Strategic Blueprint</div>
-        <div class="card-desc">Two-agent system architecture. Jarvis as nervous system, Hermes as executor. Phase 1–3 roadmap, deployment strategy, integration spec.</div>
-        <div class="card-meta">
-          <span class="tag gold">v1.0</span>
-          <span class="tag">Apr 10 2026</span>
-        </div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-hermes-strategic-blueprint-2026-04-10.html" target="_blank">
+      <span class="link-title">Hermes Strategic Blueprint</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-hermes-strategic-blueprint-2026-04-10.html</span>
+      <span class="link-date">Apr 10 2026</span>
     </a>
   </div>
 
-  <!-- ARCHITECTURE & ENGINEERING -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-icon">⚙️</div>
-      <div class="section-title">Architecture &amp; Engineering</div>
-      <div class="section-count">3 docs</div>
-      <a class="section-repo" href="https://github.com/philbelue/jarvis" target="_blank">jarvis repo →</a>
-    </div>
+    <div class="section-label">Architecture &amp; Engineering</div>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-hermes-engineering-addendum-2026-04-10.html" target="_blank">
-      <div class="card-icon">⚙️</div>
-      <div class="card-body">
-        <div class="card-title">Hermes Engineering Addendum</div>
-        <div class="card-desc">Technical spec: Python asyncio daemon, SQLite WAL queue, boot state machine (BOOTING→OPERATIONAL→DEGRADED→EMERGENCY), launchd integration rules.</div>
-        <div class="card-meta"><span class="tag">Apr 10 2026</span><span class="tag">Engineering</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-hermes-engineering-addendum-2026-04-10.html" target="_blank">
+      <span class="link-title">Hermes Engineering Addendum</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-hermes-engineering-addendum-2026-04-10.html</span>
+      <span class="link-date">Apr 10 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-memory-architecture-2026-04-10.html" target="_blank">
-      <div class="card-icon">🧠</div>
-      <div class="card-body">
-        <div class="card-title">Memory Architecture</div>
-        <div class="card-desc">4-layer memory system: MEMORY.md → AGENTS.md → Obsidian Vault → Session search. Cross-agent shared workspace design.</div>
-        <div class="card-meta"><span class="tag">Apr 10 2026</span><span class="tag">Memory</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-memory-architecture-2026-04-10.html" target="_blank">
+      <span class="link-title">Memory Architecture</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-memory-architecture-2026-04-10.html</span>
+      <span class="link-date">Apr 10 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-weekend-sprint-v2.1-2026-04-11.html" target="_blank">
-      <div class="card-icon">🚀</div>
-      <div class="card-body">
-        <div class="card-title">Weekend Sprint — Migration Plan v2.1</div>
-        <div class="card-desc">Mac Studio migration: Docker → native macOS. launchd services, n8n setup, Obsidian vault, Phase 0 cold reboot. Full execution log.</div>
-        <div class="card-meta"><span class="tag gold">v2.1</span><span class="tag">Apr 11 2026</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-weekend-sprint-v2.1-2026-04-11.html" target="_blank">
+      <span class="link-title">Weekend Sprint v2.1</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-weekend-sprint-v2.1-2026-04-11.html</span>
+      <span class="link-date">Apr 11 2026</span>
+    </a>
+
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-weekend-sprint-2026-04-10.html" target="_blank">
+      <span class="link-title">Weekend Sprint v1</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-weekend-sprint-2026-04-10.html</span>
+      <span class="link-date">Apr 10 2026</span>
     </a>
   </div>
 
-  <!-- INFRASTRUCTURE AUDITS -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-icon">🔍</div>
-      <div class="section-title">Infrastructure Audits</div>
-      <div class="section-count">2 versions shown</div>
-      <a class="section-repo" href="https://github.com/philbelue/jarvis" target="_blank">jarvis repo →</a>
-    </div>
+    <div class="section-label">Infrastructure Audits</div>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.9-2026-04-11.html" target="_blank">
-      <div class="card-icon">🔍</div>
-      <div class="card-body">
-        <div class="card-title">Infrastructure Audit v1.9 — Latest</div>
-        <div class="card-desc">Current Jarvis stack state. Service health, security posture, open loops, risk matrix. Always read this version first.</div>
-        <div class="card-meta"><span class="tag gold">v1.9 — Latest</span><span class="tag">Apr 11 2026</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.9-2026-04-11.html" target="_blank">
+      <span class="link-title">Audit v1.9</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.9-2026-04-11.html</span>
+      <span class="link-date">Apr 11 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.7-2026-04-09.html" target="_blank">
-      <div class="card-icon">🔍</div>
-      <div class="card-body">
-        <div class="card-title">Infrastructure Audit v1.7</div>
-        <div class="card-desc">Post-migration audit. First clean audit on Mac Studio native stack. Hermes correctly marked Phase 2.</div>
-        <div class="card-meta"><span class="tag">v1.7</span><span class="tag">Apr 9 2026</span></div>
-      </div>
-      <div class="card-arrow">→</div>
-    </a>
-  </div>
-
-  <!-- LIVE TOOLS -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon">⚡</div>
-      <div class="section-title">Live Tools &amp; Apps</div>
-      <div class="section-count">2 apps</div>
-    </div>
-
-    <a class="card" href="https://philbelue.github.io/cortex/" target="_blank">
-      <div class="card-icon">⚡</div>
-      <div class="card-body">
-        <div class="card-title">Cortex v2.0 — 6-Gauge Cockpit</div>
-        <div class="card-desc">Live system status PWA. 6 gauges: Services, Workflows, Context, Cost, Security, Events. Midnight design system. Built by Opus 4.7.</div>
-        <div class="card-meta"><span class="tag green">Live App</span><span class="tag gold">v2.0</span><span class="tag">Apr 13 2026</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.7-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit v1.7</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.7-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
 
-    <a class="card" href="https://philbelue.github.io/philbelue/ixon-trade-show-command-center.html" target="_blank">
-      <div class="card-icon">🏭</div>
-      <div class="card-body">
-        <div class="card-title">MODEX Trade Show Command Center</div>
-        <div class="card-desc">Mobile-first booth visit tracker for MODEX 2026. Account list, visit/skip/priority marking, business card capture, localStorage persistence.</div>
-        <div class="card-meta"><span class="tag green">Live App</span><span class="tag">Apr 15 2026</span><span class="tag">MODEX 2026</span></div>
-      </div>
-      <div class="card-arrow">→</div>
-    </a>
-  </div>
-
-  <!-- IXON INTERNAL -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon">🏢</div>
-      <div class="section-title">IXON — Internal</div>
-      <div class="section-count">4 docs</div>
-      <a class="section-repo" href="https://github.com/philbelue/ixon-internal" target="_blank">ixon-internal repo →</a>
-    </div>
-
-    <a class="card" href="https://github.com/philbelue/ixon-internal/blob/main/iautomation-discovery-prep-2026-04-16.html" target="_blank">
-      <div class="card-icon">🔎</div>
-      <div class="card-body">
-        <div class="card-title">iAutomation Discovery Prep</div>
-        <div class="card-desc">Discovery call preparation document for iAutomation. Account context, qualification framework, demo strategy.</div>
-        <div class="card-meta"><span class="tag">Apr 16 2026</span><span class="tag">Discovery</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.6-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit v1.6</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.6-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
 
-    <a class="card" href="https://github.com/philbelue/ixon-internal/blob/main/modex-2026-command-center-exec-brief.html" target="_blank">
-      <div class="card-icon">📊</div>
-      <div class="card-body">
-        <div class="card-title">MODEX 2026 — Executive Brief</div>
-        <div class="card-desc">Command center executive brief for MODEX 2026. Trade show strategy, target accounts, booth ops.</div>
-        <div class="card-meta"><span class="tag">Apr 2026</span><span class="tag">MODEX</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.5-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit v1.5</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.5-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
 
-    <a class="card" href="https://github.com/philbelue/ixon-internal/blob/main/ixon-connection-layer-onepager.html" target="_blank">
-      <div class="card-icon">🔗</div>
-      <div class="card-body">
-        <div class="card-title">IXON Connection Layer One-Pager</div>
-        <div class="card-desc">Internal positioning doc for the IXON connection layer. IXrouter3 + Cloud platform value framing.</div>
-        <div class="card-meta"><span class="tag">Internal</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.4-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit v1.4</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.4-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
 
-    <a class="card" href="https://github.com/philbelue/ixon-internal/blob/main/elite-workstation-dossier.html" target="_blank">
-      <div class="card-icon">💻</div>
-      <div class="card-body">
-        <div class="card-title">Elite Workstation Dossier</div>
-        <div class="card-desc">Mac Studio M4 Max workstation spec and configuration dossier.</div>
-        <div class="card-meta"><span class="tag">Internal</span></div>
-      </div>
-      <div class="card-arrow">→</div>
-    </a>
-  </div>
-
-  <!-- IXON CUSTOMER -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon">🤝</div>
-      <div class="section-title">IXON — Customer Docs</div>
-      <div class="section-count">4 accounts</div>
-      <a class="section-repo" href="https://github.com/philbelue/ixon-customer" target="_blank">ixon-customer repo →</a>
-    </div>
-
-    <a class="card" href="https://github.com/philbelue/ixon-customer/blob/main/spartan-ixon-future-state.html" target="_blank">
-      <div class="card-icon">🏗️</div>
-      <div class="card-body">
-        <div class="card-title">Spartan — IXON Future State</div>
-        <div class="card-desc">Future state vision doc for Spartan. IXrouter3 + SaaS platform integration roadmap.</div>
-        <div class="card-meta"><span class="tag blue">Spartan</span><span class="tag">Customer</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-v1.3-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit v1.3</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-v1.3-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
 
-    <a class="card" href="https://github.com/philbelue/ixon-customer/blob/main/spartan-remote-access-plus.html" target="_blank">
-      <div class="card-icon">🔌</div>
-      <div class="card-body">
-        <div class="card-title">Spartan — Remote Access Plus</div>
-        <div class="card-desc">Remote access expansion proposal for Spartan LMP. Professional → Enterprise tier.</div>
-        <div class="card-meta"><span class="tag blue">Spartan</span><span class="tag">Customer</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-2026-04-11.html" target="_blank">
+      <span class="link-title">Audit Apr 11</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-2026-04-11.html</span>
+      <span class="link-date">Apr 11 2026</span>
     </a>
 
-    <a class="card" href="https://github.com/philbelue/ixon-customer/blob/main/promach-ixon-v2.html" target="_blank">
-      <div class="card-icon">⚙️</div>
-      <div class="card-body">
-        <div class="card-title">ProMach — IXON Proposal v2</div>
-        <div class="card-desc">Enterprise proposal for ProMach. IXON platform fit, ROI model, deployment plan.</div>
-        <div class="card-meta"><span class="tag purple">ProMach</span><span class="tag">Customer</span></div>
-      </div>
-      <div class="card-arrow">→</div>
+    <a class="link-row" href="https://philbelue.github.io/jarvis/jarvis-infrastructure-audit-2026-04-09.html" target="_blank">
+      <span class="link-title">Audit Apr 9</span>
+      <span class="link-sep">/</span>
+      <span class="link-url">jarvis-infrastructure-audit-2026-04-09.html</span>
+      <span class="link-date">Apr 9 2026</span>
     </a>
   </div>
 
 </div>
 
 <footer>
-  <p>Jarvis AI Infrastructure — Philip Belue — Charlotte, NC</p>
-  <p style="margin-top:6px;">Maintained by Jarvis · Last updated Apr 16 2026 · 3 strategy docs · <a href="https://github.com/philbelue" style="color:var(--text-faint);text-decoration:none;">github.com/philbelue</a></p>
+  <span>philbelue.github.io/jarvis</span>
+  <span>Updated Apr 16 2026</span>
 </footer>
+
+</div>
 </body>
 </html>
