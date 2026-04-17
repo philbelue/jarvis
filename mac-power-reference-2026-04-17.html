@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mac Power Reference — Jarvis Stack</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --content-bg: #ffffff;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-light: rgba(0, 113, 227, 0.08);
+    --border: #d2d2d7;
+    --border-light: #e8e8ed;
+    --code-bg: #fafafa;
+    --hover-bg: rgba(0, 0, 0, 0.04);
+    --shadow: 0 4px 16px rgba(0,0,0,0.05);
+    --shadow-hover: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 15px;
+  }
+
+  /* Top bar */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245, 245, 247, 0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(210, 210, 215, 0.5);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+  }
+  .topbar h1 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .topbar .meta {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .topbar .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 10px;
+    margin-right: 12px;
+    border-radius: 6px;
+  }
+  .topbar .menu-toggle:hover { background: var(--hover-bg); }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 40px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 16px 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 3px;
+  }
+
+  .sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar nav a {
+    display: block;
+    padding: 8px 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: all 0.15s ease;
+    margin-bottom: 2px;
+  }
+  .sidebar nav a:hover {
+    color: var(--text);
+    background: var(--hover-bg);
+  }
+  .sidebar nav a.active {
+    color: var(--accent);
+    background: var(--accent-light);
+    font-weight: 500;
+  }
+  .sidebar .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    padding: 16px 14px 10px;
+  }
+
+  /* Main */
+  .main { min-width: 0; }
+
+  .content-card {
+    background: var(--content-bg);
+    border-radius: 18px;
+    padding: 56px 64px;
+    box-shadow: var(--shadow);
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  h1.doc-title {
+    font-size: 44px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: -0.03em;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+  }
+  .metaline {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 64px;
+    margin-bottom: 12px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-light);
+    scroll-margin-top: 72px;
+  }
+  h2:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 48px;
+  }
+  h2 .hash {
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-right: 10px;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 36px;
+    margin-bottom: 12px;
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  p { margin: 12px 0; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover { text-decoration: underline; }
+
+  strong { font-weight: 600; }
+  em { font-style: italic; color: var(--text-secondary); }
+
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.875em;
+    color: #d03060;
+    border: 1px solid var(--border-light);
+  }
+
+  pre {
+    background: #1d1d1f;
+    color: #f5f5f7;
+    padding: 20px 24px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    position: relative;
+    margin: 16px 0;
+    border: none;
+    font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    font-size: inherit;
+  }
+  pre::-webkit-scrollbar { height: 8px; }
+  pre::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #f5f5f7;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: -apple-system, sans-serif;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.15s;
+  }
+  pre:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: rgba(255,255,255,0.18); }
+  .copy-btn.copied { background: #30d158; border-color: #30d158; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+  }
+  thead { background: #fafafa; }
+  th {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #fafbfc; }
+  td code { font-size: 0.85em; }
+
+  ul, ol { padding-left: 24px; margin: 12px 0; }
+  li { margin-bottom: 6px; }
+  li strong { color: var(--text); }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    padding: 16px 20px;
+    background: #fafafa;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  /* Back to top */
+  .back-to-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 18px;
+    z-index: 50;
+    box-shadow: var(--shadow);
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+      padding: 20px 16px;
+      gap: 0;
+    }
+    .topbar .menu-toggle { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 90;
+      padding: 20px;
+      max-height: none;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content-card { padding: 32px 24px; border-radius: 14px; }
+    h1.doc-title { font-size: 32px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; }
+  }
+
+  @media print {
+    .topbar, .sidebar, .back-to-top, .copy-btn { display: none; }
+    .layout { grid-template-columns: 1fr; padding: 0; }
+    .content-card { box-shadow: none; padding: 0; }
+    pre { background: #f5f5f7; color: #1d1d1f; border: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+  <h1>Mac Power Reference</h1>
+  <div class="meta">v1 · 2026-04-17</div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <div class="section-title">Contents</div>
+      <ul>
+        <li><a href="#how-to-use">How To Use</a></li>
+        <li><a href="#macos">1. macOS — Keyboard &amp; Trackpad</a></li>
+        <li><a href="#terminal">2. Terminal + Bash</a></li>
+        <li><a href="#claude-code">3. Claude Code CLI</a></li>
+        <li><a href="#openclaw">4. OpenClaw</a></li>
+        <li><a href="#hermes">5. Hermes</a></li>
+        <li><a href="#obsidian">6. Obsidian</a></li>
+        <li><a href="#recipes">7. Workflow Recipes</a></li>
+      </ul>
+      <div class="section-title">Appendices</div>
+      <ul>
+        <li><a href="#appendix-a">A · Log Locations</a></li>
+        <li><a href="#appendix-b">B · Config Locations</a></li>
+        <li><a href="#appendix-c">C · Cookbook</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <article class="content-card">
+      <h1 class="doc-title">Mac Studio Power Reference</h1>
+      <p class="subtitle">Jarvis Stack — macOS · Magic Keyboard &amp; Trackpad · Claude Code · OpenClaw · Hermes · Obsidian</p>
+      <p class="metaline">Owner: Phil  ·  Version v1  ·  Updated 2026-04-17</p>
+
+      <h2 id="how-to-use"><span class="hash">#</span>How To Use This Doc</h2>
+      <ul>
+        <li>Organized by tool, grouped by use case.</li>
+        <li>This is a lookup doc, not a read-through. <code>⌘F</code> your way around.</li>
+        <li>Add to it as you discover tricks — version it in the vault, not in your head.</li>
+      </ul>
+
+      <div class="legend">
+        <div class="legend-item"><span>🔥</span><span>highest leverage — use daily</span></div>
+        <div class="legend-item"><span>⚠️</span><span>dangerous or irreversible</span></div>
+        <div class="legend-item"><span>🧪</span><span>verify against live docs (may change between versions)</span></div>
+      </div>
+
+      <h2 id="macos"><span class="hash">#</span>1. macOS — Magic Keyboard &amp; Trackpad</h2>
+
+      <h3>Global Shortcuts (Daily Drivers)</h3>
+      <table>
+        <thead><tr><th>Shortcut</th><th>What it does</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td>🔥 <code>⌘Space</code></td><td>Spotlight search</td><td>Launch apps, find files, calc, unit convert</td></tr>
+          <tr><td>🔥 <code>⌘Tab</code></td><td>App switcher</td><td>Cycle apps forward; add <code>Shift</code> to go back</td></tr>
+          <tr><td>🔥 <code>⌘`</code></td><td>Cycle windows within current app</td><td>Multiple Chrome/Finder windows</td></tr>
+          <tr><td><code>⌘Q</code></td><td>Quit app (not just close window)</td><td>Vital for memory hygiene</td></tr>
+          <tr><td><code>⌘W</code></td><td>Close window/tab</td><td>Doesn't quit the app</td></tr>
+          <tr><td><code>⌘H</code></td><td>Hide current app</td><td>Cleaner than minimize</td></tr>
+          <tr><td><code>⌘Option+H</code></td><td>Hide all other apps</td><td>Focus mode instantly</td></tr>
+          <tr><td><code>⌘M</code></td><td>Minimize window to Dock</td><td>Rarely better than <code>⌘H</code></td></tr>
+          <tr><td><code>Ctrl+⌘F</code></td><td>Toggle fullscreen</td><td></td></tr>
+          <tr><td><code>Ctrl+⌘Space</code></td><td>Emoji + special character picker</td><td></td></tr>
+          <tr><td><code>Fn Fn</code></td><td>Dictation</td><td>Alternative to Wispr Flow for quick captures</td></tr>
+          <tr><td>🔥 <code>⌘Shift+3</code></td><td>Full screenshot</td><td>Auto-saves to Desktop</td></tr>
+          <tr><td>🔥 <code>⌘Shift+4</code></td><td>Region screenshot</td><td>Drag rectangle</td></tr>
+          <tr><td><code>⌘Shift+5</code></td><td>Screenshot toolbar</td><td>Record screen, timed captures, options</td></tr>
+          <tr><td><code>⌘Shift+4</code> then <code>Space</code></td><td>Window screenshot</td><td>Click any window</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Magic Trackpad Gestures</h3>
+      <table>
+        <thead><tr><th>Gesture</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>🔥 3-finger swipe up</td><td>Mission Control (all windows)</td></tr>
+          <tr><td>🔥 3-finger swipe left/right</td><td>Switch Spaces / full-screen apps</td></tr>
+          <tr><td>3-finger swipe down</td><td>App Exposé (all windows of current app)</td></tr>
+          <tr><td>4-finger pinch in</td><td>Launchpad</td></tr>
+          <tr><td>4-finger spread out</td><td>Show Desktop</td></tr>
+          <tr><td>2-finger tap</td><td>Right-click (enable "Tap to Click" in Settings)</td></tr>
+          <tr><td>3-finger drag</td><td>Move windows (enable in Accessibility → Pointer Control → Trackpad)</td></tr>
+          <tr><td>Force click</td><td>Preview links, define words, quick actions</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Magic Keyboard Specific</h3>
+      <table>
+        <thead><tr><th>Key / Combo</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td><code>Fn + Fn</code></td><td>Dictation on/off</td></tr>
+          <tr><td><code>Fn + E</code></td><td>Emoji picker</td></tr>
+          <tr><td><code>Fn + H</code></td><td>Hide app</td></tr>
+          <tr><td><code>Fn + M</code></td><td>Minimize window</td></tr>
+          <tr><td><code>F3</code></td><td>Mission Control</td></tr>
+          <tr><td><code>F4</code></td><td>Launchpad / Spotlight (configurable)</td></tr>
+          <tr><td>Globe key</td><td>Switch keyboard layout / Fn override</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Stage Manager &amp; Multi-Monitor</h3>
+      <ul>
+        <li>Toggle Stage Manager: Control Center (menu bar) → Stage Manager icon</li>
+        <li>Move window across displays: drag to edge, or <code>⌘</code> + drag for precision</li>
+        <li>System Settings → Displays → Arrangement: drag menu bar to set primary display</li>
+      </ul>
+
+      <h3>Hidden System Settings Worth Knowing</h3>
+      <ul>
+        <li><strong>Keyboard Shortcuts → App Shortcuts</strong> — assign custom <code>⌘</code> keys to any menu item in any app</li>
+        <li><strong>Accessibility → Pointer Control → Trackpad Options</strong> — enable 3-finger drag</li>
+        <li><strong>Desktop &amp; Dock → Hot Corners</strong> — assign Mission Control / Screen Saver / Lock to screen corners</li>
+        <li><strong>Control Center</strong> — pin Battery %, Bluetooth, Sound to menu bar</li>
+      </ul>
+
+      <h2 id="terminal"><span class="hash">#</span>2. Terminal + Bash — Mac Studio Daily Driver</h2>
+
+      <h3>Memory + Pressure</h3>
+<pre><code># Full memory pressure report (macOS verdict at bottom)
+memory_pressure
+
+# Top 10 processes by memory
+ps aux | sort -rk 4 | head -10
+
+# Top 10 by CPU
+ps aux | sort -rk 3 | head -10
+
+# Real-time memory view (q to quit)
+top -o mem
+
+# Real-time CPU view
+top -o cpu
+
+# Full system info
+system_profiler SPHardwareDataType</code></pre>
+
+      <h3>Processes</h3>
+<pre><code># Find a process by name
+ps aux | grep -i "openclaw" | grep -v grep
+
+# Kill by PID
+kill &lt;PID&gt;
+
+# Force kill (⚠️ skips cleanup)
+kill -9 &lt;PID&gt;
+
+# Kill all matching a name (⚠️ test with pgrep first)
+pkill -f "pattern"
+
+# Preview what pkill would kill
+pgrep -fl "pattern"</code></pre>
+
+      <h3>Network + Ports</h3>
+<pre><code># What's listening on port 18789 (OpenClaw health)
+lsof -nP -iTCP:18789 -sTCP:LISTEN
+
+# All established connections
+lsof -nP -iTCP -sTCP:ESTABLISHED | head -20
+
+# All open network connections
+netstat -an | grep ESTABLISHED | head
+
+# DNS lookup
+dig example.com +short
+nslookup example.com
+
+# HTTP endpoint test (with status code)
+curl -s -w "\nHTTP:%{http_code}\n" http://127.0.0.1:18789/health
+
+# macOS built-in internet speed test
+networkQuality</code></pre>
+
+      <h3>🔥 Launchd (macOS service manager)</h3>
+<pre><code># List user services (Jarvis services show here)
+launchctl list | grep -i jarvis
+launchctl list | grep -i hermes
+
+# Restart a service (safe, launchd respawns)
+launchctl kickstart -k gui/$(id -u)/com.jarvis.openclaw-gateway
+
+# Get service info
+launchctl print gui/$(id -u)/com.jarvis.openclaw-gateway
+
+# Disable/Enable (⚠️ persists across reboots)
+launchctl disable gui/$(id -u)/com.jarvis.openclaw-gateway
+launchctl enable  gui/$(id -u)/com.jarvis.openclaw-gateway
+
+# Where user-level service plists live
+ls ~/Library/LaunchAgents/</code></pre>
+
+      <h3>Disk + Filesystem</h3>
+<pre><code># Disk space (human readable)
+df -h
+
+# Folder size (slow for big dirs)
+du -sh ~/some/folder
+
+# Find big files in a folder
+du -ah ~/Downloads | sort -rh | head -20
+
+# Disk info + SMART status
+diskutil list
+diskutil info /
+
+# Flush filesystem caches (rarely needed)
+sudo purge  # ⚠️ requires admin</code></pre>
+
+      <h3>Clipboard + Text</h3>
+<pre><code># Pipe command output to clipboard
+cat file.txt | pbcopy
+
+# Paste clipboard into command
+pbpaste | wc -l
+
+# Read clipboard
+pbpaste</code></pre>
+
+      <h3>Handy One-Liners</h3>
+<pre><code># Say something out loud (good for build completion alerts)
+say "Lane A shipped"
+
+# Watch a log file live
+tail -f /tmp/openclaw/openclaw-*.log
+
+# Watch with grep filter
+tail -f /tmp/openclaw/openclaw-*.log | grep -i "discord"
+
+# Prevent sleep during long jobs
+caffeinate -i &lt;command&gt;
+caffeinate -t 3600  # stays awake 1 hour
+
+# Battery + power
+pmset -g batt
+pmset -g
+
+# Quick HTTP server on port 8000
+python3 -m http.server 8000</code></pre>
+
+      <h3>Shell Quality of Life</h3>
+<pre><code># Open current folder in Finder
+open .
+
+# Open a file with default app
+open file.pdf
+
+# Open URL in default browser
+open https://example.com
+
+# Reveal file in Finder
+open -R /path/to/file
+
+# Show hidden files in Finder (toggle)
+⌘Shift+. (in Finder)</code></pre>
+
+      <h2 id="claude-code"><span class="hash">#</span>3. Claude Code CLI 🧪</h2>
+      <p><em>Claude Code v2.1.92 as of 2026-04-17 — slash command list may evolve; run <code>/help</code> to see current.</em></p>
+
+      <h3>Slash Commands</h3>
+      <table>
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>🔥 <code>/help</code></td><td>List all slash commands for your version</td></tr>
+          <tr><td>🔥 <code>/clear</code></td><td>Start a fresh conversation (nukes context)</td></tr>
+          <tr><td>🔥 <code>/compact</code></td><td>Summarize conversation — manual auto-compact</td></tr>
+          <tr><td><code>/cost</code></td><td>Token usage + $ spend for current session</td></tr>
+          <tr><td><code>/status</code></td><td>Session info, model, mode</td></tr>
+          <tr><td><code>/permissions</code></td><td>Manage tool auto-approve vs prompt</td></tr>
+          <tr><td><code>/model</code></td><td>Switch model mid-session</td></tr>
+          <tr><td><code>/review</code></td><td>Code review skill</td></tr>
+          <tr><td><code>/init</code></td><td>Bootstrap CLAUDE.md in current dir</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Keyboard Shortcuts</h3>
+      <table>
+        <thead><tr><th>Key</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>🔥 <code>Esc</code></td><td>Interrupt current run</td></tr>
+          <tr><td>🔥 <code>Shift+Tab</code></td><td>Cycle: prompt-every / accept-edits / plan-mode</td></tr>
+          <tr><td><code>Ctrl+O</code></td><td>Expand collapsed tool output</td></tr>
+          <tr><td><code>Ctrl+C</code></td><td>Cancel input (twice to exit)</td></tr>
+          <tr><td><code>↑ / ↓</code></td><td>Navigate prompt history</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Permissions (reduce prompt fatigue)</h3>
+      <ul>
+        <li><code>/permissions</code> shows the allowlist</li>
+        <li><strong>Safe to auto-approve:</strong> <code>Bash(grep:*)</code>, <code>Bash(tail:*)</code>, <code>Read(*)</code>, <code>Glob(*)</code>, plugin-specific read-onlys</li>
+        <li><strong>Keep prompting:</strong> <code>Write</code>, <code>Edit</code>, destructive Bash (<code>rm</code>, <code>mv</code>, <code>chmod</code>), <code>git push</code></li>
+        <li><strong>Rule:</strong> if worst case is "read wrong file," auto-approve. If worst case is "delete/modify/push," keep prompting.</li>
+      </ul>
+
+      <h3>Session + Context Hygiene</h3>
+<pre><code># Where CC sessions live on disk
+ls ~/.claude/projects/
+
+# Current project's sessions
+ls ~/.claude/projects/-Users-philipbelue-jarvis-hq/</code></pre>
+      <ul>
+        <li>When context nears limit, <code>/compact</code> before auto-compact fires — you control the summarization prompt that way</li>
+        <li><code>/clear</code> between unrelated tasks — don't let stale context pollute new work</li>
+      </ul>
+
+      <h2 id="openclaw"><span class="hash">#</span>4. OpenClaw</h2>
+
+      <h3>Health</h3>
+<pre><code># Gateway health endpoint
+curl -s http://127.0.0.1:18789/health
+
+# Pretty-print JSON response
+curl -s http://127.0.0.1:18789/health | python3 -m json.tool</code></pre>
+
+      <h3>Gateway Lifecycle</h3>
+<pre><code># 🔥 Restart (safe)
+launchctl kickstart -k gui/$(id -u)/com.jarvis.openclaw-gateway
+
+# Status
+launchctl print gui/$(id -u)/com.jarvis.openclaw-gateway | head -30
+
+# Find gateway PID
+ps aux | grep "openclaw-gateway" | grep -v grep
+
+# Force stop (⚠️ launchd will respawn unless disabled)
+kill $(pgrep -f openclaw-gateway)</code></pre>
+
+      <h3>Logs</h3>
+<pre><code># Today's log (date-stamped)
+tail -f /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log
+
+# Last 100 lines
+tail -n 100 /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log
+
+# Filter by subsystem
+grep '"subsystem":"gateway/channels/discord"' \
+  /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -20
+
+# Errors only
+grep -i error /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail
+
+# All logs (rotated)
+ls -lt /tmp/openclaw/ | head</code></pre>
+
+      <h3>Session Logs (DM + Channel History)</h3>
+<pre><code># Where agent sessions live
+ls -lt ~/.openclaw/agents/main/sessions/ | head
+
+# Read a session (jsonl, one record per line)
+wc -l ~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl
+
+# Pretty-print last N records (jsonl isn't valid JSON array)
+tail -n 5 ~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl | \
+  while read -r line; do echo "$line" | python3 -m json.tool; echo "---"; done
+
+# Which model answered recent turns
+grep -oE '"model":"[^"]+"' \
+  ~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl | tail -20</code></pre>
+
+      <h3>Config</h3>
+<pre><code># Main config
+ls -lh ~/.openclaw/openclaw.json
+
+# Backups (automatic on every edit)
+ls -lt ~/.openclaw/openclaw.json.bak.* | head
+
+# Validate JSON before restart (always!)
+python3 -c "import json; json.load(open('/Users/philipbelue/.openclaw/openclaw.json')); print('JSON valid')"
+
+# Diff config against backup
+diff ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak.5
+
+# Backup manually before a risky edit
+cp ~/.openclaw/openclaw.json \
+  ~/.openclaw/openclaw.json.bak.manual.$(date +%Y%m%d-%H%M%S)</code></pre>
+
+      <h3>Workspace Files (System Prompt Composition)</h3>
+<pre><code># What Jarvis loads as system prompt
+ls -lh ~/.openclaw/workspace/
+
+# Word counts (keep MEMORY.md under 20k chars)
+wc -c ~/.openclaw/workspace/*.md
+
+# Grep across workspace
+grep -l "protocol" ~/.openclaw/workspace/*.md</code></pre>
+
+      <h2 id="hermes"><span class="hash">#</span>5. Hermes 🧪</h2>
+      <p><em>Based on observed session data; verify specific CLI flags against your install.</em></p>
+
+      <h3>Process</h3>
+<pre><code># Find Hermes process
+ps aux | grep -i hermes | grep -v grep
+
+# Hermes CLI (via its venv)
+~/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main --help
+
+# Common invocation seen in logs
+~/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run --replace</code></pre>
+
+      <h3>Logs</h3>
+<pre><code># Gateway log (rolling)
+tail -f ~/.hermes/logs/gateway.log
+
+# Recent errors
+grep -i "error" ~/.hermes/logs/gateway.log | tail -20
+
+# Filter by date
+grep "2026-04-17" ~/.hermes/logs/gateway.log | tail</code></pre>
+
+      <h3>Launchd (if Hermes is managed)</h3>
+<pre><code># Find Hermes launchd label
+launchctl list | grep -i hermes
+
+# Restart (substitute actual label)
+launchctl kickstart -k gui/$(id -u)/com.hermes.&lt;label&gt;</code></pre>
+
+      <h2 id="obsidian"><span class="hash">#</span>6. Obsidian</h2>
+
+      <h3>Keyboard Shortcuts</h3>
+      <table>
+        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>🔥 <code>⌘O</code></td><td>Quick Switcher (open any file by fuzzy name)</td></tr>
+          <tr><td>🔥 <code>⌘P</code></td><td>Command Palette (run any Obsidian command)</td></tr>
+          <tr><td><code>⌘E</code></td><td>Toggle Edit / Reading view</td></tr>
+          <tr><td><code>⌘N</code></td><td>New note</td></tr>
+          <tr><td><code>⌘,</code></td><td>Settings</td></tr>
+          <tr><td><code>⌘Shift+F</code></td><td>Search in all notes</td></tr>
+          <tr><td><code>⌘K</code></td><td>Insert link (then fuzzy search target)</td></tr>
+          <tr><td><code>⌘[ / ⌘]</code></td><td>Navigate back / forward</td></tr>
+          <tr><td><code>Ctrl+⌘→ / ←</code></td><td>Next / previous pane</td></tr>
+          <tr><td><code>⌘W</code></td><td>Close current tab</td></tr>
+          <tr><td><code>⌘Shift+V</code></td><td>Paste without formatting</td></tr>
+          <tr><td><code>⌘.</code></td><td>Toggle right sidebar</td></tr>
+          <tr><td><code>⌘\</code></td><td>Toggle left sidebar</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Linking + Navigation</h3>
+      <ul>
+        <li><code>[[</code> in a note → fuzzy-link another note</li>
+        <li><code>[[note|display text]]</code> → custom display text</li>
+        <li><code>![[note]]</code> → embed/transclude another note's content</li>
+        <li><code>⌘ + click</code> a link → open in new pane</li>
+        <li>Graph view: <code>⌘P</code> → "Open graph view"</li>
+      </ul>
+
+      <h3>Daily Notes (your 01-DAILY structure)</h3>
+      <ul>
+        <li><code>⌘P → "Open today's daily note"</code> (set a hotkey for speed)</li>
+        <li>Templates live in <code>⌘, → Core plugins → Daily notes → Template location</code></li>
+        <li>Assign hotkey: <code>⌘, → Hotkeys → "daily notes"</code></li>
+      </ul>
+
+      <h3>Essential Core Plugins</h3>
+      <ul>
+        <li><strong>Quick switcher</strong> — <code>⌘O</code></li>
+        <li><strong>Command palette</strong> — <code>⌘P</code></li>
+        <li><strong>Daily notes</strong> — your 01-DAILY structure depends on this</li>
+        <li><strong>Templates</strong> — reusable note scaffolds</li>
+        <li><strong>Backlinks</strong> — shows what links TO current note</li>
+        <li><strong>Graph view</strong> — visual knowledge map</li>
+      </ul>
+
+      <h3>Community Plugins Worth Looking At 🧪</h3>
+      <ul>
+        <li><strong>Advanced Tables</strong> — clean table editing with Tab/Enter nav</li>
+        <li><strong>Templater</strong> — richer templates (JS, date math, prompts)</li>
+        <li><strong>Periodic Notes</strong> — weekly/monthly rollups</li>
+        <li><strong>Dataview</strong> — query your vault like a database</li>
+        <li><strong>Obsidian Git</strong> — version your vault alongside code</li>
+        <li><strong>Tag Wrangler</strong> — rename/merge tags across vault</li>
+        <li><strong>QuickAdd</strong> — scripted new-note creation</li>
+      </ul>
+
+      <h3>Obsidian Publish (jarvis-cockpit)</h3>
+      <div class="callout">
+        Publish site is served from Obsidian's cloud — no local server command. Manage which notes publish via <strong>Settings → Publish</strong>. URL: <a href="https://publish.obsidian.md/jarvis-cockpit/HOME">publish.obsidian.md/jarvis-cockpit/HOME</a>
+      </div>
+
+      <h2 id="recipes"><span class="hash">#</span>7. Workflow Recipes (multi-tool combos)</h2>
+
+      <h3>Recipe: Post-Ship Verification</h3>
+      <p>After Claude Code claims "shipped":</p>
+<pre><code># 1. Gateway up?
+curl -s http://127.0.0.1:18789/health
+
+# 2. Config valid?
+python3 -c "import json; json.load(open('/Users/philipbelue/.openclaw/openclaw.json')); print('valid')"
+
+# 3. Service running?
+launchctl print gui/$(id -u)/com.jarvis.openclaw-gateway | grep -E "state|pid"
+
+# 4. Discord connected? (check log for "logged in")
+grep -i "logged in" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -3
+
+# 5. Which model answered the last DM?
+grep -oE '"model":"[^"]+"' \
+  ~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl | tail -5</code></pre>
+
+      <h3>Recipe: Full Stack Health Check</h3>
+<pre><code>echo "=== LAUNCHD ==="
+launchctl list | grep -iE "jarvis|hermes|openclaw"
+
+echo "=== PROCESSES ==="
+ps aux | grep -iE "openclaw|hermes|ollama" | grep -v grep | awk '{print $2, $11}'
+
+echo "=== OPENCLAW HEALTH ==="
+curl -s http://127.0.0.1:18789/health
+
+echo "=== DISK ==="
+df -h / | tail -1
+
+echo "=== MEMORY ==="
+memory_pressure | tail -1
+
+echo "=== ERRORS TODAY (openclaw) ==="
+grep -c "ERROR" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log
+
+echo "=== ERRORS TODAY (hermes) ==="
+grep -c "ERROR" ~/.hermes/logs/gateway.log</code></pre>
+      <div class="callout">Save this as <code>~/bin/jarvis-health</code> and <code>chmod +x</code> it. Instant 10-second health snapshot.</div>
+
+      <h3>Recipe: Restart The World (after Mac reboot)</h3>
+<pre><code># Usually launchd brings services back automatically. If not:
+launchctl kickstart gui/$(id -u)/com.jarvis.openclaw-gateway
+launchctl kickstart gui/$(id -u)/&lt;hermes-label&gt;
+
+# Wait 15s, then health check
+sleep 15 && curl -s http://127.0.0.1:18789/health</code></pre>
+
+      <h3>Recipe: Investigate a Bug (fast triage)</h3>
+<pre><code># 1. When did it start?
+grep -n "symptom string" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | head -5
+
+# 2. Context ±20 lines
+grep -B 20 -A 20 "symptom" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | head -80
+
+# 3. Nearby errors
+grep -i -C 5 "error" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -40
+
+# 4. Which model was in use?
+grep -oE '"model":"[^"]+"' \
+  ~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl | tail -10</code></pre>
+
+      <h2 id="appendix-a"><span class="hash">#</span>Appendix A · Log Locations</h2>
+      <table>
+        <thead><tr><th>System</th><th>Path</th></tr></thead>
+        <tbody>
+          <tr><td>OpenClaw gateway</td><td><code>/tmp/openclaw/openclaw-YYYY-MM-DD.log</code></td></tr>
+          <tr><td>OpenClaw sessions</td><td><code>~/.openclaw/agents/main/sessions/&lt;uuid&gt;.jsonl</code></td></tr>
+          <tr><td>Hermes gateway</td><td><code>~/.hermes/logs/gateway.log</code></td></tr>
+          <tr><td>macOS system</td><td><code>/var/log/system.log</code> (use <code>log show</code> on recent macOS)</td></tr>
+          <tr><td>Claude Code sessions</td><td><code>~/.claude/projects/&lt;project-slug&gt;/</code></td></tr>
+          <tr><td>Launchd user services</td><td><code>~/Library/Logs/</code> (app-specific subfolders)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="appendix-b"><span class="hash">#</span>Appendix B · Config Locations</h2>
+      <table>
+        <thead><tr><th>What</th><th>Path</th></tr></thead>
+        <tbody>
+          <tr><td>OpenClaw main config</td><td><code>~/.openclaw/openclaw.json</code></td></tr>
+          <tr><td>OpenClaw backups</td><td><code>~/.openclaw/openclaw.json.bak.*</code></td></tr>
+          <tr><td>OpenClaw workspace (system prompt)</td><td><code>~/.openclaw/workspace/</code></td></tr>
+          <tr><td>Hermes</td><td><code>~/.hermes/</code></td></tr>
+          <tr><td>Claude Code global</td><td><code>~/.claude/</code></td></tr>
+          <tr><td>Claude Code project</td><td><code>&lt;project&gt;/.claude/</code> or <code>&lt;project&gt;/CLAUDE.md</code></td></tr>
+          <tr><td>Launchd user plists</td><td><code>~/Library/LaunchAgents/</code></td></tr>
+          <tr><td>Obsidian vault</td><td><code>/Volumes/Jarvis/obsidian-vault/</code></td></tr>
+          <tr><td>macOS shell (zsh)</td><td><code>~/.zshrc</code>, <code>~/.zprofile</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="appendix-c"><span class="hash">#</span>Appendix C · "What Do I Do When…" Cookbook</h2>
+      <table>
+        <thead><tr><th>Symptom</th><th>First move</th></tr></thead>
+        <tbody>
+          <tr><td>Jarvis not responding in Discord</td><td><code>curl health</code> → <code>launchctl kickstart</code> → check "logged in" in log</td></tr>
+          <tr><td>Mac feels sluggish</td><td><code>memory_pressure</code>, <code>ps aux | sort -rk 4 | head</code>, quit memory hogs or restart</td></tr>
+          <tr><td>Claude Code hanging</td><td><code>Esc</code> to interrupt; if frozen, <code>Ctrl+C</code> twice to exit; relaunch</td></tr>
+          <tr><td>Config change didn't take effect</td><td>did you kickstart? did you validate JSON? is your edit in the right file?</td></tr>
+          <tr><td>"What model actually answered?"</td><td>grep the session jsonl for <code>"model":</code> — never trust "it responded"</td></tr>
+          <tr><td>Port X in use</td><td><code>lsof -nP -iTCP:X -sTCP:LISTEN</code> → find PID → kill if safe</td></tr>
+          <tr><td>Deleted something important</td><td>check <code>.openclaw/*.bak.*</code>, Obsidian Version History, or macOS Time Machine</td></tr>
+          <tr><td>Lost context in CC</td><td><code>/compact</code> before limit; <code>/clear</code> between unrelated tasks</td></tr>
+        </tbody>
+      </table>
+
+      <hr style="border: none; border-top: 1px solid var(--border-light); margin: 56px 0 24px;">
+      <p style="color: var(--text-tertiary); font-size: 13px; margin: 0;">
+        <strong>Maintenance rule:</strong> when you learn a new trick that survives 3 uses, add it here. When a command breaks because a tool updated, mark it 🧪 and fix or remove. This doc gets better the more you live in it.
+      </p>
+    </article>
+  </main>
+</div>
+
+<a href="#" class="back-to-top" title="Back to top">↑</a>
+
+<script>
+  // Active section highlighting via IntersectionObserver
+  const sections = document.querySelectorAll('h2[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector('.sidebar nav a[href="#' + id + '"]');
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Back to top
+  const backBtn = document.querySelector('.back-to-top');
+  window.addEventListener('scroll', () => {
+    backBtn.classList.toggle('visible', window.scrollY > 600);
+  });
+  backBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Copy buttons on code blocks
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code')?.textContent || pre.textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+    pre.appendChild(btn);
+  });
+
+  // Mobile menu toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+  });
+  // Close mobile menu on nav click
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) sidebar.classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>
