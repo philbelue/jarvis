@@ -216,11 +216,13 @@
   code {
     font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
     background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 5px;
-    font-size: 0.875em;
-    color: #d03060;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #1d1d1f;
     border: 1px solid var(--border-light);
+    white-space: nowrap;
   }
 
   pre {
@@ -297,7 +299,45 @@
   }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: #fafbfc; }
-  td code { font-size: 0.85em; }
+  td code { font-size: 0.92em; }
+
+  /* Compact Apple/internet symbol form — shown beside the learner-friendly plus form */
+  .sym {
+    font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88em;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .sym::before { content: "·  "; color: #c9c9ce; margin-right: 2px; }
+
+  /* Symbols decoder grid */
+  .sym-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px 18px;
+    padding: 18px 22px;
+    background: #fafafa;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .sym-grid-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .sym-grid-item .glyph {
+    font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 28px;
+    text-align: center;
+  }
+  .sym-grid-item .name { color: var(--text-secondary); }
 
   ul, ol { padding-left: 24px; margin: 12px 0; }
   li { margin-bottom: 6px; }
@@ -435,7 +475,7 @@
       <h2 id="how-to-use"><span class="hash">#</span>How To Use This Doc</h2>
       <ul>
         <li>Organized by tool, grouped by use case.</li>
-        <li>This is a lookup doc, not a read-through. <code>⌘F</code> your way around.</li>
+        <li>This is a lookup doc, not a read-through. <code>⌘+F</code> your way around.</li>
         <li>Add to it as you discover tricks — version it in the vault, not in your head.</li>
       </ul>
 
@@ -445,27 +485,69 @@
         <div class="legend-item"><span>🧪</span><span>verify against live docs (may change between versions)</span></div>
       </div>
 
+      <h3>Notation Guide — Two Forms of the Same Shortcut</h3>
+      <p>Every shortcut in this doc is written <strong>two ways</strong>:</p>
+      <ul>
+        <li><strong>Training-wheel form</strong> → <code>Shift+⌘+3</code> — spelled out, plus-separated. This is how you <em>read, type, and build muscle memory</em>.</li>
+        <li><strong>Compact form</strong> → <span class="sym">⇧⌘3</span> — Apple menus, Apple support docs, Reddit threads, and developer blogs all use this. Learn to read it so Apple's UI stops being hieroglyphics.</li>
+      </ul>
+
+      <p><strong>Modifier order (Apple convention — memorize this):</strong></p>
+      <div class="callout">
+        <code>Control → Option → Shift → ⌘ → [Key]</code><br>
+        <em>Mnemonic: <strong>COSC-K</strong>. Command is always the last modifier before the key letter.</em><br>
+        Example: Force Quit is <code>Option+⌘+Esc</code> <span class="sym">⌥⌘⎋</span>, not "⌘+Option+Esc".
+      </div>
+
+      <h3>Keyboard Symbols Decoder</h3>
+      <p>When you see these on a Mac menu or in a forum post, this is what they mean:</p>
+      <div class="sym-grid">
+        <div class="sym-grid-item"><span class="glyph">⌘</span><span class="name">Command</span></div>
+        <div class="sym-grid-item"><span class="glyph">⌥</span><span class="name">Option / Alt</span></div>
+        <div class="sym-grid-item"><span class="glyph">⌃</span><span class="name">Control</span></div>
+        <div class="sym-grid-item"><span class="glyph">⇧</span><span class="name">Shift</span></div>
+        <div class="sym-grid-item"><span class="glyph">⇪</span><span class="name">Caps Lock</span></div>
+        <div class="sym-grid-item"><span class="glyph">fn</span><span class="name">Function</span></div>
+        <div class="sym-grid-item"><span class="glyph">↩</span><span class="name">Return / Enter</span></div>
+        <div class="sym-grid-item"><span class="glyph">⌤</span><span class="name">Enter (numpad)</span></div>
+        <div class="sym-grid-item"><span class="glyph">⎋</span><span class="name">Escape</span></div>
+        <div class="sym-grid-item"><span class="glyph">⌫</span><span class="name">Delete (backspace)</span></div>
+        <div class="sym-grid-item"><span class="glyph">⌦</span><span class="name">Forward Delete</span></div>
+        <div class="sym-grid-item"><span class="glyph">⇥</span><span class="name">Tab</span></div>
+        <div class="sym-grid-item"><span class="glyph">⇤</span><span class="name">Shift-Tab (back)</span></div>
+        <div class="sym-grid-item"><span class="glyph">␣</span><span class="name">Space</span></div>
+        <div class="sym-grid-item"><span class="glyph">↑ ↓ ← →</span><span class="name">Arrow keys</span></div>
+        <div class="sym-grid-item"><span class="glyph">⇞ ⇟</span><span class="name">Page Up / Down</span></div>
+        <div class="sym-grid-item"><span class="glyph">↖ ↘</span><span class="name">Home / End</span></div>
+        <div class="sym-grid-item"><span class="glyph">⏏</span><span class="name">Eject / Power</span></div>
+      </div>
+
+      <p><em>Reading practice: when you see <span class="sym">⇧⌘4</span> in a blog post, your brain translates it as <code>Shift+⌘+4</code> → "take a region screenshot". That translation gets faster until it's instant.</em></p>
+
       <h2 id="macos"><span class="hash">#</span>1. macOS — Magic Keyboard &amp; Trackpad</h2>
 
       <h3>Global Shortcuts (Daily Drivers)</h3>
       <table>
         <thead><tr><th>Shortcut</th><th>What it does</th><th>Use case</th></tr></thead>
         <tbody>
-          <tr><td>🔥 <code>⌘Space</code></td><td>Spotlight search</td><td>Launch apps, find files, calc, unit convert</td></tr>
-          <tr><td>🔥 <code>⌘Tab</code></td><td>App switcher</td><td>Cycle apps forward; add <code>Shift</code> to go back</td></tr>
-          <tr><td>🔥 <code>⌘`</code></td><td>Cycle windows within current app</td><td>Multiple Chrome/Finder windows</td></tr>
-          <tr><td><code>⌘Q</code></td><td>Quit app (not just close window)</td><td>Vital for memory hygiene</td></tr>
-          <tr><td><code>⌘W</code></td><td>Close window/tab</td><td>Doesn't quit the app</td></tr>
-          <tr><td><code>⌘H</code></td><td>Hide current app</td><td>Cleaner than minimize</td></tr>
-          <tr><td><code>⌘Option+H</code></td><td>Hide all other apps</td><td>Focus mode instantly</td></tr>
-          <tr><td><code>⌘M</code></td><td>Minimize window to Dock</td><td>Rarely better than <code>⌘H</code></td></tr>
-          <tr><td><code>Ctrl+⌘F</code></td><td>Toggle fullscreen</td><td></td></tr>
-          <tr><td><code>Ctrl+⌘Space</code></td><td>Emoji + special character picker</td><td></td></tr>
-          <tr><td><code>Fn Fn</code></td><td>Dictation</td><td>Alternative to Wispr Flow for quick captures</td></tr>
-          <tr><td>🔥 <code>⌘Shift+3</code></td><td>Full screenshot</td><td>Auto-saves to Desktop</td></tr>
-          <tr><td>🔥 <code>⌘Shift+4</code></td><td>Region screenshot</td><td>Drag rectangle</td></tr>
-          <tr><td><code>⌘Shift+5</code></td><td>Screenshot toolbar</td><td>Record screen, timed captures, options</td></tr>
-          <tr><td><code>⌘Shift+4</code> then <code>Space</code></td><td>Window screenshot</td><td>Click any window</td></tr>
+          <tr><td>🔥 <code>⌘+Space</code> <span class="sym">⌘Space</span></td><td>Spotlight search</td><td>Launch apps, find files, calc, unit convert</td></tr>
+          <tr><td>🔥 <code>⌘+Tab</code> <span class="sym">⌘⇥</span></td><td>App switcher</td><td>Cycle apps forward; add <code>Shift</code> to go back</td></tr>
+          <tr><td>🔥 <code>⌘+`</code> <span class="sym">⌘`</span></td><td>Cycle windows within current app</td><td>Multiple Chrome/Finder windows</td></tr>
+          <tr><td><code>⌘+Q</code> <span class="sym">⌘Q</span></td><td>Quit app (not just close window)</td><td>Vital for memory hygiene</td></tr>
+          <tr><td><code>⌘+W</code> <span class="sym">⌘W</span></td><td>Close window/tab</td><td>Doesn't quit the app</td></tr>
+          <tr><td><code>⌘+H</code> <span class="sym">⌘H</span></td><td>Hide current app</td><td>Cleaner than minimize</td></tr>
+          <tr><td><code>Option+⌘+H</code> <span class="sym">⌥⌘H</span></td><td>Hide all other apps</td><td>Focus mode instantly</td></tr>
+          <tr><td><code>⌘+M</code> <span class="sym">⌘M</span></td><td>Minimize window to Dock</td><td>Rarely better than <code>⌘+H</code></td></tr>
+          <tr><td><code>Control+⌘+F</code> <span class="sym">⌃⌘F</span></td><td>Toggle fullscreen</td><td></td></tr>
+          <tr><td><code>Control+⌘+Space</code> <span class="sym">⌃⌘Space</span></td><td>Emoji + special character picker</td><td></td></tr>
+          <tr><td><code>Fn Fn</code> <span class="sym">fn fn</span></td><td>Dictation</td><td>Alternative to Wispr Flow for quick captures</td></tr>
+          <tr><td>🔥 <code>Shift+⌘+3</code> <span class="sym">⇧⌘3</span></td><td>Full screenshot</td><td>Auto-saves to Desktop</td></tr>
+          <tr><td>🔥 <code>Shift+⌘+4</code> <span class="sym">⇧⌘4</span></td><td>Region screenshot</td><td>Drag rectangle</td></tr>
+          <tr><td><code>Shift+⌘+5</code> <span class="sym">⇧⌘5</span></td><td>Screenshot toolbar</td><td>Record screen, timed captures, options</td></tr>
+          <tr><td><code>Shift+⌘+4</code> then <code>Space</code> <span class="sym">⇧⌘4 ␣</span></td><td>Window screenshot</td><td>Click any window</td></tr>
+          <tr><td>🔥 <code>Option+⌘+Esc</code> <span class="sym">⌥⌘⎋</span></td><td>Force Quit dialog</td><td>When an app hangs (the "8GB MacBook Pro" lifesaver)</td></tr>
+          <tr><td><code>Control+⌘+Q</code> <span class="sym">⌃⌘Q</span></td><td>Lock screen instantly</td><td>Stepping away from machine</td></tr>
+          <tr><td><code>Control+⌘+Power</code> <span class="sym">⌃⌘⏏</span></td><td>Force restart</td><td>Last resort when Mac is frozen solid</td></tr>
         </tbody>
       </table>
 
@@ -650,7 +732,7 @@ open https://example.com
 open -R /path/to/file
 
 # Show hidden files in Finder (toggle)
-⌘Shift+. (in Finder)</code></pre>
+Shift+⌘+. (in Finder)</code></pre>
 
       <h2 id="claude-code"><span class="hash">#</span>3. Claude Code CLI 🧪</h2>
       <p><em>Claude Code v2.1.92 as of 2026-04-17 — slash command list may evolve; run <code>/help</code> to see current.</em></p>
@@ -675,10 +757,10 @@ open -R /path/to/file
       <table>
         <thead><tr><th>Key</th><th>Action</th></tr></thead>
         <tbody>
-          <tr><td>🔥 <code>Esc</code></td><td>Interrupt current run</td></tr>
-          <tr><td>🔥 <code>Shift+Tab</code></td><td>Cycle: prompt-every / accept-edits / plan-mode</td></tr>
-          <tr><td><code>Ctrl+O</code></td><td>Expand collapsed tool output</td></tr>
-          <tr><td><code>Ctrl+C</code></td><td>Cancel input (twice to exit)</td></tr>
+          <tr><td>🔥 <code>Esc</code> <span class="sym">⎋</span></td><td>Interrupt current run</td></tr>
+          <tr><td>🔥 <code>Shift+Tab</code> <span class="sym">⇧⇥</span></td><td>Cycle: prompt-every / accept-edits / plan-mode</td></tr>
+          <tr><td><code>Control+O</code> <span class="sym">⌃O</span></td><td>Expand collapsed tool output</td></tr>
+          <tr><td><code>Control+C</code> <span class="sym">⌃C</span></td><td>Cancel input (twice to exit)</td></tr>
           <tr><td><code>↑ / ↓</code></td><td>Navigate prompt history</td></tr>
         </tbody>
       </table>
@@ -819,19 +901,19 @@ launchctl kickstart -k gui/$(id -u)/com.hermes.&lt;label&gt;</code></pre>
       <table>
         <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
         <tbody>
-          <tr><td>🔥 <code>⌘O</code></td><td>Quick Switcher (open any file by fuzzy name)</td></tr>
-          <tr><td>🔥 <code>⌘P</code></td><td>Command Palette (run any Obsidian command)</td></tr>
-          <tr><td><code>⌘E</code></td><td>Toggle Edit / Reading view</td></tr>
-          <tr><td><code>⌘N</code></td><td>New note</td></tr>
-          <tr><td><code>⌘,</code></td><td>Settings</td></tr>
-          <tr><td><code>⌘Shift+F</code></td><td>Search in all notes</td></tr>
-          <tr><td><code>⌘K</code></td><td>Insert link (then fuzzy search target)</td></tr>
-          <tr><td><code>⌘[ / ⌘]</code></td><td>Navigate back / forward</td></tr>
-          <tr><td><code>Ctrl+⌘→ / ←</code></td><td>Next / previous pane</td></tr>
-          <tr><td><code>⌘W</code></td><td>Close current tab</td></tr>
-          <tr><td><code>⌘Shift+V</code></td><td>Paste without formatting</td></tr>
-          <tr><td><code>⌘.</code></td><td>Toggle right sidebar</td></tr>
-          <tr><td><code>⌘\</code></td><td>Toggle left sidebar</td></tr>
+          <tr><td>🔥 <code>⌘+O</code> <span class="sym">⌘O</span></td><td>Quick Switcher (open any file by fuzzy name)</td></tr>
+          <tr><td>🔥 <code>⌘+P</code> <span class="sym">⌘P</span></td><td>Command Palette (run any Obsidian command)</td></tr>
+          <tr><td><code>⌘+E</code> <span class="sym">⌘E</span></td><td>Toggle Edit / Reading view</td></tr>
+          <tr><td><code>⌘+N</code> <span class="sym">⌘N</span></td><td>New note</td></tr>
+          <tr><td><code>⌘+,</code> <span class="sym">⌘,</span></td><td>Settings</td></tr>
+          <tr><td><code>Shift+⌘+F</code> <span class="sym">⇧⌘F</span></td><td>Search in all notes</td></tr>
+          <tr><td><code>⌘+K</code> <span class="sym">⌘K</span></td><td>Insert link (then fuzzy search target)</td></tr>
+          <tr><td><code>⌘+[</code> / <code>⌘+]</code> <span class="sym">⌘[ / ⌘]</span></td><td>Navigate back / forward</td></tr>
+          <tr><td><code>Control+⌘+→</code> / <code>Control+⌘+←</code> <span class="sym">⌃⌘→ / ⌃⌘←</span></td><td>Next / previous pane</td></tr>
+          <tr><td><code>⌘+W</code> <span class="sym">⌘W</span></td><td>Close current tab</td></tr>
+          <tr><td><code>Shift+⌘+V</code> <span class="sym">⇧⌘V</span></td><td>Paste without formatting</td></tr>
+          <tr><td><code>⌘+.</code> <span class="sym">⌘.</span></td><td>Toggle right sidebar</td></tr>
+          <tr><td><code>⌘+\</code> <span class="sym">⌘\</span></td><td>Toggle left sidebar</td></tr>
         </tbody>
       </table>
 
@@ -841,20 +923,20 @@ launchctl kickstart -k gui/$(id -u)/com.hermes.&lt;label&gt;</code></pre>
         <li><code>[[note|display text]]</code> → custom display text</li>
         <li><code>![[note]]</code> → embed/transclude another note's content</li>
         <li><code>⌘ + click</code> a link → open in new pane</li>
-        <li>Graph view: <code>⌘P</code> → "Open graph view"</li>
+        <li>Graph view: <code>⌘+P</code> → "Open graph view"</li>
       </ul>
 
       <h3>Daily Notes (your 01-DAILY structure)</h3>
       <ul>
-        <li><code>⌘P → "Open today's daily note"</code> (set a hotkey for speed)</li>
+        <li><code>⌘+P</code> → "Open today's daily note" (set a hotkey for speed)</li>
         <li>Templates live in <code>⌘, → Core plugins → Daily notes → Template location</code></li>
         <li>Assign hotkey: <code>⌘, → Hotkeys → "daily notes"</code></li>
       </ul>
 
       <h3>Essential Core Plugins</h3>
       <ul>
-        <li><strong>Quick switcher</strong> — <code>⌘O</code></li>
-        <li><strong>Command palette</strong> — <code>⌘P</code></li>
+        <li><strong>Quick switcher</strong> — <code>⌘+O</code></li>
+        <li><strong>Command palette</strong> — <code>⌘+P</code></li>
         <li><strong>Daily notes</strong> — your 01-DAILY structure depends on this</li>
         <li><strong>Templates</strong> — reusable note scaffolds</li>
         <li><strong>Backlinks</strong> — shows what links TO current note</li>
@@ -977,7 +1059,7 @@ grep -oE '"model":"[^"]+"' \
         <tbody>
           <tr><td>Jarvis not responding in Discord</td><td><code>curl health</code> → <code>launchctl kickstart</code> → check "logged in" in log</td></tr>
           <tr><td>Mac feels sluggish</td><td><code>memory_pressure</code>, <code>ps aux | sort -rk 4 | head</code>, quit memory hogs or restart</td></tr>
-          <tr><td>Claude Code hanging</td><td><code>Esc</code> to interrupt; if frozen, <code>Ctrl+C</code> twice to exit; relaunch</td></tr>
+          <tr><td>Claude Code hanging</td><td><code>Esc</code> to interrupt; if frozen, <code>Control+C</code> twice to exit; relaunch</td></tr>
           <tr><td>Config change didn't take effect</td><td>did you kickstart? did you validate JSON? is your edit in the right file?</td></tr>
           <tr><td>"What model actually answered?"</td><td>grep the session jsonl for <code>"model":</code> — never trust "it responded"</td></tr>
           <tr><td>Port X in use</td><td><code>lsof -nP -iTCP:X -sTCP:LISTEN</code> → find PID → kill if safe</td></tr>
