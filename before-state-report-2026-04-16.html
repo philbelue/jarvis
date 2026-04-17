@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS — The Before State — April 16, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #08090d;
+    --bg-card: #0c0e14;
+    --bg-card-hover: #11131a;
+    --bg-elevated: #0f1117;
+    --bg-code: #060810;
+    --gold: #ffb86a;
+    --gold-soft: #ffc978;
+    --gold-dim: rgba(255,184,106,0.10);
+    --gold-glow: rgba(255,184,106,0.15);
+    --gold-strong: rgba(255,184,106,0.28);
+    --core-white: #fff4db;
+    --core-warm: #ffd7a3;
+    --blue-ghost: #3d5060;
+    --blue-ghost-dim: rgba(61,80,96,0.08);
+    --blue-faint: rgba(80,110,130,0.06);
+    --green: #5ce0a0;
+    --green-dim: rgba(92,224,160,0.08);
+    --red: #f06060;
+    --red-dim: rgba(240,96,96,0.06);
+    --yellow: #f0d060;
+    --yellow-dim: rgba(240,208,96,0.08);
+    --text: #b8bfc8;
+    --text-bright: #dce0e6;
+    --text-dim: #5a6370;
+    --text-faint: #3a4250;
+    --border: rgba(255,255,255,0.05);
+    --border-gold: rgba(255,184,106,0.10);
+    --border-subtle: rgba(255,255,255,0.03);
+    --radius: 8px;
+    --shadow: 0 2px 20px rgba(0,0,0,0.3);
+    --shadow-glow: 0 0 30px rgba(255,184,106,0.04);
+    --font-display: 'Orbitron', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+    --font-code: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    height: 800px;
+    background: radial-gradient(ellipse 900px 600px at center, rgba(255,184,106,0.08) 0%, rgba(255,184,106,0.02) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: rgba(8,9,13,0.97);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border);
+    padding: 32px 20px;
+    overflow-y: auto;
+    z-index: 10;
+}
+.sidebar-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.sidebar-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+}
+.sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+}
+.nav-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin: 16px 0 10px;
+    padding-left: 12px;
+}
+.nav a {
+    display: block;
+    padding: 8px 12px;
+    color: var(--text-dim);
+    font-size: 13px;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+.nav a:hover { color: var(--core-warm); background: var(--blue-ghost-dim); }
+.nav a.active {
+    color: var(--core-warm);
+    border-left-color: var(--gold);
+    background: var(--gold-dim);
+}
+
+/* MAIN */
+.main {
+    margin-left: 260px;
+    position: relative;
+    z-index: 2;
+}
+
+/* HERO */
+.hero {
+    padding: 80px 60px 60px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg) 100%);
+    border-bottom: 2px solid var(--border-gold);
+    position: relative;
+    overflow: hidden;
+}
+.hero-inner { position: relative; z-index: 2; }
+.hero-badge {
+    display: inline-block;
+    background: var(--gold-dim);
+    border: 1px solid var(--core-warm);
+    color: var(--core-warm);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--core-white);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    line-height: 1.1;
+    text-shadow: 0 0 20px rgba(255,184,106,0.15);
+    margin-bottom: 16px;
+}
+.hero .subtitle {
+    font-family: var(--font-body);
+    font-size: 17px;
+    color: var(--core-warm);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    max-width: 700px;
+}
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+    max-width: 900px;
+}
+.meta-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+}
+.meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+}
+.meta-value {
+    font-family: var(--font-code);
+    font-size: 14px;
+    color: var(--core-warm);
+}
+
+/* Arc reactor */
+.arc-reactor {
+    position: absolute;
+    top: 50%;
+    right: 60px;
+    transform: translateY(-50%);
+    width: 220px;
+    height: 220px;
+    opacity: 0.18;
+    pointer-events: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin-r { to { transform: rotate(-360deg); } }
+.ring { transform-origin: 50% 50%; animation: spin 6s linear infinite; }
+.ring-2 { animation: spin-r 4s linear infinite; }
+.ring-3 { animation: spin 8s linear infinite; }
+
+/* CONTENT */
+.content {
+    padding: 60px;
+    max-width: 1100px;
+}
+section { margin-bottom: 80px; scroll-margin-top: 20px; }
+
+h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--core-warm);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, var(--gold), transparent) 1;
+}
+h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    margin: 32px 0 16px;
+}
+p { margin-bottom: 16px; }
+p + p { margin-top: 0; }
+strong { color: var(--core-warm); font-weight: 600; }
+code {
+    font-family: var(--font-code);
+    background: var(--bg-code);
+    color: var(--core-warm);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border: 1px solid var(--border);
+}
+
+/* CARDS */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+.card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-gold);
+    box-shadow: var(--shadow-glow);
+}
+.card-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-faint);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.card-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--core-white);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+.card-sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+/* FAILURE CARDS */
+.failure {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 28px;
+}
+.failure-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.failure-id {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 2px;
+    background: var(--red-dim);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.failure-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--core-white);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    flex: 1;
+    min-width: 300px;
+}
+.failure-cost {
+    font-family: var(--font-code);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 600;
+}
+.failure-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+}
+.failure-section-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* CALLOUTS */
+.callout {
+    background: var(--bg-elevated);
+    border-left: 4px solid var(--gold);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 24px 0;
+}
+.callout.danger { border-left-color: var(--red); background: rgba(240,96,96,0.02); }
+.callout.success { border-left-color: var(--green); background: rgba(92,224,160,0.02); }
+.callout.warn { border-left-color: var(--yellow); background: rgba(240,208,96,0.02); }
+.callout-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--gold);
+}
+.callout.danger .callout-label { color: var(--red); }
+.callout.success .callout-label { color: var(--green); }
+.callout.warn .callout-label { color: var(--yellow); }
+
+/* CODE BLOCKS */
+pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    overflow-x: auto;
+    margin: 16px 0;
+}
+pre code { color: var(--text); background: none; padding: 0; border: none; }
+
+/* DIAGRAMS */
+.diagram {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    margin: 24px 0;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+}
+.diagram-caption {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-top: -12px;
+    margin-bottom: 24px;
+}
+
+/* Layered architecture diagram */
+.layer-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+}
+.layer {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+}
+.layer-num {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--gold);
+    min-width: 60px;
+}
+.layer-body { flex: 1; }
+.layer-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--core-white);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+.layer-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+}
+.layer-status {
+    font-family: var(--font-code);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+.status-broken {
+    background: var(--red-dim);
+    color: var(--red);
+    border: 1px solid rgba(240,96,96,0.2);
+}
+.status-blocked {
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    border: 1px solid rgba(240,208,96,0.2);
+}
+.status-working {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(92,224,160,0.2);
+}
+
+/* FLOW DIAGRAM */
+.flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+}
+.flow-node {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    min-width: 140px;
+    text-align: center;
+}
+.flow-node.broken {
+    border-color: var(--red);
+    background: rgba(240,96,96,0.04);
+}
+.flow-node.working {
+    border-color: var(--green);
+    background: rgba(92,224,160,0.04);
+}
+.flow-node-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+.flow-node-value {
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: var(--core-warm);
+    font-weight: 500;
+}
+.flow-node.broken .flow-node-value { color: var(--red); }
+.flow-node.working .flow-node-value { color: var(--green); }
+.flow-arrow {
+    color: var(--text-faint);
+    font-size: 20px;
+    font-family: var(--font-code);
+}
+.flow-arrow.broken { color: var(--red); }
+
+/* METRICS GRID */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+.metric {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+.metric-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.metric-value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--core-white);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+.metric-value.bad { color: var(--red); }
+.metric-value.warn { color: var(--yellow); }
+.metric-value.good { color: var(--green); }
+.metric-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+/* QUOTE */
+.quote {
+    background: var(--bg-elevated);
+    border-left: 4px solid var(--gold);
+    padding: 24px 32px;
+    margin: 28px 0;
+    border-radius: 4px;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-bright);
+}
+.quote-attribution {
+    display: block;
+    margin-top: 14px;
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+}
+
+/* TABLE */
+.table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+th {
+    background: var(--bg-card);
+    color: var(--core-warm);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text);
+    vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-card-hover); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--blue-ghost-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue-ghost); }
+
+/* FOOTER */
+footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 60px;
+    margin-top: 40px;
+    text-align: center;
+}
+footer p {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 900px) {
+    .sidebar { width: 100%; height: auto; position: relative; }
+    .main { margin-left: 0; }
+    .hero { padding: 40px 24px; }
+    .hero h1 { font-size: 32px; }
+    .content { padding: 40px 24px; }
+    .arc-reactor { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-title">JARVIS</div>
+    <div class="sidebar-sub">Before State Report</div>
+    <div class="sidebar-divider"></div>
+
+    <div class="nav-group-label">Analysis</div>
+    <nav class="nav">
+        <a href="#summary" class="active">Executive Summary</a>
+        <a href="#architecture">Layered Architecture</a>
+        <a href="#failures">The Four Failures</a>
+        <a href="#cost-impact">Cost Impact</a>
+        <a href="#user-impact">User Impact</a>
+    </nav>
+
+    <div class="nav-group-label">Foundation</div>
+    <nav class="nav">
+        <a href="#baseline">Baseline Metrics</a>
+        <a href="#reframe">The Reframe</a>
+        <a href="#plan">The Plan</a>
+    </nav>
+
+    <div class="sidebar-divider"></div>
+    <div class="nav-group-label">Meta</div>
+    <nav class="nav">
+        <a href="#glossary">Glossary</a>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<section class="hero">
+    <svg class="arc-reactor" viewBox="0 0 220 220">
+        <g class="ring">
+            <circle cx="110" cy="110" r="95" fill="none" stroke="#ffb86a" stroke-width="1" stroke-dasharray="6,4"/>
+        </g>
+        <g class="ring ring-2">
+            <circle cx="110" cy="110" r="75" fill="none" stroke="#ffb86a" stroke-width="1.5" stroke-dasharray="12,8"/>
+        </g>
+        <g class="ring ring-3">
+            <circle cx="110" cy="110" r="55" fill="none" stroke="#ffb86a" stroke-width="1" stroke-dasharray="3,3"/>
+        </g>
+        <circle cx="110" cy="110" r="30" fill="url(#core)"/>
+        <defs>
+            <radialGradient id="core">
+                <stop offset="0%" stop-color="#fff4db"/>
+                <stop offset="100%" stop-color="#ffb86a" stop-opacity="0.6"/>
+            </radialGradient>
+        </defs>
+    </svg>
+    <div class="hero-inner">
+        <div class="hero-badge">Infrastructure Forensics — 2026.04.16</div>
+        <h1>The Before State</h1>
+        <p class="subtitle">What Jarvis looked like before tonight's foundation repair — and why it was bleeding cash while failing to deliver value.</p>
+        <div class="meta-grid">
+            <div class="meta-item">
+                <div class="meta-label">Snapshot Date</div>
+                <div class="meta-value">2026-04-16 18:00 ET</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Weekly Burn</div>
+                <div class="meta-value">$286 / wk</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Critical Failures</div>
+                <div class="meta-value">4 (P0, P1, P1.6, P1.10)</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Memory p95 Latency</div>
+                <div class="meta-value">15s (timeout)</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Vault Files Indexed</div>
+                <div class="meta-value">0</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Operator</div>
+                <div class="meta-value">Phil Belue</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="content">
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="summary">
+    <h2>Executive Summary</h2>
+    <p>At 6:00 PM on April 16, 2026, Jarvis — the local AI infrastructure running on a Mac Studio — was simultaneously <strong>expensive, slow, and ignorant</strong>. Four independent failures had compounded across the stack, each one hidden by the next, creating a system that looked operational from the outside but delivered degraded value while burning <strong>$286 per week</strong> in API costs.</p>
+    <p>The failures were not random bugs. They were <strong>layered infrastructure drift</strong> — each one rooted in a config default that was never audited. The operator was absorbing the cost manually: re-providing context to Jarvis on every session, tolerating 15-second memory lookups, and paying premium Sonnet rates for tasks that should have routed to free local models.</p>
+    <p>This document captures the baseline state so that tonight's repairs — and the 30-day benchmark that starts from here — have a fixed reference point.</p>
+
+    <div class="callout danger">
+        <div class="callout-label">Core Finding</div>
+        <p>Jarvis had <strong>no awareness of the Obsidian vault</strong> — the file system treated as the canonical source of truth by <code>CLAUDE.md</code>. Every prior "why doesn't Jarvis remember X?" frustration traces back to this single scope error. The memory layer was indexing 18 self-written session files, not the knowledge base.</p>
+    </div>
+</section>
+
+<!-- LAYERED ARCHITECTURE -->
+<section id="architecture">
+    <h2>The Four-Layer Architecture</h2>
+    <p>Jarvis is conceptually a four-layer stack. Each layer depends on the one below it being stable. On April 16 evening, three of the four layers had compounding issues — which is why building upward (new automations, new agents, new workflows) kept producing disappointment. The foundation was wet concrete.</p>
+
+    <div class="diagram">
+        <div class="layer-stack">
+            <div class="layer">
+                <div class="layer-num">L5</div>
+                <div class="layer-body">
+                    <div class="layer-title">Observability</div>
+                    <div class="layer-desc">Cortex dashboards, live status, cost telemetry</div>
+                </div>
+                <div class="layer-status status-blocked">Deferred</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">L4</div>
+                <div class="layer-body">
+                    <div class="layer-title">Automation</div>
+                    <div class="layer-desc">n8n workflows, Hermes cron, Cost Watchdog</div>
+                </div>
+                <div class="layer-status status-broken">Amplifying broken</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">L3</div>
+                <div class="layer-body">
+                    <div class="layer-title">Assistant</div>
+                    <div class="layer-desc">Gmail triage, Calendar, Tasks, booking links</div>
+                </div>
+                <div class="layer-status status-blocked">Blocked</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">L2</div>
+                <div class="layer-body">
+                    <div class="layer-title">Knowledge</div>
+                    <div class="layer-desc">Memory, vault, embeddings, vector index</div>
+                </div>
+                <div class="layer-status status-broken">Degraded (FTS-only, vault unindexed)</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">L1</div>
+                <div class="layer-body">
+                    <div class="layer-title">Infrastructure</div>
+                    <div class="layer-desc">OpenClaw, gateway, model routing, provider config</div>
+                </div>
+                <div class="layer-status status-broken">Cost bleed + 404s</div>
+            </div>
+        </div>
+    </div>
+    <p class="diagram-caption">Stack state as of 2026-04-16 18:00 ET</p>
+
+    <div class="callout warn">
+        <div class="callout-label">Rule</div>
+        <p>You cannot amplify what is broken. L4 automations firing against L1/L2 failures don't produce automation — they produce <strong>faster and more expensive failure</strong>. This is the principle that explains why adding more n8n workflows over the prior weeks made the problem feel worse, not better.</p>
+    </div>
+</section>
+
+<!-- THE FOUR FAILURES -->
+<section id="failures">
+    <h2>The Four Failures</h2>
+    <p>Each of the following was a distinct, shippable-in-isolation bug. Their compounding effect — not any individual one — was what made the system feel fundamentally broken.</p>
+
+    <!-- P0 -->
+    <div class="failure">
+        <div class="failure-head">
+            <span class="failure-id">P0</span>
+            <div class="failure-title">Default Model Routing Bleed</div>
+            <span class="failure-cost">~$286 / week</span>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Symptom</div>
+            <p>Any Discord channel not explicitly routed in the OpenClaw config was defaulting to <code>anthropic/claude-sonnet-4-6</code>. This meant every internal reference channel, every side-thread, every forgotten workflow was paying <strong>Sonnet rates for Sonnet-tier tasks</strong> that should have been Gemini Flash jobs at zero cost.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Root Cause</div>
+            <p>In <code>~/.openclaw/openclaw.json</code>, <code>agents.defaults.model.primary</code> was set to Sonnet. The config had been authored conservatively — defaulting to the strongest model — without a later pass to demote the default once routing rules matured.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Flow</div>
+            <div class="diagram" style="padding: 24px 16px;">
+                <div class="flow">
+                    <div class="flow-node"><div class="flow-node-label">Trigger</div><div class="flow-node-value">Discord msg</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node"><div class="flow-node-label">Router</div><div class="flow-node-value">channel check</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Unrouted</div><div class="flow-node-value">default = Sonnet</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Cost</div><div class="flow-node-value">$5/day cap hit</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Historical evidence</div>
+            <p>Apr 13: $44 single-day burn. April month-to-date: $169. Projected weekly run rate if unfixed: $286. Sonnet budget cap was set at $5/day but being violated regularly because unrouted channel traffic wasn't being accounted for in the cap logic.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Implication</div>
+            <p>Phil was funding every unrouted message out of the same budget intended for deep thinking work in <code>#thinking</code>. This is the classic "1% of traffic = 90% of spend" leak — except the 1% was unmonitored channels generating background cruft.</p>
+        </div>
+    </div>
+
+    <!-- P1 -->
+    <div class="failure">
+        <div class="failure-head">
+            <span class="failure-id">P1</span>
+            <div class="failure-title">Active-Memory Plugin Prefix Bug</div>
+            <span class="failure-cost">100% 404 rate</span>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Symptom</div>
+            <p>Every active-memory subagent call returned <code>FailoverError: Unknown model: openai/mistral-small3.1</code>. Mistral is an Ollama-hosted local model. It is not an OpenAI model. Nothing should have been attempting to route it through OpenAI.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Root Cause</div>
+            <p>The plugin used <code>parseModelRef(configured, DEFAULT_PROVIDER)</code>. When the configured model string was bare <code>mistral-small3.1</code> (no provider prefix), <code>parseModelRef</code> auto-prefixed it with <code>DEFAULT_PROVIDER</code>, which was hardcoded to <code>openai</code> in <code>defaults.ts:3</code>. Result: <code>openai/mistral-small3.1</code>, which OpenAI legitimately returns 404 for.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Flow</div>
+            <div class="diagram" style="padding: 24px 16px;">
+                <div class="flow">
+                    <div class="flow-node"><div class="flow-node-label">Config</div><div class="flow-node-value">mistral-small3.1</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">parseModelRef</div><div class="flow-node-value">auto-prefix openai/</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">OpenAI API</div><div class="flow-node-value">404 Unknown</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Result</div><div class="flow-node-value">FailoverError</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Implication</div>
+            <p>Every memory recall call was failing silently with a fallback summary. The user perceived "Jarvis can't remember things" — the actual cause was Jarvis was never successfully calling the summarizer model because the routing was broken before the call even left the machine.</p>
+        </div>
+    </div>
+
+    <!-- P1.6 -->
+    <div class="failure">
+        <div class="failure-head">
+            <span class="failure-id">P1.6</span>
+            <div class="failure-title">Memory in FTS-Only Mode</div>
+            <span class="failure-cost">15s p95 latency</span>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Symptom</div>
+            <p>Every memory query hit a 15-second timeout. Warning messages in the gateway log stated <code>sqlite-vec unavailable</code>. Operator response: "I've been fighting this for weeks."</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Root Cause (Inverted from Initial Theory)</div>
+            <p>The warning message was misleading. <code>sqlite-vec</code> was installed correctly at <code>~/openclaw/node_modules/sqlite-vec-darwin-arm64/vec0.dylib</code>. The <em>actual</em> cause was that <code>agents.defaults.memorySearch.provider</code> was unset — no embedding provider was configured, so OpenClaw ran in <strong>FTS-only mode</strong> and never generated embeddings at all.</p>
+            <p>The <code>chunks_vec</code> table was never created. The error message said "sqlite-vec unavailable" when the true state was "no embeddings have ever been generated." Every memory query fell back to full-text keyword scan across 30K+ character <code>MEMORY.md</code> plus 17 dated session files.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Flow (before fix)</div>
+            <div class="diagram" style="padding: 24px 16px;">
+                <div class="flow">
+                    <div class="flow-node"><div class="flow-node-label">Query</div><div class="flow-node-value">memory search</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">No provider</div><div class="flow-node-value">FTS fallback</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Scan</div><div class="flow-node-value">30K+ chars</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Timeout</div><div class="flow-node-value">15s</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Implication</div>
+            <p>Vector search — the core mechanic that makes an LLM assistant usable at scale — was not operational. The <code>156</code> memory chunks had <code>embedding_bytes: 2</code> (empty) instead of the expected ~16KB per 768-dimensional float vector. The system had been paying the cost of maintaining a vector schema without ever populating it.</p>
+        </div>
+    </div>
+
+    <!-- P1.10 -->
+    <div class="failure">
+        <div class="failure-head">
+            <span class="failure-id">P1.10</span>
+            <div class="failure-title">Vault Not in Indexed Sources</div>
+            <span class="failure-cost">0% vault recall</span>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Symptom</div>
+            <p>When Jarvis was asked "what did we ship in the last hour?" in Discord, he responded: <em>"I don't have visibility into a code deployment pipeline or git log from this session."</em> He could not recall recently shipped work.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Root Cause (the deepest one)</div>
+            <p>OpenClaw's memory was indexing a single directory: <code>~/.openclaw/workspace/memory/</code>. This contained 18 files — all of them Jarvis's own self-written daily session flushes. The Obsidian vault at <code>/Volumes/Jarvis/obsidian-vault/</code> — which <code>CLAUDE.md</code> explicitly designated as the canonical source of truth — was <strong>never in the indexed paths</strong>.</p>
+            <p>Every note written to the vault for months, including the priority queue, the benchmark tracker, and all session working context, was invisible to Jarvis. He had no mechanism to recall it.</p>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Flow</div>
+            <div class="diagram" style="padding: 24px 16px;">
+                <div class="flow">
+                    <div class="flow-node working"><div class="flow-node-label">Vault</div><div class="flow-node-value">/02-NOW/ written</div></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Scope</div><div class="flow-node-value">not in extraPaths</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Watcher</div><div class="flow-node-value">ignores vault</div></div>
+                    <div class="flow-arrow broken">→</div>
+                    <div class="flow-node broken"><div class="flow-node-label">Memory</div><div class="flow-node-value">0 vault chunks</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="failure-section">
+            <div class="failure-section-label">Implication — This Is The Big One</div>
+            <p>Every prior "Jarvis doesn't know about X" frustration traces back here. <strong>The vault was the source of truth, but memory was a separate, smaller island</strong> fed only by session flushes. The operator had been manually re-providing context for months without knowing that the memory system was structurally incapable of reading the knowledge base.</p>
+            <p>This is the kind of failure that's not a bug in any single file — it's a <strong>scope error</strong> that sat dormant because every individual component was technically working as specified.</p>
+        </div>
+    </div>
+</section>
+
+<!-- COST IMPACT -->
+<section id="cost-impact">
+    <h2>Cost Impact</h2>
+    <p>Quantifying the damage — direct API spend, opportunity cost, and time cost — across a one-month lookback.</p>
+
+    <div class="metrics-grid">
+        <div class="metric">
+            <div class="metric-label">Weekly Burn</div>
+            <div class="metric-value bad">$286</div>
+            <div class="metric-sub">Run-rate if P0 unfixed</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Monthly Projection</div>
+            <div class="metric-value bad">$1,144</div>
+            <div class="metric-sub">4x weekly run-rate</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Single-Day Spike</div>
+            <div class="metric-value bad">$44</div>
+            <div class="metric-sub">Apr 13 burn event</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Memory Query p95</div>
+            <div class="metric-value bad">15s</div>
+            <div class="metric-sub">Timeout — fallback fired</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Memory Recall Rate</div>
+            <div class="metric-value bad">0%</div>
+            <div class="metric-sub">Against vault content</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Vault Files Indexed</div>
+            <div class="metric-value bad">0</div>
+            <div class="metric-sub">of the canonical source</div>
+        </div>
+    </div>
+
+    <h3>Cost Breakdown</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cost Layer</th>
+                    <th>Before State</th>
+                    <th>Mechanism</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Direct API</strong></td>
+                    <td>~$286 / week</td>
+                    <td>Sonnet as default on unrouted traffic</td>
+                </tr>
+                <tr>
+                    <td><strong>Wasted Tokens</strong></td>
+                    <td>~20–30% of spend</td>
+                    <td>Failed memory calls, retries, fallback summaries</td>
+                </tr>
+                <tr>
+                    <td><strong>Operator Time</strong></td>
+                    <td>~2–3 hrs / week</td>
+                    <td>Manual context re-provision per session</td>
+                </tr>
+                <tr>
+                    <td><strong>Opportunity Cost</strong></td>
+                    <td>Unquantified</td>
+                    <td>Every minute spent debugging is a minute not spent on quota-moving work</td>
+                </tr>
+                <tr>
+                    <td><strong>Compounding Cost</strong></td>
+                    <td>Rising</td>
+                    <td>New n8n workflows amplified the broken base instead of fixing it</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- USER IMPACT -->
+<section id="user-impact">
+    <h2>User Impact</h2>
+    <p>The cost ledger alone under-represents the damage. The real cost was <strong>cognitive tax on the operator</strong>. Jarvis was supposed to be a decision-reduction system. It was functioning as a decision-addition system.</p>
+
+    <div class="quote">
+        "At some point with higher quotas and burn out I need systems. The local 'IXON enterprise Claude with co-work agents' putting drafts in my inbox with 'what to do' is just not a good method of delivery. I want to build upon and actually create real value-add activity instead of piddling around with agents delivering me details that I already know in places I don't want to look."
+        <span class="quote-attribution">— Phil Belue, 2026-04-16</span>
+    </div>
+
+    <h3>The Delivery Problem</h3>
+    <p>Every broken component — the $286 bleed, the 15-second lag, the missing vault index, the prefix 404s — routed the same damage to the operator: <strong>more things to remember, monitor, or manually correct</strong>. The compounding effect was burnout pressure at rising quota attainment.</p>
+
+    <h3>What Jarvis Should Have Been Doing</h3>
+    <div class="card">
+        <div class="card-label">Design Principle (Post-Reframe)</div>
+        <p>Agents do not deliver information. They deliver <strong>decisions-already-made</strong> or <strong>actions-already-taken</strong>. If an output arrives and the operator's reaction is "yeah I know" — the system failed. The only things that should cross the attention threshold are (a) judgment calls, (b) confirmations before irreversible action, (c) genuinely new signal.</p>
+    </div>
+
+    <h3>What Jarvis Was Actually Doing</h3>
+    <div class="card">
+        <div class="card-label">Observed Behavior</div>
+        <p>Posting briefs to Discord channels the operator did not watch. Drafting emails that sat in the inbox adding to the "to review" pile. Generating task summaries that duplicated mental state the operator already carried. <strong>Busywork with an AI veneer.</strong></p>
+    </div>
+</section>
+
+<!-- BASELINE METRICS -->
+<section id="baseline">
+    <h2>Baseline Metrics — The Benchmark Starts Here</h2>
+    <p>To measure whether the repairs actually worked — and to force a 30-day review — the following metrics were captured at the moment of first intervention. This is the Day 0 reference point for the local-first, zero-cost memory benchmark.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Before</th>
+                    <th>Target (30 days)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Memory p95 latency</td><td><span style="color:var(--red)">15s (timeout)</span></td><td>≤ 10s</td></tr>
+                <tr><td>Recall accuracy</td><td><span style="color:var(--red)">~0% on vault</span></td><td>≥ 70%</td></tr>
+                <tr><td>Hit rate (relevant result in top 5)</td><td><span style="color:var(--red)">~15%</span></td><td>≥ 50%</td></tr>
+                <tr><td>False positive rate</td><td><span style="color:var(--red)">High (FTS noise)</span></td><td>&lt; 2 / week</td></tr>
+                <tr><td>Indexed files</td><td>18 (session only)</td><td>+ vault /02-NOW/</td></tr>
+                <tr><td>Chunks in index</td><td>156</td><td>161+ (vault adds)</td></tr>
+                <tr><td>Embedding provider</td><td><span style="color:var(--red)">None (FTS only)</span></td><td>ollama / nomic-embed-text</td></tr>
+                <tr><td>Default model</td><td><span style="color:var(--red)">Sonnet</span></td><td>Gemini 2.0 Flash</td></tr>
+                <tr><td>Weekly API spend</td><td><span style="color:var(--red)">$286</span></td><td>&lt; $20</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Rule: any one criterion failing = upgrade trigger</div>
+        <p>If after 30 days any single target metric is missed, the benchmark fails, and we upgrade the embedding provider from local <code>nomic-embed-text</code> to the paid <code>voyage-3-large</code> (MTEB 68.1, ~$0.07/mo at this scale). <strong>Review date: 2026-05-16.</strong></p>
+    </div>
+</section>
+
+<!-- REFRAME -->
+<section id="reframe">
+    <h2>The Reframe — From Cost-Minimization to Value-Maximization</h2>
+    <p>Mid-session, Phil issued a reframe that changed the entire decision framework:</p>
+
+    <div class="quote">
+        "Cost and quality = VALUE for me. Value = time saved, stress reduced, ability to earn more. This is capital ex to buy more capital and financial freedom."
+        <span class="quote-attribution">— Phil Belue, 2026-04-16</span>
+    </div>
+
+    <h3>The New Decision Framework</h3>
+    <div class="card">
+        <div class="card-label">Equation</div>
+        <p style="font-family: var(--font-code); font-size: 16px; color: var(--core-warm); margin-bottom: 20px;">
+            VALUE = (time saved) + (stress reduced) + (earning capacity unlocked) − (direct cost)
+        </p>
+        <p>This is not a cost-minimization problem. Picking the cheapest option is wrong if the cheap option fails to deliver time-saved or stress-reduced. Picking the expensive option is wrong if a local equivalent delivers the same outcome. The answer is always: <strong>benchmark the cheap option first, upgrade only if it fails</strong>.</p>
+    </div>
+
+    <h3>Why This Matters For The Infrastructure</h3>
+    <p>The prior $6,000 in Mac Studio investment was capex for precisely this purpose — to enable local-first, zero-marginal-cost compute for everything that can run locally, freeing cloud budget for the specific thinking tasks where frontier-model quality pays for itself. The before-state violated this principle in two directions at once: paying cloud Sonnet rates for things that should have been local, while failing to extract value from the local compute that was already paid for.</p>
+</section>
+
+<!-- PLAN -->
+<section id="plan">
+    <h2>The Plan — Plan / Do / Review as Benchmark</h2>
+    <p>Rather than committing to an "upgrade everything" strategy, the plan is structured as a 30-day benchmark cycle. This forces measurement and prevents paying for optionality that isn't actually used.</p>
+
+    <div class="metrics-grid">
+        <div class="metric">
+            <div class="metric-label">Phase 1 — Plan</div>
+            <div class="metric-value good">NOW</div>
+            <div class="metric-sub">Define targets, baseline, criteria</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Phase 2 — Do</div>
+            <div class="metric-value warn">30 Days</div>
+            <div class="metric-sub">Run local $0 stack, measure daily</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Phase 3 — Review</div>
+            <div class="metric-value">2026-05-16</div>
+            <div class="metric-sub">Hit metrics = hold. Miss = upgrade.</div>
+        </div>
+    </div>
+
+    <h3>The Repair Sequence</h3>
+    <p>Foundation first, then framing, then the house, then the view. Each layer only begins once the layer beneath it is stable.</p>
+
+    <div class="diagram">
+        <div class="layer-stack">
+            <div class="layer">
+                <div class="layer-num">1</div>
+                <div class="layer-body">
+                    <div class="layer-title">L1/L2 — Pour concrete</div>
+                    <div class="layer-desc">Ship P0, P1, P1.6, P1.10. Trim MEMORY.md. Restructure vault.</div>
+                </div>
+                <div class="layer-status status-working">Tonight</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">2</div>
+                <div class="layer-body">
+                    <div class="layer-title">L1/L2 — Cure</div>
+                    <div class="layer-desc">Channel trim, requireMention, sync audit. 30-day benchmark runs.</div>
+                </div>
+                <div class="layer-status status-blocked">Week 1</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">3</div>
+                <div class="layer-body">
+                    <div class="layer-title">L3 — Frame the house</div>
+                    <div class="layer-desc">Google API audit. Ship Tasks, Calendar, Gmail — with delivery principles.</div>
+                </div>
+                <div class="layer-status status-blocked">Month 1</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">4</div>
+                <div class="layer-body">
+                    <div class="layer-title">L4 — Wire automation</div>
+                    <div class="layer-desc">Hermes Daily Historian. Cost Watchdog. n8n workflow cleanup.</div>
+                </div>
+                <div class="layer-status status-blocked">Month 2</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">5</div>
+                <div class="layer-body">
+                    <div class="layer-title">L5 — Install windows</div>
+                    <div class="layer-desc">Cortex Live UI. Real-time status, cost burn, routing.</div>
+                </div>
+                <div class="layer-status status-blocked">Month 3+</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="callout success">
+        <div class="callout-label">Principle</div>
+        <p>If something can be simplified, automate it. If something can scale, design it that way. If something is unclear, make a strong assumption and move forward. <strong>Benchmarks force the review — no upgrade is permanent, and no failure is invisible.</strong></p>
+    </div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary">
+    <h2>Glossary</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Term</th><th>Definition</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>OpenClaw</strong></td><td>The local gateway process running on Mac Studio that handles model routing, memory, and agent execution for Jarvis.</td></tr>
+                <tr><td><strong>Vault</strong></td><td>The Obsidian knowledge base at <code>/Volumes/Jarvis/obsidian-vault/</code>. Canonical source of truth per <code>CLAUDE.md</code>.</td></tr>
+                <tr><td><strong>FTS</strong></td><td>Full-Text Search. SQLite's keyword-based search. Fast at tiny scale, catastrophic at 30K+ chars.</td></tr>
+                <tr><td><strong>sqlite-vec</strong></td><td>SQLite extension enabling vector similarity search over embeddings.</td></tr>
+                <tr><td><strong>nomic-embed-text</strong></td><td>Open-source 768-dim embedding model. Runs locally via Ollama. $0 marginal cost.</td></tr>
+                <tr><td><strong>voyage-3-large</strong></td><td>Commercial embedding model (MTEB 68.1). Upgrade target if local benchmark fails at 30 days.</td></tr>
+                <tr><td><strong>p95 latency</strong></td><td>The latency below which 95% of queries complete. Better measure than average for user experience.</td></tr>
+                <tr><td><strong>extraPaths</strong></td><td>OpenClaw config key that tells the memory watcher which additional directories to index beyond the default.</td></tr>
+                <tr><td><strong>Rule-04</strong></td><td>Functional test: ask Jarvis to self-report his routing table. If he answers correctly, routing config is live.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</div>
+
+<footer>
+    <p>JARVIS AI Infrastructure — Built by Philip Belue</p>
+    <p>Midnight Design System v2 — Before State Report — 2026-04-16</p>
+</footer>
+
+</main>
+
+<script>
+// Active nav tracking on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav a');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + id) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
