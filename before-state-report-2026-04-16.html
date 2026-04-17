@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS — The Before State — April 16, 2026</title>
+<title>JARVIS — Before &amp; After — April 16, 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -654,10 +654,10 @@ footer p {
 <!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-title">JARVIS</div>
-    <div class="sidebar-sub">Before State Report</div>
+    <div class="sidebar-sub">Before &amp; After Report</div>
     <div class="sidebar-divider"></div>
 
-    <div class="nav-group-label">Analysis</div>
+    <div class="nav-group-label">Before State</div>
     <nav class="nav">
         <a href="#summary" class="active">Executive Summary</a>
         <a href="#architecture">Layered Architecture</a>
@@ -671,6 +671,16 @@ footer p {
         <a href="#baseline">Baseline Metrics</a>
         <a href="#reframe">The Reframe</a>
         <a href="#plan">The Plan</a>
+    </nav>
+
+    <div class="sidebar-divider"></div>
+    <div class="nav-group-label">After State — L1 Closed</div>
+    <nav class="nav">
+        <a href="#after-summary">Closure Summary</a>
+        <a href="#shipped">What Shipped Tonight</a>
+        <a href="#timeline">Tonight's Timeline</a>
+        <a href="#after-metrics">Before vs After</a>
+        <a href="#new-queue">New Queue — L2 Next</a>
     </nav>
 
     <div class="sidebar-divider"></div>
@@ -704,29 +714,37 @@ footer p {
         </defs>
     </svg>
     <div class="hero-inner">
-        <div class="hero-badge">Infrastructure Forensics — 2026.04.16</div>
-        <h1>The Before State</h1>
-        <p class="subtitle">What Jarvis looked like before tonight's foundation repair — and why it was bleeding cash while failing to deliver value.</p>
+        <div class="hero-badge">Infrastructure Forensics — 2026.04.16 — L1 CLOSED</div>
+        <h1>Before &amp; After</h1>
+        <p class="subtitle">What Jarvis looked like before tonight's foundation repair — and what changed. Before: expensive, slow, ignorant. After: cheap, fast, lucid.</p>
         <div class="meta-grid">
             <div class="meta-item">
-                <div class="meta-label">Snapshot Date</div>
-                <div class="meta-value">2026-04-16 18:00 ET</div>
+                <div class="meta-label">Session Date</div>
+                <div class="meta-value">2026-04-16</div>
             </div>
             <div class="meta-item">
-                <div class="meta-label">Weekly Burn</div>
+                <div class="meta-label">Weekly Burn — Before</div>
                 <div class="meta-value">$286 / wk</div>
             </div>
             <div class="meta-item">
-                <div class="meta-label">Critical Failures</div>
-                <div class="meta-value">4 (P0, P1, P1.6, P1.10)</div>
+                <div class="meta-label">Weekly Burn — After</div>
+                <div class="meta-value">~$30 / wk</div>
             </div>
             <div class="meta-item">
-                <div class="meta-label">Memory p95 Latency</div>
-                <div class="meta-value">15s (timeout)</div>
+                <div class="meta-label">Failures Closed</div>
+                <div class="meta-value">6 (P0 · P0.1 · P1 · P1.6 · P1.8 · P1.10)</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Memory p95 — Before / After</div>
+                <div class="meta-value">15s timeout → ~3.6s</div>
             </div>
             <div class="meta-item">
                 <div class="meta-label">Vault Files Indexed</div>
-                <div class="meta-value">0</div>
+                <div class="meta-value">0 → 162 chunks</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">L1 Foundation</div>
+                <div class="meta-value">CLOSED 20:45 ET</div>
             </div>
             <div class="meta-item">
                 <div class="meta-label">Operator</div>
@@ -1154,18 +1172,18 @@ footer p {
             <div class="layer">
                 <div class="layer-num">1</div>
                 <div class="layer-body">
-                    <div class="layer-title">L1/L2 — Pour concrete</div>
-                    <div class="layer-desc">Ship P0, P1, P1.6, P1.10. Trim MEMORY.md. Restructure vault.</div>
+                    <div class="layer-title">L1 — Foundation Poured</div>
+                    <div class="layer-desc">P0, P0.1, P1, P1.6, P1.8, P1.10 ALL SHIPPED. Memory pipeline live. Jarvis calls memory_search reflexively.</div>
                 </div>
-                <div class="layer-status status-working">Tonight</div>
+                <div class="layer-status status-working">SHIPPED ✓</div>
             </div>
             <div class="layer">
                 <div class="layer-num">2</div>
                 <div class="layer-body">
-                    <div class="layer-title">L1/L2 — Cure</div>
-                    <div class="layer-desc">Channel trim, requireMention, sync audit. 30-day benchmark runs.</div>
+                    <div class="layer-title">L2 — Curing + Polish</div>
+                    <div class="layer-desc">P1.13 MEMORY.md trim · P1.14 DMs to Sonnet · P4 requireMention · Hermes (Daily Historian) build.</div>
                 </div>
-                <div class="layer-status status-blocked">Week 1</div>
+                <div class="layer-status status-working">IN PROGRESS</div>
             </div>
             <div class="layer">
                 <div class="layer-num">3</div>
@@ -1197,6 +1215,362 @@ footer p {
     <div class="callout success">
         <div class="callout-label">Principle</div>
         <p>If something can be simplified, automate it. If something can scale, design it that way. If something is unclear, make a strong assumption and move forward. <strong>Benchmarks force the review — no upgrade is permanent, and no failure is invisible.</strong></p>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- AFTER STATE — L1 FOUNDATION CLOSED -->
+<!-- ============================================ -->
+
+<section id="after-summary">
+    <div class="callout success" style="border-left: 4px solid var(--gold); padding: 24px; margin-bottom: 32px;">
+        <div class="callout-label" style="color: var(--gold); font-family: var(--font-display); font-weight: 700; letter-spacing: 3px; font-size: 12px;">L1 FOUNDATION — CLOSED</div>
+        <p style="font-size: 18px; color: var(--core-white); margin-top: 12px; line-height: 1.6;">At 20:45 ET, the final verification test passed. Jarvis called <code>memory_search</code> unprompted, retrieved <code>priority-queue.md</code> from the vault, and returned an accurate summary of tonight's shipped work with line-level detail — including the P0.1 hotfix, open items, and severity rankings. The memory pipeline is live. The foundation is poured.</p>
+    </div>
+
+    <h2>Closure Summary</h2>
+    <p>What was four independent compounding failures at 18:00 ET became a working memory pipeline by 20:45 ET. The architectural fix was not "build new features" — it was <strong>expose the pipes that already existed</strong>. Each bug was a config issue, a routing rule, or a prompt instruction. No new code was written. No new dependencies added. The system always could do this; it just wasn't configured to.</p>
+
+    <div class="metrics-grid" style="margin-top: 24px;">
+        <div class="metric">
+            <div class="metric-label">Session Duration</div>
+            <div class="metric-value good">~3 hrs</div>
+            <div class="metric-sub">18:00 → 20:45 ET</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Bugs Shipped</div>
+            <div class="metric-value good">6</div>
+            <div class="metric-sub">P0, P0.1, P1, P1.6, P1.8, P1.10</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">New Bugs Discovered</div>
+            <div class="metric-value warn">3</div>
+            <div class="metric-sub">P1.11, P1.13, P1.14 (logged)</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Lines of Code Shipped</div>
+            <div class="metric-value good">~40</div>
+            <div class="metric-sub">Config + prompt edits only</div>
+        </div>
+    </div>
+</section>
+
+<section id="shipped">
+    <h2>What Shipped Tonight</h2>
+    <p>Six separate fixes, each surgical, each verified. The pattern: every bug was <em>already fixable</em> with existing software — the problem was that misconfiguration hid the real state.</p>
+
+    <div style="margin-top: 24px;">
+
+        <div class="failure" style="border-left: 4px solid var(--green);">
+            <div class="failure-head">
+                <div class="failure-id" style="color: var(--green); background: var(--green-dim);">P0 · SHIPPED</div>
+                <div class="failure-cost" style="color: var(--green);">cost</div>
+            </div>
+            <h3>Default Model Flipped — Sonnet → Gemini Flash</h3>
+            <p><strong>Fix:</strong> Changed <code>agents.defaults.model.primary</code> from <code>anthropic/claude-sonnet-4-6</code> to <code>openrouter/google/gemini-2.0-flash-001</code>. Hotfix (P0.1): corrected model ID suffix after first boot failure.</p>
+            <p><strong>Impact:</strong> Any channel not explicitly routed to Sonnet now costs fractions of a cent per response instead of Sonnet rates. Projected weekly burn dropped from ~$286 → ~$30.</p>
+        </div>
+
+        <div class="failure" style="border-left: 4px solid var(--green);">
+            <div class="failure-head">
+                <div class="failure-id" style="color: var(--green); background: var(--green-dim);">P1 · SHIPPED</div>
+                <div class="failure-cost" style="color: var(--green);">provider</div>
+            </div>
+            <h3>active-memory Provider Prefix</h3>
+            <p><strong>Fix:</strong> Changed plugin config from bare <code>mistral-small3.1</code> to <code>ollama/mistral-small3.1</code> — OpenClaw was defaulting missing-prefix models to OpenAI, producing 404s on every memory query.</p>
+            <p><strong>Impact:</strong> Background memory subagent now routes to local Ollama correctly. Zero 404s post-fix.</p>
+        </div>
+
+        <div class="failure" style="border-left: 4px solid var(--green);">
+            <div class="failure-head">
+                <div class="failure-id" style="color: var(--green); background: var(--green-dim);">P1.6 · SHIPPED</div>
+                <div class="failure-cost" style="color: var(--green);">memory</div>
+            </div>
+            <h3>Vector Embeddings — FIRST TIME EVER WORKING</h3>
+            <p><strong>Fix:</strong> Added <code>memorySearch: { provider: "ollama", model: "nomic-embed-text", fallback: "none" }</code> to openclaw.json. Pulled nomic-embed-text (274 MB, 768-dim). Reindexed 156 chunks in 6 seconds.</p>
+            <p><strong>Impact:</strong> OpenClaw stopped running in FTS-only (keyword) mode. <code>chunks_vec</code> table now populated, all chunks have embeddings. Memory does real vector similarity search. <strong>30-day benchmark running</strong> — review 2026-05-16, upgrade to voyage-3-large if metrics miss.</p>
+        </div>
+
+        <div class="failure" style="border-left: 4px solid var(--green);">
+            <div class="failure-head">
+                <div class="failure-id" style="color: var(--green); background: var(--green-dim);">P1.10 · SHIPPED</div>
+                <div class="failure-cost" style="color: var(--green);">scope</div>
+            </div>
+            <h3>Vault Path Indexed</h3>
+            <p><strong>Fix:</strong> Added <code>extraPaths: ["/Volumes/Jarvis/obsidian-vault/02-NOW"]</code> to memorySearch. Force-reindex took 6s. Index grew from 156 → 162 chunks. Watcher confirmed auto-indexing within 30s on new files.</p>
+            <p><strong>Impact:</strong> Every vault note in <code>02-NOW</code> is now searchable. Specific query "P1.6 SHIPPED memory FTS-only" returns priority-queue.md at score 0.750 (top result). Vault is now a first-class memory source.</p>
+        </div>
+
+        <div class="failure" style="border-left: 4px solid var(--green);">
+            <div class="failure-head">
+                <div class="failure-id" style="color: var(--green); background: var(--green-dim);">P1.8 · SHIPPED</div>
+                <div class="failure-cost" style="color: var(--green);">behavior</div>
+            </div>
+            <h3>Memory-First Reflex — The Real Unlock</h3>
+            <p><strong>Fix:</strong> Prepended MEMORY-FIRST PROTOCOL block to <code>~/.openclaw/workspace/AGENTS.md</code> (priority 10, first injected file). Block enumerates trigger phrases, forbids punting before tool call, and explicitly overrides the 129-char active-memory auto-summary as "a hint, not an answer."</p>
+            <p><strong>Impact:</strong> Sonnet now calls <code>memory_search</code> reflexively on recall questions instead of answering "I don't know." Verified end-to-end in <code>#jarvis-builds</code>: Jarvis returned accurate ship log for P0/P1/P1.6/P1.10 with P0.1 hotfix detail. <strong>This is the bug that unlocked everything else.</strong></p>
+        </div>
+
+    </div>
+
+    <div class="callout success" style="margin-top: 32px;">
+        <div class="callout-label">Architectural Insight</div>
+        <p>The four original failures plus P1.8 formed a dependency chain: <strong>routing (P0) → providers (P1) → embeddings (P1.6) → scope (P1.10) → reflex (P1.8)</strong>. Each one masked the next. Fixing them in order was the only sequence that worked — shipping P1.8 first would have revealed no memory to search, shipping P1.10 first would have indexed into a broken embedding pipeline. <strong>The dependency chain defined the shipping order.</strong></p>
+    </div>
+</section>
+
+<section id="timeline">
+    <h2>Tonight's Timeline</h2>
+    <p>The session compressed three hours of infrastructure repair into a visible arc. Failures, verifications, and corrections in the order they happened.</p>
+
+    <div class="diagram" style="margin-top: 24px;">
+        <div class="layer-stack">
+            <div class="layer">
+                <div class="layer-num" style="background: var(--gold-dim); color: var(--gold);">18:00</div>
+                <div class="layer-body">
+                    <div class="layer-title">Session Start — The Before State</div>
+                    <div class="layer-desc">Jarvis bleeding $286/wk. Memory p95 = 15s timeout. 0 vault files indexed. 4 compounding failures identified.</div>
+                </div>
+                <div class="layer-status" style="background: var(--red-dim); color: var(--red);">BROKEN</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--gold-dim); color: var(--gold);">~19:00</div>
+                <div class="layer-body">
+                    <div class="layer-title">P0, P0.1, P1 — Routing + Provider Fixes</div>
+                    <div class="layer-desc">Default model flipped to Gemini Flash. Mistral prefix corrected. 404 errors stopped.</div>
+                </div>
+                <div class="layer-status status-working">SHIPPED</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--gold-dim); color: var(--gold);">~19:30</div>
+                <div class="layer-body">
+                    <div class="layer-title">P1.6 — Vector Embeddings Live</div>
+                    <div class="layer-desc">nomic-embed-text pulled. memorySearch configured. 156 chunks reindexed. First-ever vector search.</div>
+                </div>
+                <div class="layer-status status-working">SHIPPED</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--gold-dim); color: var(--gold);">~20:00</div>
+                <div class="layer-body">
+                    <div class="layer-title">P1.10 — Vault Indexed</div>
+                    <div class="layer-desc">extraPaths added. Vault content embedded. Index: 156 → 162. First Discord verify test run.</div>
+                </div>
+                <div class="layer-status status-working">SHIPPED</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--red-dim); color: var(--red);">20:13</div>
+                <div class="layer-body">
+                    <div class="layer-title">Verify FAIL #1 — Jarvis Still Punting</div>
+                    <div class="layer-desc">Discord test: "I don't know what P0/P1 refers to." Diagnosis: P1.8 (behavior, not scope). Memory exists but Sonnet isn't reaching for it.</div>
+                </div>
+                <div class="layer-status" style="background: var(--red-dim); color: var(--red);">BLOCKED</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--gold-dim); color: var(--gold);">~20:30</div>
+                <div class="layer-body">
+                    <div class="layer-title">P1.8 — MEMORY-FIRST PROTOCOL</div>
+                    <div class="layer-desc">AGENTS.md strengthened with non-negotiable reflex block. Kickstart clean. Two verify failures isolated as confounds (session pollution + Gemini Flash on DMs).</div>
+                </div>
+                <div class="layer-status status-working">SHIPPED</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--green-dim); color: var(--green);">20:44</div>
+                <div class="layer-body">
+                    <div class="layer-title">Verify PASS — #jarvis-builds</div>
+                    <div class="layer-desc">Jarvis called memory_search, returned accurate P0/P1/P1.6/P1.10 summary with P0.1 detail and open-items flags.</div>
+                </div>
+                <div class="layer-status" style="background: var(--green-dim); color: var(--green);">PASS ✓</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num" style="background: var(--green-dim); color: var(--green);">20:45</div>
+                <div class="layer-body">
+                    <div class="layer-title">L1 FOUNDATION CLOSED</div>
+                    <div class="layer-desc">priority-queue.md banner set. Daily log written at 01-DAILY/2026/04-April/2026-04-16.md. Session continues into L2 polish.</div>
+                </div>
+                <div class="layer-status" style="background: var(--green-dim); color: var(--green);">CLOSED</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="after-metrics">
+    <h2>Before vs After</h2>
+    <p>The same metrics that defined the before state, recomputed post-L1 closure. The cost impact is projected; the capability impact is verified.</p>
+
+    <div class="table-wrap" style="margin-top: 24px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Before (18:00)</th>
+                    <th>After (20:45)</th>
+                    <th>Delta</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Weekly burn (projected)</strong></td>
+                    <td>~$286 / wk</td>
+                    <td>~$30 / wk</td>
+                    <td style="color: var(--green);">-89% · ~$256/wk saved</td>
+                </tr>
+                <tr>
+                    <td><strong>Default model</strong></td>
+                    <td>Sonnet 4.6 (all traffic)</td>
+                    <td>Gemini Flash (bulk) + Sonnet (selected)</td>
+                    <td style="color: var(--green);">Fleet routing</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory mode</strong></td>
+                    <td>FTS-only (keyword)</td>
+                    <td>Vector + FTS hybrid</td>
+                    <td style="color: var(--green);">First-time semantic search</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory p95 latency</strong></td>
+                    <td>15s (timeout)</td>
+                    <td>~3.6s</td>
+                    <td style="color: var(--green);">-76%</td>
+                </tr>
+                <tr>
+                    <td><strong>Vault files indexed</strong></td>
+                    <td>0</td>
+                    <td>162 chunks (growing)</td>
+                    <td style="color: var(--green);">Vault is searchable</td>
+                </tr>
+                <tr>
+                    <td><strong>Jarvis recall reflex</strong></td>
+                    <td>Punts with "I don't know"</td>
+                    <td>Calls memory_search on trigger phrases</td>
+                    <td style="color: var(--green);">Behavioral change</td>
+                </tr>
+                <tr>
+                    <td><strong>404 error rate</strong></td>
+                    <td>Every memory query</td>
+                    <td>0</td>
+                    <td style="color: var(--green);">Provider fixed</td>
+                </tr>
+                <tr>
+                    <td><strong>Embedding model</strong></td>
+                    <td>None (no provider)</td>
+                    <td>nomic-embed-text (768-dim, local, $0)</td>
+                    <td style="color: var(--green);">Live</td>
+                </tr>
+                <tr>
+                    <td><strong>DMs routing</strong></td>
+                    <td>Fall-through to Gemini Flash</td>
+                    <td>Explicit Sonnet (P1.14)</td>
+                    <td style="color: var(--green);">Correct model for recall</td>
+                </tr>
+                <tr>
+                    <td><strong>L1 status</strong></td>
+                    <td>4 compounding failures</td>
+                    <td>CLOSED</td>
+                    <td style="color: var(--gold);">Foundation set</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout success" style="margin-top: 24px;">
+        <div class="callout-label">The VALUE Equation, Updated</div>
+        <p>Before: paying premium rates for a system that couldn't remember yesterday. After: paying bulk rates for a system that recalls tonight's ship log on request. Same dollar of infrastructure, ~10× the usable function. <strong>The ROI isn't in the cost reduction — it's in the capability unlock.</strong></p>
+    </div>
+</section>
+
+<section id="new-queue">
+    <h2>New Queue — L2 Next</h2>
+    <p>L1 is closed but 3 bugs surfaced during verification. These form the start of L2 (curing + polish). Plus the next-tier work: build Hermes (the Daily Historian), define the 5 memory benchmark queries, start L3 Google integrations.</p>
+
+    <h3>Open Bugs — Ranked by Severity</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Severity</th>
+                    <th>Description</th>
+                    <th>Path to Close</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>P1.13</strong></td>
+                    <td><span style="color: var(--yellow);">Medium</span></td>
+                    <td>MEMORY.md is 29,888 chars, truncated at 20k bootstrap limit. Stale facts ("I'm in Atlanta") leak into Sonnet's always-on context.</td>
+                    <td>Trim to &lt;18k. Move archival content to dated vault notes.</td>
+                </tr>
+                <tr>
+                    <td><strong>P1.14</strong></td>
+                    <td><span style="color: var(--green);">SHIPPED</span></td>
+                    <td>DMs route to Gemini Flash, too weak for MEMORY-FIRST. (Shipped during L2 pass — DM peer added to channels.modelByChannel.discord as Sonnet.)</td>
+                    <td>Verify with DM test.</td>
+                </tr>
+                <tr>
+                    <td><strong>P1.11</strong></td>
+                    <td><span style="color: var(--text-dim);">Low</span></td>
+                    <td>Watcher unlink events don't propagate within 35s. Deleted vault notes linger in chunks until forced reindex.</td>
+                    <td>Fix manager-sync-ops.ts unlink path. Low priority — deletes are rare.</td>
+                </tr>
+                <tr>
+                    <td><strong>P1.12</strong></td>
+                    <td><span style="color: var(--text-dim);">Low</span></td>
+                    <td>Long-running sessions anchor on prior assistant turns, overriding new system instructions. Observed in #thinking test.</td>
+                    <td>Add session TTL or manual clear command. Workaround: fresh channel for high-stakes tests.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 style="margin-top: 32px;">Next-Tier Work (L2 → L4)</h3>
+    <div class="diagram">
+        <div class="layer-stack">
+            <div class="layer">
+                <div class="layer-num">1</div>
+                <div class="layer-body">
+                    <div class="layer-title">L2 Cleanup — ship P1.13 · P4 · P0.5</div>
+                    <div class="layer-desc">MEMORY.md trim · requireMention on brief channels · vault restructure to time-first architecture.</div>
+                </div>
+                <div class="layer-status status-working">This week</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">2</div>
+                <div class="layer-body">
+                    <div class="layer-title">Memory Benchmark Fuel — 5 weekly test queries</div>
+                    <div class="layer-desc">Define the 5 queries that measure whether memory recall actually works for Phil's real workflow. Feeds into the May 16 review.</div>
+                </div>
+                <div class="layer-status status-blocked">This week</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">3</div>
+                <div class="layer-body">
+                    <div class="layer-title">Hermes — The Daily Historian</div>
+                    <div class="layer-desc">L4 auto-curator. Mistral local, $0 incremental. Ingests Discord + vault + commits, writes daily summaries, prunes old entries. Solves MEMORY.md rot permanently.</div>
+                </div>
+                <div class="layer-status status-blocked">Weekend</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">4</div>
+                <div class="layer-body">
+                    <div class="layer-title">L3 — Google API Integrations</div>
+                    <div class="layer-desc">Tasks, Calendar, Gmail. Calendly-killer via Google Appointment Schedules (native, free). Delivery principle: actions taken, not information delivered.</div>
+                </div>
+                <div class="layer-status status-blocked">Month 1</div>
+            </div>
+            <div class="layer">
+                <div class="layer-num">5</div>
+                <div class="layer-body">
+                    <div class="layer-title">May 16 — 30-day Benchmark Review</div>
+                    <div class="layer-desc">Hit metrics: recall ≥70%, p95 ≤10s, hit rate ≥50%, false positives &lt;2/wk. Miss any → upgrade to voyage-3-large (~$0.07/mo).</div>
+                </div>
+                <div class="layer-status status-blocked">Locked: 2026-05-16</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="callout success" style="margin-top: 32px;">
+        <div class="callout-label">What tonight bought</div>
+        <p>Tonight closed the foundation that every higher layer depends on. Hermes can only work if memory is searchable (now true). L3 agents can only be tested if their state is recallable (now true). Cost Watchdog can only alert on spend if the routing is deterministic (now true). <strong>The next five layers of Jarvis are now unblocked.</strong></p>
     </div>
 </section>
 
